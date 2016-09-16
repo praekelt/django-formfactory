@@ -2,7 +2,7 @@ Django Form Factory
 ===================
 **Dynamic django form builder.**
 
-.. figure:: https://travis-ci.org/praekelt/django-formfactory.svg?branch=develop
+.. figure:: https://travis-ci.org/praekelt/django-formfactory.svg?branch=master
    :align: center
    :alt: Travis
 
