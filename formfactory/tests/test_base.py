@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 
-from formfactory import models
+from formfactory import actions, models, validators
 
 
 def load_fixtures(kls):
@@ -24,6 +24,58 @@ def load_fixtures(kls):
         setattr(kls, "formfield_%s" % count, models.FormField.objects.create(
             **getattr(kls, "formfield_data_%s" % count)
         ))
+
+
+class TestValidator(validators.BaseValidator):
+    pass
+
+
+class TestAction(actions.BaseAction):
+    pass
+
+
+class ValidatorTestCase(TestCase):
+    def setUp(self):
+        self.validator = TestValidator()
+
+    def test_registry(self):
+        validators.register(self.validator)
+
+        # ensure the class is registered as expected
+        self.assertIn(self.validator, validators.get_registered_validators())
+
+    def test_unregistry(self):
+        validators.register(self.validator)
+
+        # ensure the class is registered as expected
+        self.assertIn(self.validator, validators.get_registered_validators())
+
+        validators.unregister(self.validator)
+
+        # ensure the class is unregistered as expected
+        self.assertNotIn(self.validator, validators.get_registered_validators())
+
+
+class ActionTestCase(TestCase):
+    def setUp(self):
+        self.action = TestAction()
+
+    def test_registry(self):
+        actions.register(self.action)
+
+        # ensure the class is registered as expected
+        self.assertIn(self.action, actions.get_registered_actions())
+
+    def test_unregistry(self):
+        actions.register(self.action)
+
+        # ensure the class is registered as expected
+        self.assertIn(self.action, actions.get_registered_actions())
+
+        actions.unregister(self.action)
+
+        # ensure the class is unregistered as expected
+        self.assertNotIn(self.action, actions.get_registered_actions())
 
 
 class ModelTestCase(TestCase):
