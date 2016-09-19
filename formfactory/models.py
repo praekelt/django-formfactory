@@ -61,9 +61,9 @@ class FormField(models.Model):
         max_length=256,
         help_text="A short descriptive title."
     )
-    position = models.PositiveIntegerField()
+    position = models.PositiveIntegerField(default=0)
 
-    form = models.ForeignKey(Form)
+    form = models.ForeignKey(Form, related_name="fields")
 
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
     label = models.CharField(max_length=64)
@@ -73,7 +73,7 @@ class FormField(models.Model):
     disabled = models.BooleanField(default=False)
     choices = models.ManyToManyField(FieldChoice)
     additional_validators = models.CharField(
-        choices=ADDITIONAL_VALIDATORS, max_length=128
+        choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
     )
 
     class Meta:
