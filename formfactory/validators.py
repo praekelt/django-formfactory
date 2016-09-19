@@ -1,12 +1,21 @@
 from formfactory import _registery
 
 
+_validators = _registery.setdefault("validators", [])
+
+
 def register(kls):
-    validators = _registery.setdefault("validators", [])
-    validators.append(kls)
+    _validators.append(kls)
 
 
 def unregister(kls):
-    validators = _registery.setdefault("validators", [])
-    if kls in validators:
-        validators.remove(kls)
+    if kls in _validators:
+        _validators.remove(kls)
+
+
+def get_registered_validators():
+    return _validators
+
+
+class BaseValidator(object):
+    pass

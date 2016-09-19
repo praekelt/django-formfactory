@@ -1,12 +1,20 @@
 from formfactory import _registery
 
 
-def register(kls):
-    actions = _registery.setdefault("actions", [])
-    actions.append(kls)
+_actions = _registery.setdefault("actions", [])
 
+
+def register(kls):
+    _actions.append(kls)
 
 def unregister(kls):
-    actions = _registery.setdefault("actions", [])
-    if kls in actions:
-        actions.remove(kls)
+    _actions = _registery.setdefault("actions", [])
+    if kls in _actions:
+        _actions.remove(kls)
+
+def get_registered_actions():
+    return _actions
+
+
+class BaseAction(object):
+    pass
