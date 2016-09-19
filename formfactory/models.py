@@ -36,6 +36,17 @@ class Form(models.Model):
         return self.title
 
 
+class FieldChoice(models.Model):
+    label = models.CharField(max_length=128)
+    value = models.CharField(max_length=128)
+
+    class Meta:
+        ordering = ["label"]
+
+    def __unicode__(self):
+        return "%s:%s" % (self.label, self.value)
+
+
 class FormField(models.Model):
     title = models.CharField(
         max_length=256,
@@ -50,6 +61,7 @@ class FormField(models.Model):
     initial = models.TextField(blank=True, null=True)
     label = models.CharField(max_length=64)
     required = models.BooleanField(default=True)
+    choices = models.ManyToManyField(FieldChoice)
 
     class Meta:
         ordering = ["position"]
