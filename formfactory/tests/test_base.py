@@ -26,17 +26,30 @@ def load_fixtures(kls):
         ))
 
 
-class TestValidator(validators.BaseValidator):
+class TestValidatorIncomplete(validators.BaseValidator):
     pass
+
+
+class TestActionIncomplete(actions.BaseAction):
+    pass
+
+
+class TestValidator(validators.BaseValidator):
+    validation_message = "%(value) is not divible by 2"
+
+    def condition(self, value):
+        return not value % 2
 
 
 class TestAction(actions.BaseAction):
-    pass
+    def run(self, form_data):
+        return True
 
 
 class ValidatorTestCase(TestCase):
     def setUp(self):
         self.validator = TestValidator()
+        self.incomplete_validator = TestValidatorIncomplete()
 
     def test_registry(self):
         validators.register(self.validator)
@@ -55,10 +68,21 @@ class ValidatorTestCase(TestCase):
         # ensure the class is unregistered as expected
         self.assertNotIn(self.validator, validators.get_registered_validators())
 
+    def test_validation(self):
+
+        # ensure an excpetion is raised if the validation class is not complete
+        self.assertRaises(
+            NotImplementedError, self.incomplete_validator.validate, None
+        )
+
+        # ensure that the validate method returns correctly
+        self.assertTrue(self.validator.validate(4))
+
 
 class ActionTestCase(TestCase):
     def setUp(self):
         self.action = TestAction()
+        self.incomplete_action = TestActionIncomplete()
 
     def test_registry(self):
         actions.register(self.action)
@@ -76,6 +100,14 @@ class ActionTestCase(TestCase):
 
         # ensure the class is unregistered as expected
         self.assertNotIn(self.action, actions.get_registered_actions())
+
+    def test_action(self):
+
+        # ensure an excpetion is raised if the validation class is not complete
+        self.assertRaises(NotImplementedError, self.incomplete_action.run, None)
+
+        # ensure that the run method returns correctly
+        self.assertTrue(self.action.run({}))
 
 
 class ModelTestCase(TestCase):
