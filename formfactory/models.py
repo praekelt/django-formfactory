@@ -3,6 +3,8 @@ import inspect
 from django.forms import fields
 from django.db import models
 
+from formfactory import _registery
+
 
 FIELD_CLASSES = [
     getattr(fields, field) for field in dir(fields)
@@ -14,19 +16,26 @@ FIELD_TYPES = tuple(
     if issubclass(field, fields.Field)
 )
 
+ADDITIONAL_VALIDATORS = tuple(
+    (validator.__name__, validator.__name__)
+    for validator in _registery.get("validators", [])
+)
+
+FORM_ACTIONS = tuple(
+    (action.__name__, action.__name__)
+    for action in _registery.get("actions", [])
+)
+
 
 class Form(models.Model):
     title = models.CharField(
-        max_length=256,
-        help_text="A short descriptive title."
+        max_length=256, help_text="A short descriptive title."
     )
     slug = models.SlugField(
-        max_length=256,
-        db_index=True,
+        max_length=256, db_index=True,
     )
     action = models.CharField(
-        choices=(("email", "Email"), ),
-        max_length=128
+        choices=FORM_ACTIONS, max_length=128
     )
 
     class Meta:
@@ -61,7 +70,11 @@ class FormField(models.Model):
     initial = models.TextField(blank=True, null=True)
     label = models.CharField(max_length=64)
     required = models.BooleanField(default=True)
+    disabled = models.BooleanField(default=False)
     choices = models.ManyToManyField(FieldChoice)
+    additional_validators = models.CharField(
+        choices=ADDITIONAL_VALIDATORS, max_length=128
+    )
 
     class Meta:
         ordering = ["position"]
