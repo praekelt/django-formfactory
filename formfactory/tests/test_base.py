@@ -7,12 +7,15 @@ from formfactory import models
 
 
 def load_fixtures(kls):
-    pass
+    return kls
 
 
 class ModelTestCase(TestCase):
     def setUp(self):
         load_fixtures(self)
+
+    def test_field_constant(self):
+        self.assertIn(("DateTimeField", "DateTimeField"), models.FIELD_TYPES)
 
 
 class AdminTestCase(TestCase):
