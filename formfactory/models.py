@@ -24,7 +24,10 @@ class Form(models.Model):
         max_length=256,
         db_index=True,
     )
-    action = models.CharField(choices=(("email", "Email")))
+    action = models.CharField(
+        choices=(("email", "Email"), ),
+        max_length=128
+    )
 
     class Meta:
         ordering = ["title"]
@@ -42,7 +45,7 @@ class FormField(models.Model):
 
     form = models.ForeignKey(Form)
 
-    field_type = models.CharField(choices=FIELD_TYPES)
+    field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
     label = models.CharField(max_length=64)
     initial = models.TextField(blank=True, null=True)
     label = models.CharField(max_length=64)
