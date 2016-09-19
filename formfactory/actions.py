@@ -17,5 +17,5 @@ def get_registered_actions():
 
 
 class BaseAction(object):
-    def run(self, value):
+    def run(self, form_data):
         raise NotImplementedError()
