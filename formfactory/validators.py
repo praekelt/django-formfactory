@@ -1,3 +1,6 @@
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+
 from formfactory import _registery
 
 
@@ -18,4 +21,29 @@ def get_registered_validators():
 
 
 class BaseValidator(object):
-    pass
+    validation_message = "%(value)s did not validate"
+
+    def condition(self, value):
+        raise NotImplementedError()
+
+    def validate(self, value):
+        if not self.condition(value):
+            raise  ValidationError(
+                _(self.validation_message), params={"value": value},
+            )
+
+
+
+
+
+"""
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+
+def validate_even(value):
+    if value % 2 != 0:
+        raise ValidationError(
+            _('%(value)s is not an even number'),
+            params={'value': value},
+        )
+"""
