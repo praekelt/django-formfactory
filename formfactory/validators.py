@@ -28,9 +28,10 @@ class BaseValidator(object):
 
     def validate(self, value):
         if not self.condition(value):
-            raise  ValidationError(
+            raise ValidationError(
                 _(self.validation_message), params={"value": value},
             )
+        return True
 
 
 
