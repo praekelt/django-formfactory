@@ -2,6 +2,9 @@ from django import forms
 
 
 class FormFactory(forms.Form):
+    """
+    Builds a form class from defined fields passed to it by the Form model.
+    """
     def __init__(self, *args, **kwargs):
         self.defined_fields = kwargs.pop("fields")
         super(FormFactory, self).__init__(*args, **kwargs)
