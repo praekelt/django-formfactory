@@ -19,7 +19,7 @@ def load_fixtures(kls):
             "slug": "form-field-%s" % count,
             "position": count,
             "form": kls.form,
-            "field_type": field_type,
+            "field_type": field_type[0],
             "label": "Form Field %s" % count,
         })
         setattr(kls, "formfield_%s" % count, models.FormField.objects.create(

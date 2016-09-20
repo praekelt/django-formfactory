@@ -3,17 +3,12 @@ import inspect
 from django import forms
 from django.db import models
 
-from formfactory import _registery
+from formfactory import _registery, SETTINGS
 
-
-FIELD_CLASSES = [
-    getattr(forms.fields, field) for field in dir(forms.fields)
-    if inspect.isclass(getattr(forms.fields, field))
-]
 
 FIELD_TYPES = tuple(
-    (field.__name__, field.__name__) for field in FIELD_CLASSES
-    if issubclass(field, forms.fields.Field)
+    (field, field) for field in SETTINGS["field-types"]
+    if issubclass(getattr(forms.fields, field), forms.fields.Field)
 )
 
 ADDITIONAL_VALIDATORS = tuple(
@@ -29,17 +24,25 @@ FORM_ACTIONS = tuple(
 
 class FormFactory(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.fields = kwargs.pop("fields")
+        self.defined_fields = kwargs.pop("fields")
         super(FormFactory, self).__init__(*args, **kwargs)
 
-        for field in self.fields:
+        for field in self.defined_fields:
             field_type = getattr(forms, field.field_type)
             self.fields[field.slug] = field_type(
                 label=field.label,
                 initial=field.initial,
                 required=field.required,
-                disable=field.disable
+                disabled=field.disabled,
+                validators=[field.additional_validators]
             )
+
+            # Add the field choices but catch the exception as not all fields
+            # allow for them.
+            try:
+                self.fields[field.slug].choices = field.choices
+            except TypeError:
+                pass
 
 
 class Form(models.Model):
