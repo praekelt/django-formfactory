@@ -1,5 +1,3 @@
-import inspect
-
 from django import forms
 from django.db import models
 
@@ -27,6 +25,8 @@ class FormFactory(forms.Form):
         self.defined_fields = kwargs.pop("fields")
         super(FormFactory, self).__init__(*args, **kwargs)
 
+        # Interates over the fields defined in the Form model and sets the
+        # appropriate attributes.
         for field in self.defined_fields:
             field_type = getattr(forms, field.field_type)
             self.fields[field.slug] = field_type(
@@ -46,6 +46,10 @@ class FormFactory(forms.Form):
 
 
 class Form(models.Model):
+    """
+    Form model which encompasses a set of form fields and defines an action
+    when the form processed.
+    """
     title = models.CharField(
         max_length=256, help_text="A short descriptive title."
     )
@@ -63,10 +67,16 @@ class Form(models.Model):
         return self.title
 
     def as_form(self):
+        """
+        Builds the form factory object and returns it.
+        """
         return FormFactory(fields=self.fields.all())
 
 
 class FieldChoice(models.Model):
+    """
+    Defines options for select or multiselect field types.
+    """
     label = models.CharField(max_length=128)
     value = models.CharField(max_length=128)
 
@@ -78,6 +88,9 @@ class FieldChoice(models.Model):
 
 
 class FormField(models.Model):
+    """
+    Defines a form field with all option and required attributes.
+    """
     title = models.CharField(
         max_length=256,
         help_text="A short descriptive title."
@@ -86,9 +99,7 @@ class FormField(models.Model):
         max_length=256, db_index=True, unique=True
     )
     position = models.PositiveIntegerField(default=0)
-
     form = models.ForeignKey(Form, related_name="fields")
-
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
     label = models.CharField(max_length=64)
     initial = models.TextField(blank=True, null=True)
