@@ -21,9 +21,13 @@ class FormFactory(forms.Form):
                 validators=[field.additional_validators]
             )
 
-            # Add the field choices but catch the exception as not all fields
-            # allow for them.
+            # Adds the field choices but catches the exception as not all
+            # fields allow for them.
             try:
                 self.fields[field.slug].choices = field.choices
             except TypeError:
                 pass
+
+            # Adds widget-specific options to the form field
+            widget_attrs = self.fields[field.slug].widget.attrs
+            widget_attrs["placeholder"] = field.placeholder

@@ -79,6 +79,7 @@ class FormField(models.Model):
     label = models.CharField(max_length=64)
     initial = models.TextField(blank=True, null=True)
     label = models.CharField(max_length=64)
+    placeholder = models.CharField(max_length=128, blank=True, null=True)
     required = models.BooleanField(default=True)
     disabled = models.BooleanField(default=False)
     choices = models.ManyToManyField(FieldChoice)
