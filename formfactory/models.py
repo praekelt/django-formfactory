@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 
-from formfactory import _registery, SETTINGS
+from formfactory import _registery, factory, SETTINGS
 
 
 FIELD_TYPES = tuple(
@@ -18,31 +18,6 @@ FORM_ACTIONS = tuple(
     (action.__name__, action.__name__)
     for action in _registery.get("actions", [])
 )
-
-
-class FormFactory(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.defined_fields = kwargs.pop("fields")
-        super(FormFactory, self).__init__(*args, **kwargs)
-
-        # Interates over the fields defined in the Form model and sets the
-        # appropriate attributes.
-        for field in self.defined_fields:
-            field_type = getattr(forms, field.field_type)
-            self.fields[field.slug] = field_type(
-                label=field.label,
-                initial=field.initial,
-                required=field.required,
-                disabled=field.disabled,
-                validators=[field.additional_validators]
-            )
-
-            # Add the field choices but catch the exception as not all fields
-            # allow for them.
-            try:
-                self.fields[field.slug].choices = field.choices
-            except TypeError:
-                pass
 
 
 class Form(models.Model):
@@ -70,7 +45,7 @@ class Form(models.Model):
         """
         Builds the form factory object and returns it.
         """
-        return FormFactory(fields=self.fields.all())
+        return factory.FormFactory(fields=self.fields.all())
 
 
 class FieldChoice(models.Model):
