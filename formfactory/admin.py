@@ -5,7 +5,7 @@ from formfactory.models import FieldChoice, Form, FormField
 
 
 class FieldChoiceModelAdmin(admin.ModelAdmin):
-    form = form.FieldChoiceAdminForm
+    form = forms.FieldChoiceAdminForm
     models = FieldChoice
 
 
