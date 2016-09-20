@@ -1,23 +1,23 @@
 from django import forms
 
-from formfactory.models import FieldChoice, Form, FormField
+from formfactory import models
 
 
 class FormAdminForm(forms.ModelForm):
     class Meta:
-        model = Form
+        model = models.Form
         fields = ["title", "slug", "action"]
 
 
 class FieldChoiceAdminForm(forms.ModelForm):
     class Meta:
-        model = FieldChoice
+        model = models.FieldChoice
         fields = ["label", "value"]
 
 
 class FormFieldAdminForm(forms.ModelForm):
     class Meta:
-        model = FormField
+        model = models.FormField
         fields = [
             "title", "position", "form", "field_type", "label", "initial",
             "label", "required", "disabled", "choices", "additional_validators"
