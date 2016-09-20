@@ -32,19 +32,3 @@ class BaseValidator(object):
                 _(self.validation_message), params={"value": value},
             )
         return True
-
-
-
-
-
-"""
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
-
-def validate_even(value):
-    if value % 2 != 0:
-        raise ValidationError(
-            _('%(value)s is not an even number'),
-            params={'value': value},
-        )
-"""
