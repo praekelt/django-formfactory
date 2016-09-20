@@ -156,6 +156,17 @@ class AdminTestCase(TestCase):
         response = self.client.get("/admin/")
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.get("/admin/formfactory/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_form(self):
+        response = self.client.get("/admin/formfactory/form/add/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_fieldoption(self):
+        response = self.client.get("/admin/formfactory/fieldchoice/add/")
+        self.assertEqual(response.status_code, 200)
+
 
 class ViewTestCase(TestCase):
     def setUp(self):
