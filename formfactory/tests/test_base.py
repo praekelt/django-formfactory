@@ -1,5 +1,5 @@
+from django import forms
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 
@@ -16,6 +16,7 @@ def load_fixtures(kls):
     for count, field_type in enumerate(models.FIELD_TYPES):
         setattr(kls, "formfield_data_%s" % count, {
             "title": "Form Field %s" % count,
+            "slug": "form-field-%s" % count,
             "position": count,
             "form": kls.form,
             "field_type": field_type,
@@ -66,7 +67,9 @@ class ValidatorTestCase(TestCase):
         validators.unregister(self.validator)
 
         # ensure the class is unregistered as expected
-        self.assertNotIn(self.validator, validators.get_registered_validators())
+        self.assertNotIn(
+            self.validator, validators.get_registered_validators()
+        )
 
     def test_validation(self):
 
@@ -104,7 +107,9 @@ class ActionTestCase(TestCase):
     def test_action(self):
 
         # ensure an excpetion is raised if the validation class is not complete
-        self.assertRaises(NotImplementedError, self.incomplete_action.run, None)
+        self.assertRaises(
+            NotImplementedError, self.incomplete_action.run, None
+        )
 
         # ensure that the run method returns correctly
         self.assertTrue(self.action.run({}))
@@ -130,6 +135,9 @@ class ModelTestCase(TestCase):
         # ensure all form fields were saved
         self.assertEqual(self.form.fields.count(), len(models.FIELD_TYPES))
 
+        # ensure the form object is returned
+        self.assertIsInstance(self.form.as_form(), forms.Form)
+
     def test_formfield(self):
 
         # ensure the form model has been saved correctly
@@ -138,6 +146,7 @@ class ModelTestCase(TestCase):
             for key, value in formfield_data.items():
                 formfield = getattr(self, "formfield_%s" % count)
                 self.assertEqual(getattr(formfield, key), value)
+
 
 class AdminTestCase(TestCase):
     def setUp(self):
