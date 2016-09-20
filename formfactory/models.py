@@ -1,19 +1,19 @@
 import inspect
 
-from django.forms import fields
+from django import forms
 from django.db import models
 
 from formfactory import _registery
 
 
 FIELD_CLASSES = [
-    getattr(fields, field) for field in dir(fields)
-    if inspect.isclass(getattr(fields, field))
+    getattr(forms.fields, field) for field in dir(forms.fields)
+    if inspect.isclass(getattr(forms.fields, field))
 ]
 
 FIELD_TYPES = tuple(
     (field.__name__, field.__name__) for field in FIELD_CLASSES
-    if issubclass(field, fields.Field)
+    if issubclass(field, forms.fields.Field)
 )
 
 ADDITIONAL_VALIDATORS = tuple(
@@ -27,12 +27,27 @@ FORM_ACTIONS = tuple(
 )
 
 
+class FormFactory(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.fields = kwargs.pop("fields")
+        super(FormFactory, self).__init__(*args, **kwargs)
+
+        for field in self.fields:
+            field_type = getattr(forms, field.field_type)
+            self.fields[field.slug] = field_type(
+                label=field.label,
+                initial=field.initial,
+                required=field.required,
+                disable=field.disable
+            )
+
+
 class Form(models.Model):
     title = models.CharField(
         max_length=256, help_text="A short descriptive title."
     )
     slug = models.SlugField(
-        max_length=256, db_index=True,
+        max_length=256, db_index=True, unique=True
     )
     action = models.CharField(
         choices=FORM_ACTIONS, max_length=128
@@ -43,6 +58,9 @@ class Form(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def as_form(self):
+        return FormFactory(fields=self.fields.all())
 
 
 class FieldChoice(models.Model):
@@ -60,6 +78,9 @@ class FormField(models.Model):
     title = models.CharField(
         max_length=256,
         help_text="A short descriptive title."
+    )
+    slug = models.SlugField(
+        max_length=256, db_index=True, unique=True
     )
     position = models.PositiveIntegerField(default=0)
 
