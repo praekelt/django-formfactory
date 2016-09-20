@@ -15,7 +15,7 @@ class FormFieldInline(admin.StackedInline):
 
 
 class FormAdmin(admin.ModelAdmin):
-    form = forms.Form
+    form = forms.FormAdminForm
     list_display = ["title"]
     inlines = [FormFieldInline]
     prepopulated_fields = {"slug": ["title"]}
