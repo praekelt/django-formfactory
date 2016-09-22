@@ -27,8 +27,8 @@ def load_fixtures(kls):
         ))
 
     kls.simpleform_data = {
-        "title": "Form 1",
-        "slug": "form-1"
+        "title": "Subscribe Form",
+        "slug": "contact"
     }
     kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
 
@@ -39,7 +39,8 @@ def load_fixtures(kls):
             "position": 0,
             "form": kls.simpleform,
             "field_type": "CharField",
-            "label": "Full Name"
+            "label": "Full Name",
+            "required": False
         },
         "email_address": {
             "title": "Email Address",
@@ -48,8 +49,7 @@ def load_fixtures(kls):
             "form": kls.simpleform,
             "field_type": "EmailField",
             "label": "Email",
-            "required": False,
-            "help_text": "Add your email address here"
+            "help_text": "The email you would like info to be sent to"
         },
         "accept_terms": {
             "title": "Accept Terms",
@@ -191,6 +191,9 @@ class ModelTestCase(TestCase):
 
 class AdminTestCase(TestCase):
     def setUp(self):
+        load_fixtures(self)
+
+        # Sets up the test client as an admin superuser
         self.client = Client()
         self.editor = get_user_model().objects.create(
             username="editor",
@@ -217,17 +220,35 @@ class AdminTestCase(TestCase):
         response = self.client.get("/admin/formfactory/fieldchoice/add/")
         self.assertEqual(response.status_code, 200)
 
+    def tearDown(self):
+        pass
+
 
 class FactoryTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
         load_fixtures(self)
 
-    def test_detail(self):
-        pass
+    def test_form(self):
+        form_factory = self.simpleform.as_form()
 
-    def test_list(self):
-        pass
+        # ensure the form factory field attrs have been set correctly
+        for value in self.simpleformfield_data.values():
+            self.assertIn(value["slug"], [f for f in form_factory.fields])
+            for k, v in value.items():
+                if k in ["label", "help_text", "required"]:
+                    self.assertEqual(
+                        v, getattr(form_factory.fields[value["slug"]], k)
+                    )
+
+        # ensure the form is valid when populated
+        form_factory = self.simpleform.as_form(data={
+            "name": "Name Surname",
+            "email-address": "test@test.com",
+            "accept-terms": True
+        })
+        self.assertTrue(form_factory.is_bound)
+        self.assertFalse(bool(form_factory.errors))
+        self.assertTrue(form_factory.is_valid())
 
     def tearDown(self):
         pass
