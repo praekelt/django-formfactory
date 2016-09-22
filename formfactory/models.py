@@ -41,11 +41,11 @@ class Form(models.Model):
     def __unicode__(self):
         return self.title
 
-    def as_form(self, data={}):
+    def as_form(self, data=None):
         """
         Builds the form factory object and returns it.
         """
-        return factory.FormFactory(data=data, fields=self.fields.all())
+        return factory.FormFactory(data, fields=self.fields.all())
 
 
 class FieldChoice(models.Model):
