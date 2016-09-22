@@ -13,13 +13,18 @@ class FormFactory(forms.Form):
         # appropriate attributes.
         for field in self.defined_fields:
             field_type = getattr(forms, field.field_type)
+
+            additional_validators = []
+            if field.additional_validators:
+                additional_validators = [field.additional_validators]
+
             self.fields[field.slug] = field_type(
                 label=field.label,
                 initial=field.initial,
                 required=field.required,
                 disabled=field.disabled,
                 help_text=field.help_text,
-                validators=[field.additional_validators]
+                validators=additional_validators
             )
 
             # Adds the field choices and max_length but catches the exception
