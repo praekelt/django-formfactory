@@ -78,6 +78,8 @@ class FormField(models.Model):
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
     label = models.CharField(max_length=64)
     initial = models.TextField(blank=True, null=True)
+    max_length = models.PositiveIntegerField(default=256)
+    help_text = models.CharField(max_length=256, blank=True, null=True)
     label = models.CharField(max_length=64)
     placeholder = models.CharField(max_length=128, blank=True, null=True)
     required = models.BooleanField(default=True)
