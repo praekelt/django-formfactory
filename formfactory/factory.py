@@ -18,13 +18,18 @@ class FormFactory(forms.Form):
                 initial=field.initial,
                 required=field.required,
                 disabled=field.disabled,
+                help_text=field.help_text,
                 validators=[field.additional_validators]
             )
 
-            # Adds the field choices but catches the exception as not all
-            # fields allow for them.
+            # Adds the field choices and max_length but catches the exception
+            # as not all fields allow for these attrs.
             try:
                 self.fields[field.slug].choices = field.choices
+            except TypeError:
+                pass
+            try:
+                self.fields[field.slug].choices = field.max_length
             except TypeError:
                 pass
 
