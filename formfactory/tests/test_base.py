@@ -26,6 +26,47 @@ def load_fixtures(kls):
             **getattr(kls, "formfield_data_%s" % count)
         ))
 
+    kls.simpleform_data = {
+        "title": "Form 1",
+        "slug": "form-1"
+    }
+    kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
+
+    kls.simpleformfield_data = {
+        "name": {
+            "title": "Name",
+            "slug": "name",
+            "position": 0,
+            "form": kls.simpleform,
+            "field_type": "CharField",
+            "label": "Full Name"
+        },
+        "email_address": {
+            "title": "Email Address",
+            "slug": "email-address",
+            "position": 1,
+            "form": kls.simpleform,
+            "field_type": "EmailField",
+            "label": "Email",
+            "required": False,
+            "help_text": "Add your email address here"
+        },
+        "accept_terms": {
+            "title": "Accept Terms",
+            "slug": "accept-terms",
+            "position": 2,
+            "form": kls.simpleform,
+            "field_type": "BooleanField",
+            "label": "Do you accept the terms and conditions",
+            "required": False
+        }
+    }
+    for key, value in kls.simpleformfield_data.items():
+        setattr(
+            kls, "simpleformfield_%s" % key,
+            models.FormField.objects.create(**value)
+        )
+
 
 class TestValidatorIncomplete(validators.BaseValidator):
     pass
@@ -175,6 +216,21 @@ class AdminTestCase(TestCase):
     def test_admin_fieldoption(self):
         response = self.client.get("/admin/formfactory/fieldchoice/add/")
         self.assertEqual(response.status_code, 200)
+
+
+class FactoryTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        load_fixtures(self)
+
+    def test_detail(self):
+        pass
+
+    def test_list(self):
+        pass
+
+    def tearDown(self):
+        pass
 
 
 class ViewTestCase(TestCase):
