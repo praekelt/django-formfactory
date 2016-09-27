@@ -216,7 +216,6 @@ class FactoryTestCase(TestCase):
                     )
 
         form_factory = self.simpleform.as_form(data={
-            "uuid": form_factory.fields["uuid"].initial,
             "name": "Name Surname",
             "email-address": "test@test.com",
             "accept-terms": True
@@ -225,6 +224,26 @@ class FactoryTestCase(TestCase):
         self.assertTrue(form_factory.is_bound)
         self.assertFalse(bool(form_factory.errors))
         self.assertTrue(form_factory.is_valid())
+
+    def test_save(self):
+        form_factory = self.simpleform.as_form()
+        form_data = {
+            "name": "Name Surname",
+            "email-address": "test@test.com",
+            "accept-terms": True
+        }
+        form_factory = self.simpleform.as_form(data=form_data)
+
+        self.assertTrue(form_factory.is_valid())
+
+        saved_obj = form_factory.save()
+        self.assertIsInstance(saved_obj, models.FormData)
+
+        form_store = models.FormData.objects.get(uuid=form_factory.uuid)
+        for field in form_store.items.all():
+            self.assertEqual(
+                field.value, str(form_data[field.form_field.slug])
+            )
 
     def tearDown(self):
         pass
