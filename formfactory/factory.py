@@ -1,17 +1,22 @@
+import uuid
+
 from django import forms
 
 
 class FormFactory(forms.Form):
+    """Builds a form class from defined fields passed to it by the Form model.
     """
-    Builds a form class from defined fields passed to it by the Form model.
-    """
+    uuid = forms.UUIDField(
+        initial=unicode(uuid.uuid4()), widget=forms.HiddenInput()
+    )
+
     def __init__(self, *args, **kwargs):
-        self.defined_fields = kwargs.pop("fields")
+        defined_fields = kwargs.pop("fields")
         super(FormFactory, self).__init__(*args, **kwargs)
 
         # Interates over the fields defined in the Form model and sets the
         # appropriate attributes.
-        for field in self.defined_fields:
+        for field in defined_fields:
             field_type = getattr(forms, field.field_type)
 
             additional_validators = []

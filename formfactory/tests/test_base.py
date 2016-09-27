@@ -95,31 +95,26 @@ class ValidatorTestCase(TestCase):
 
     def test_registry(self):
         validators.register(self.validator)
-
-        # ensure the class is registered as expected
         self.assertIn(self.validator, validators.get_registered_validators())
 
     def test_unregistry(self):
         validators.register(self.validator)
-
-        # ensure the class is registered as expected
         self.assertIn(self.validator, validators.get_registered_validators())
 
         validators.unregister(self.validator)
-
-        # ensure the class is unregistered as expected
         self.assertNotIn(
             self.validator, validators.get_registered_validators()
         )
 
     def test_validation(self):
 
-        # ensure an excpetion is raised if the validation class is not complete
+        # Ensure an excepetion is raised if the validation class is not
+        # complete.
         self.assertRaises(
             NotImplementedError, self.incomplete_validator.validate, None
         )
 
-        # ensure that the validate method returns correctly
+        # Ensure that the validate method returns correctly
         self.assertTrue(self.validator.validate(4))
 
 
@@ -130,19 +125,13 @@ class ActionTestCase(TestCase):
 
     def test_registry(self):
         actions.register(self.action)
-
-        # ensure the class is registered as expected
         self.assertIn(self.action, actions.get_registered_actions())
 
     def test_unregistry(self):
         actions.register(self.action)
-
-        # ensure the class is registered as expected
         self.assertIn(self.action, actions.get_registered_actions())
 
         actions.unregister(self.action)
-
-        # ensure the class is unregistered as expected
         self.assertNotIn(self.action, actions.get_registered_actions())
 
     def test_action(self):
@@ -161,27 +150,17 @@ class ModelTestCase(TestCase):
         load_fixtures(self)
 
     def test_field_constant(self):
-
-        # ensure the field types are populated
         self.assertIn(("DateTimeField", "DateTimeField"), models.FIELD_TYPES)
         self.assertIn(("BooleanField", "BooleanField"), models.FIELD_TYPES)
         self.assertIn(("CharField", "CharField"), models.FIELD_TYPES)
 
     def test_form(self):
-
-        # ensure the form model has been saved correctly
         for key, value in self.form_data.items():
             self.assertEqual(getattr(self.form, key), value)
-
-        # ensure all form fields were saved
         self.assertEqual(self.form.fields.count(), len(models.FIELD_TYPES))
-
-        # ensure the form object is returned
         self.assertIsInstance(self.form.as_form(), forms.Form)
 
     def test_formfield(self):
-
-        # ensure the form model has been saved correctly
         for count in range(len(models.FIELD_TYPES)):
             formfield_data = getattr(self, "formfield_data_%s" % count)
             for key, value in formfield_data.items():
@@ -192,8 +171,6 @@ class ModelTestCase(TestCase):
 class AdminTestCase(TestCase):
     def setUp(self):
         load_fixtures(self)
-
-        # Sets up the test client as an admin superuser
         self.client = Client()
         self.editor = get_user_model().objects.create(
             username="editor",
@@ -230,8 +207,6 @@ class FactoryTestCase(TestCase):
 
     def test_form(self):
         form_factory = self.simpleform.as_form()
-
-        # ensure the form factory field attrs have been set correctly
         for value in self.simpleformfield_data.values():
             self.assertIn(value["slug"], [f for f in form_factory.fields])
             for k, v in value.items():
@@ -240,12 +215,13 @@ class FactoryTestCase(TestCase):
                         v, getattr(form_factory.fields[value["slug"]], k)
                     )
 
-        # ensure the form is valid when populated
         form_factory = self.simpleform.as_form(data={
+            "uuid": form_factory.fields["uuid"].initial,
             "name": "Name Surname",
             "email-address": "test@test.com",
             "accept-terms": True
         })
+
         self.assertTrue(form_factory.is_bound)
         self.assertFalse(bool(form_factory.errors))
         self.assertTrue(form_factory.is_valid())

@@ -21,8 +21,7 @@ FORM_ACTIONS = tuple(
 
 
 class Form(models.Model):
-    """
-    Form model which encompasses a set of form fields and defines an action
+    """Form model which encompasses a set of form fields and defines an action
     when the form processed.
     """
     title = models.CharField(
@@ -33,6 +32,9 @@ class Form(models.Model):
     )
     action = models.CharField(
         choices=FORM_ACTIONS, max_length=128
+    )
+    save_data = models.BooleanField(
+        default=True, help_text="Select to save form entries."
     )
 
     class Meta:
@@ -49,8 +51,7 @@ class Form(models.Model):
 
 
 class FieldChoice(models.Model):
-    """
-    Defines options for select or multiselect field types.
+    """Defines options for select or multiselect field types.
     """
     label = models.CharField(max_length=128)
     value = models.CharField(max_length=128)
@@ -63,8 +64,7 @@ class FieldChoice(models.Model):
 
 
 class FormField(models.Model):
-    """
-    Defines a form field with all option and required attributes.
+    """Defines a form field with all options and required attributes.
     """
     title = models.CharField(
         max_length=256,
@@ -94,3 +94,15 @@ class FormField(models.Model):
 
     def __unicode__(self):
         return self.title
+
+
+class FormData(models.Model):
+    """A basic store for form data.
+    """
+    uuid = models.UUIDField(db_index=True)
+    form = models.ForeignKey(Form)
+    form_field = models.ForeignKey(FormField)
+    value = models.TextField()
+
+    class Meta:
+        ordering = ["uuid"]
