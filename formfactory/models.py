@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 
-from formfactory import _registery, factory, SETTINGS
+from formfactory import _registery, SETTINGS
 
 
 FIELD_TYPES = tuple(
@@ -18,6 +18,24 @@ FORM_ACTIONS = tuple(
     (action.__name__, action.__name__)
     for action in _registery.get("actions", [])
 )
+
+
+class FormData(models.Model):
+    """A basic store for form data.
+    """
+    uuid = models.UUIDField(db_index=True)
+    form = models.ForeignKey("Form")
+
+    class Meta:
+        ordering = ["uuid"]
+
+
+class FormDataItems(models.Model):
+    """A basic store for form data items.
+    """
+    form_data = models.ForeignKey(FormData, related_name="items")
+    form_field = models.ForeignKey("FormField")
+    value = models.TextField()
 
 
 class Form(models.Model):
@@ -47,7 +65,15 @@ class Form(models.Model):
         """
         Builds the form factory object and returns it.
         """
-        return factory.FormFactory(data, fields=self.fields.all())
+        from formfactory.factory import FormFactory
+        if not self.pk:
+            raise AttributeError(
+                "The model needs to be saved before a form can be generated."
+            )
+
+        return FormFactory(
+            data, fields=self.fields.all(), form_id=self.pk
+        )
 
 
 class FieldChoice(models.Model):
@@ -94,15 +120,3 @@ class FormField(models.Model):
 
     def __unicode__(self):
         return self.title
-
-
-class FormData(models.Model):
-    """A basic store for form data.
-    """
-    uuid = models.UUIDField(db_index=True)
-    form = models.ForeignKey(Form)
-    form_field = models.ForeignKey(FormField)
-    value = models.TextField()
-
-    class Meta:
-        ordering = ["uuid"]
