@@ -59,8 +59,8 @@ class Action(models.Model):
 class FormActionThrough(models.Model):
     """Through table for form actions which defines an order.
     """
-    action = models.ForeignKey(Action, related_name="forms")
-    form = models.ForeignKey("Form", related_name="actions")
+    action = models.ForeignKey(Action)
+    form = models.ForeignKey("Form")
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
