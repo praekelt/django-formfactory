@@ -13,20 +13,6 @@ def load_fixtures(kls):
     }
     kls.form = models.Form.objects.create(**kls.form_data)
 
-    kls.action_data = {
-        "action": "StoreAction"
-    }
-    kls.action = models.Action.objects.create(**kls.action_data)
-
-    kls.formactionthrough_data = {
-        "action": kls.action,
-        "form": kls.form,
-        "order": 0
-    }
-    kls.formactionthrough = models.FormActionThrough.objects.create(
-        **kls.formactionthrough_data
-    )
-
     for count, field_type in enumerate(models.FIELD_TYPES):
         setattr(kls, "formfield_data_%s" % count, {
             "title": "Form Field %s" % count,
@@ -45,6 +31,20 @@ def load_fixtures(kls):
         "slug": "contact"
     }
     kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
+
+    kls.action_data = {
+        "action": "StoreAction"
+    }
+    kls.action = models.Action.objects.create(**kls.action_data)
+
+    kls.formactionthrough_data = {
+        "action": kls.action,
+        "form": kls.simpleform,
+        "order": 0
+    }
+    kls.formactionthrough = models.FormActionThrough.objects.create(
+        **kls.formactionthrough_data
+    )
 
     kls.simpleformfield_data = {
         "name": {
@@ -227,13 +227,11 @@ class FactoryTestCase(TestCase):
             "accept-terms": True
         }
         form_factory = self.simpleform.as_form(data=form_data)
-
         self.assertTrue(form_factory.is_valid())
 
-        saved_obj = form_factory.save()
-        self.assertIsInstance(saved_obj, models.FormData)
-
-        form_store = models.FormData.objects.get(uuid=form_factory.uuid)
+        form_factory.save()
+        uuid = form_factory.fields["uuid"].initial
+        form_store = models.FormData.objects.get(uuid=uuid)
         for field in form_store.items.all():
             self.assertEqual(
                 field.value, str(form_data[field.form_field.slug])

@@ -4,5 +4,8 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r"^admin/", include(admin.site.urls)),
-    url(r"^formfactory/", include("formfactory.urls", namespace="formfactory")),
+    url(
+        r"^formfactory/",
+        include("formfactory.urls", namespace="formfactory")
+    )
 ]
