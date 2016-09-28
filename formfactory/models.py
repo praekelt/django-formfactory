@@ -67,7 +67,7 @@ class FormActionThrough(models.Model):
         ordering = ["order"]
 
     def __unicode__(self):
-        return self.action
+        return "%s (%s)" % (self.action.action, self.order)
 
 
 class Form(models.Model):
@@ -90,7 +90,9 @@ class Form(models.Model):
 
     @property
     def action_classes(self):
-        return [action.action.action_class for action in self.actions.all()]
+        return [
+            action.action.action_class for action in self.actions.all()
+        ]
 
     def as_form(self, data=None):
         """
