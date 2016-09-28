@@ -10,4 +10,8 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
     ]
 })
 
-_registery = {}
+
+_registery = {
+    "actions": {},
+    "validators": {}
+}

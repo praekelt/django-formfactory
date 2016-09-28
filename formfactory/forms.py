@@ -6,7 +6,7 @@ from formfactory import models
 class FormAdminForm(forms.ModelForm):
     class Meta:
         model = models.Form
-        fields = ["title", "slug", "action"]
+        fields = ["title", "slug"]
 
 
 class FieldChoiceAdminForm(forms.ModelForm):

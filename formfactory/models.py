@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 
-from formfactory import _registery, SETTINGS
+from formfactory import _registery, factory, SETTINGS
 
 
 FIELD_TYPES = tuple(
@@ -38,6 +38,38 @@ class FormDataItems(models.Model):
     value = models.TextField()
 
 
+class Action(models.Model):
+    """Defines a form action.
+    """
+    action = models.CharField(
+        choices=FORM_ACTIONS, max_length=128
+    )
+
+    class Meta:
+        ordering = ["formactionthrough"]
+
+    def __unicode__(self):
+        return self.action
+
+    @property
+    def action_class(self):
+        return _registery["actions"][self.action]
+
+
+class FormActionThrough(models.Model):
+    """Through table for form actions which defines an order.
+    """
+    action = models.ForeignKey(Action, related_name="forms")
+    form = models.ForeignKey("Form", related_name="actions")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __unicode__(self):
+        return self.action
+
+
 class Form(models.Model):
     """Form model which encompasses a set of form fields and defines an action
     when the form processed.
@@ -48,12 +80,7 @@ class Form(models.Model):
     slug = models.SlugField(
         max_length=256, db_index=True, unique=True
     )
-    action = models.CharField(
-        choices=FORM_ACTIONS, max_length=128
-    )
-    save_data = models.BooleanField(
-        default=True, help_text="Select to save form entries."
-    )
+    actions = models.ManyToManyField(Action, through=FormActionThrough)
 
     class Meta:
         ordering = ["title"]
@@ -61,18 +88,22 @@ class Form(models.Model):
     def __unicode__(self):
         return self.title
 
+    @property
+    def action_classes(self):
+        return [action.action.action_class for action in self.actions.all()]
+
     def as_form(self, data=None):
         """
         Builds the form factory object and returns it.
         """
-        from formfactory.factory import FormFactory
         if not self.pk:
             raise AttributeError(
                 "The model needs to be saved before a form can be generated."
             )
 
-        return FormFactory(
-            data, fields=self.fields.all(), form_id=self.pk
+        return factory.FormFactory(
+            data, fields=self.fields.all(), form_id=self.pk,
+            actions=self.action_classes
         )
 
 

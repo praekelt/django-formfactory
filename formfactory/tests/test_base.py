@@ -13,6 +13,20 @@ def load_fixtures(kls):
     }
     kls.form = models.Form.objects.create(**kls.form_data)
 
+    kls.action_data = {
+        "action": "StoreAction"
+    }
+    kls.action = models.Action.objects.create(**kls.action_data)
+
+    kls.formactionthrough_data = {
+        "action": kls.action,
+        "form": kls.form,
+        "order": 0
+    }
+    kls.formactionthrough = models.FormActionThrough.objects.create(
+        **kls.formactionthrough_data
+    )
+
     for count, field_type in enumerate(models.FIELD_TYPES):
         setattr(kls, "formfield_data_%s" % count, {
             "title": "Form Field %s" % count,
@@ -68,14 +82,6 @@ def load_fixtures(kls):
         )
 
 
-class TestValidatorIncomplete(validators.BaseValidator):
-    pass
-
-
-class TestActionIncomplete(actions.BaseAction):
-    pass
-
-
 class TestValidator(validators.BaseValidator):
     validation_message = "%(value) is not divible by 2"
 
@@ -90,59 +96,42 @@ class TestAction(actions.BaseAction):
 
 class ValidatorTestCase(TestCase):
     def setUp(self):
-        self.validator = TestValidator()
-        self.incomplete_validator = TestValidatorIncomplete()
+        self.validator = TestValidator
 
     def test_registry(self):
         validators.register(self.validator)
-        self.assertIn(self.validator, validators.get_registered_validators())
+        self.assertIn(
+            self.validator, validators.get_registered_validators().values()
+        )
 
     def test_unregistry(self):
-        validators.register(self.validator)
-        self.assertIn(self.validator, validators.get_registered_validators())
-
         validators.unregister(self.validator)
         self.assertNotIn(
-            self.validator, validators.get_registered_validators()
+            self.validator, validators.get_registered_validators().values()
         )
 
     def test_validation(self):
-
-        # Ensure an excepetion is raised if the validation class is not
-        # complete.
-        self.assertRaises(
-            NotImplementedError, self.incomplete_validator.validate, None
-        )
-
-        # Ensure that the validate method returns correctly
-        self.assertTrue(self.validator.validate(4))
+        validator_instance = self.validator()
+        self.assertTrue(validator_instance.validate(4))
 
 
 class ActionTestCase(TestCase):
     def setUp(self):
-        self.action = TestAction()
-        self.incomplete_action = TestActionIncomplete()
+        self.action = TestAction
 
     def test_registry(self):
         actions.register(self.action)
-        self.assertIn(self.action, actions.get_registered_actions())
+        self.assertIn(self.action, actions.get_registered_actions().values())
 
     def test_unregistry(self):
-        actions.register(self.action)
-        self.assertIn(self.action, actions.get_registered_actions())
-
         actions.unregister(self.action)
-        self.assertNotIn(self.action, actions.get_registered_actions())
-
-    def test_action(self):
-
-        # ensure an excpetion is raised if the validation class is not complete
-        self.assertRaises(
-            NotImplementedError, self.incomplete_action.run, None
+        self.assertNotIn(
+            self.action, actions.get_registered_actions().values()
         )
 
-        # ensure that the run method returns correctly
-        self.assertTrue(self.action.run({}))
+    def test_action(self):
+        action_instance = self.action()
+        self.assertTrue(action_instance.run({}))
 
 
 class ModelTestCase(TestCase):
@@ -215,11 +204,14 @@ class FactoryTestCase(TestCase):
                         v, getattr(form_factory.fields[value["slug"]], k)
                     )
 
-        form_factory = self.simpleform.as_form(data={
+        form_data = {
+            "uuid": form_factory.fields["uuid"].initial,
+            "form_id": form_factory.fields["form_id"].initial,
             "name": "Name Surname",
             "email-address": "test@test.com",
             "accept-terms": True
-        })
+        }
+        form_factory = self.simpleform.as_form(data=form_data)
 
         self.assertTrue(form_factory.is_bound)
         self.assertFalse(bool(form_factory.errors))
@@ -228,6 +220,8 @@ class FactoryTestCase(TestCase):
     def test_save(self):
         form_factory = self.simpleform.as_form()
         form_data = {
+            "uuid": form_factory.fields["uuid"].initial,
+            "form_id": form_factory.fields["form_id"].initial,
             "name": "Name Surname",
             "email-address": "test@test.com",
             "accept-terms": True
