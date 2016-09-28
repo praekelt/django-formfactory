@@ -65,6 +65,8 @@ class FormActionThrough(models.Model):
 
     class Meta:
         ordering = ["order"]
+        verbose_name = "Form Action"
+        verbose_name_plural = "Form Actions"
 
     def __unicode__(self):
         return "%s (%s)" % (self.action.action, self.order)
