@@ -4,16 +4,16 @@ from django.utils.translation import ugettext_lazy as _
 from formfactory import _registery
 
 
-_validators = _registery.setdefault("validators", [])
+_validators = _registery.setdefault("validators", {})
 
 
 def register(kls):
-    _validators.append(kls)
+    _validators[kls.__class__.__name__] = kls
 
 
 def unregister(kls):
     if kls in _validators:
-        _validators.remove(kls)
+        del _validators[kls.__class__.__name__]
 
 
 def get_registered_validators():
