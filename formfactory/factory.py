@@ -43,7 +43,7 @@ class FormFactory(forms.Form):
 
             # Saves the field model pk to the form field to prevent the need
             # for another query in the save method.
-            self.fields[field.slug].pk = field.pk
+            self.fields[field.slug].field_pk = field.pk
 
             # Adds the field choices and max_length but catches the exception
             # as not all fields allow for these attrs.
@@ -64,4 +64,5 @@ class FormFactory(forms.Form):
         """Performs the required actions in the defined sequence.
         """
         for action in self.actions:
-            action.run(form_instance=self)
+            action_instance = action()
+            action_instance.run(form_instance=self)
