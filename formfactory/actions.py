@@ -27,13 +27,13 @@ class StoreAction(BaseAction):
     def run(self, form_instance):
         cleaned_data = form_instance.cleaned_data
         form_data = FormData.objects.create(
-            uuid=cleaned_data["uuid"],
-            form_id=cleaned_data["form_id"],
+            uuid=cleaned_data.pop("uuid"),
+            form_id=cleaned_data.pop("form_id"),
         )
         for key, value in cleaned_data.items():
             FormDataItems.objects.create(
                 form_data=form_data,
-                form_field_id=form_instance.fields[key].pk,
+                form_field_id=form_instance.fields[key].field_pk,
                 value=value
             )
 
