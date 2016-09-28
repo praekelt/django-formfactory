@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 
-from formfactory import _registery, actions, factory, SETTINGS, validators
+from formfactory import actions, factory, SETTINGS, validators
 
 
 FIELD_TYPES = tuple(
@@ -52,7 +52,7 @@ class Action(models.Model):
 
     @property
     def action_class(self):
-        return _registery["actions"][self.action]
+        return actions.get_registered_actions()[self.action]
 
 
 class FormActionThrough(models.Model):

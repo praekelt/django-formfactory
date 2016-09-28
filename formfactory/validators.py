@@ -1,20 +1,20 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from formfactory import _registery
+from formfactory import _registry
 
 
 def register(kls):
-    _registery["validators"][kls.__name__] = kls
+    _registry["validators"][kls.__name__] = kls
 
 
 def unregister(kls):
-    if kls in _registery["validators"].values():
-        del _registery["validators"][kls.__name__]
+    if kls in _registry["validators"].values():
+        del _registry["validators"][kls.__name__]
 
 
 def get_registered_validators():
-    return _registery["validators"]
+    return _registry["validators"]
 
 
 class MetaClass(type):

@@ -1,17 +1,17 @@
-from formfactory import _registery
+from formfactory import _registry
 
 
 def register(kls):
-    _registery["actions"][kls.__name__] = kls
+    _registry["actions"][kls.__name__] = kls
 
 
 def unregister(kls):
-    if kls in _registery["actions"].values():
-        del _registery["actions"][kls.__name__]
+    if kls in _registry["actions"].values():
+        del _registry["actions"][kls.__name__]
 
 
 def get_registered_actions():
-    return _registery["actions"]
+    return _registry["actions"]
 
 
 class MetaClass(type):
@@ -30,7 +30,7 @@ class BaseAction(object):
 
 class StoreAction(BaseAction):
     """Stores the data to a simple key value store, grouped by a unique uuid per
-    submition.
+    submission.
     """
     def run(self, form_instance):
         from formfactory.models import FormData, FormDataItems
