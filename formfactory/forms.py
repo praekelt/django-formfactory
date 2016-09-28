@@ -9,6 +9,12 @@ class FormAdminForm(forms.ModelForm):
         fields = ["title", "slug"]
 
 
+class FormActionThroughAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.FormActionThrough
+        fields = ["action", "form", "order"]
+
+
 class FieldChoiceAdminForm(forms.ModelForm):
     class Meta:
         model = models.FieldChoice

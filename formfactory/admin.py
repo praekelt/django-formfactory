@@ -15,7 +15,7 @@ class FormFieldInline(admin.StackedInline):
 
 
 class FormActionThroughInline(admin.StackedInline):
-    form = forms.FormFieldAdminForm
+    form = forms.FormActionThroughAdminForm
     model = FormActionThrough
 
 

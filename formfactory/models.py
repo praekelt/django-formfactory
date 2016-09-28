@@ -91,7 +91,7 @@ class Form(models.Model):
     @property
     def action_classes(self):
         return [
-            action.action.action_class for action in self.actions.all()
+            action.action_class for action in self.actions.all()
         ]
 
     def as_form(self, data=None):
