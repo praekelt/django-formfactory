@@ -5,6 +5,8 @@ from django.test.client import Client
 
 from formfactory import actions, models, validators
 
+from formfactory import models
+
 
 def load_fixtures(kls):
     kls.form_data = {

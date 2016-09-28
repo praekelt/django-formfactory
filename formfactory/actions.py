@@ -1,5 +1,4 @@
 from formfactory import _registery
-from formfactory.models import FormData, FormDataItems
 
 
 def register(kls):
@@ -34,6 +33,8 @@ class StoreAction(BaseAction):
     submition.
     """
     def run(self, form_instance):
+        from formfactory.models import FormData, FormDataItems
+
         cleaned_data = form_instance.cleaned_data
         form_data = FormData.objects.create(
             uuid=cleaned_data.pop("uuid"),
