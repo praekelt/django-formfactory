@@ -17,7 +17,16 @@ def get_registered_validators():
     return _registery["validators"]
 
 
+class MetaClass(type):
+    def __new__(mcs, clsname, bases, attrs):
+        newclass = super(MetaClass, mcs).__new__(mcs, clsname, bases, attrs)
+        register(newclass)
+        return newclass
+
+
 class BaseValidator(object):
+    __metaclass__ = MetaClass
+
     validation_message = "%(value)s did not validate"
 
     def condition(self, value):

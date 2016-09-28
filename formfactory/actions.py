@@ -15,7 +15,16 @@ def get_registered_actions():
     return _registery["actions"]
 
 
+class MetaClass(type):
+    def __new__(mcs, clsname, bases, attrs):
+        newclass = super(MetaClass, mcs).__new__(mcs, clsname, bases, attrs)
+        register(newclass)
+        return newclass
+
+
 class BaseAction(object):
+    __metaclass__ = MetaClass
+
     def run(self, form_instance):
         raise NotImplementedError()
 
@@ -41,6 +50,3 @@ class StoreAction(BaseAction):
 class EmailAction(BaseAction):
     def run(self, form_instance):
         pass
-
-
-register(StoreAction)
