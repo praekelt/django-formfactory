@@ -1,40 +1,20 @@
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
-
 from formfactory import _registry
 
 
-def register(kls):
-    _registry["validators"][kls.__name__] = kls
+def register(func):
+    key = "%s.%s" % (func.__module__, func.__name__)
+    _registry["validators"][key] = func
+
+    def wrapper(*args):
+        return func(*args)
+    return wrapper
 
 
-def unregister(kls):
-    if kls in _registry["validators"].values():
-        del _registry["validators"][kls.__name__]
+def unregister(func):
+    key = "%s.%s" % (func.__module__, func.__name__)
+    if key in _registry["validators"]:
+        del _registry["validators"][key]
 
 
 def get_registered_validators():
     return _registry["validators"]
-
-
-class MetaClass(type):
-    def __new__(mcs, clsname, bases, attrs):
-        newclass = super(MetaClass, mcs).__new__(mcs, clsname, bases, attrs)
-        register(newclass)
-        return newclass
-
-
-class BaseValidator(object):
-    __metaclass__ = MetaClass
-
-    validation_message = "%(value)s did not validate"
-
-    def condition(self, value):
-        raise NotImplementedError()
-
-    def validate(self, value):
-        if not self.condition(value):
-            raise ValidationError(
-                _(self.validation_message), params={"value": value},
-            )
-        return True

@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.test.client import Client
 
 from formfactory import actions, models, validators
-from formfactory.tests.formfactoryapp.actions import dummy_action
 
 
 def load_fixtures(kls):
@@ -83,32 +82,23 @@ def load_fixtures(kls):
         )
 
 
-class TestValidator(validators.BaseValidator):
-    validation_message = "%(value) is not divible by 2"
-
-    def condition(self, value):
-        return not value % 2
-
-
 class ValidatorTestCase(TestCase):
     def setUp(self):
-        self.validator = TestValidator
+        self.validator = "formfactory.tests.formfactoryapp.validators.dummy_validator"
 
     def test_registry(self):
-        validators.register(self.validator)
-        self.assertIn(
-            self.validator, validators.get_registered_validators().values()
-        )
+        self.assertIn(self.validator, validators.get_registered_validators())
 
     def test_unregistry(self):
-        validators.unregister(self.validator)
+        validator = validators.get_registered_validators()[self.validator]
+        validators.unregister(validator)
         self.assertNotIn(
-            self.validator, validators.get_registered_validators().values()
+            self.validator, validators.get_registered_validators()
         )
 
-    def test_validation(self):
-        validator_instance = self.validator()
-        self.assertTrue(validator_instance.validate(4))
+    def test_action(self):
+        validator = validators.get_registered_validators()[self.validator]
+        self.assertTrue(validator(2))
 
 
 class ActionTestCase(TestCase):
@@ -127,7 +117,7 @@ class ActionTestCase(TestCase):
 
     def test_action(self):
         action = actions.get_registered_actions()[self.action]
-        self.assertTrue(action())
+        self.assertTrue(action({}))
 
 
 class ModelTestCase(TestCase):
