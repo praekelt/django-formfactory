@@ -1,21 +1,27 @@
 from formfactory import _registry
-
 from formfactory.models import FormData, FormDataItem
 
 
 def register(func):
-    _registry["actions"][func.__name__] = func
+    key = "%s.%s" % (func.__module__, func.__name__)
+    _registry["actions"][key] = func
+
+    def wrapper(*args):
+        return func(*args)
+    return wrapper
 
 
-def unregister(kls):
-    if kls in _registry["actions"].values():
-        del _registry["actions"][kls.__name__]
+def unregister(func):
+    key = "%s.%s" % (func.__module__, func.__name__)
+    if key in _registry["actions"]:
+        del _registry["actions"][key]
 
 
 def get_registered_actions():
     return _registry["actions"]
 
 
+@register
 def store_data(form_instance):
     cleaned_data = form_instance.cleaned_data
     form_data = FormData.objects.create(
@@ -28,5 +34,3 @@ def store_data(form_instance):
             form_field_id=form_instance.fields[key].field_pk,
             value=value
         )
-
-register(store_data)
