@@ -45,3 +45,4 @@ class FormDataAdmin(admin.ModelAdmin):
 admin.site.register(models.Action, ActionModelAdmin)
 admin.site.register(models.FieldChoice, FieldChoiceModelAdmin)
 admin.site.register(models.Form, FormAdmin)
+admin.site.register(models.FormData, FormDataAdmin)
