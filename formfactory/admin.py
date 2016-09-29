@@ -30,6 +30,18 @@ class FormAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ["title"]}
 
 
+class FormDataItemInline(admin.StackedInline):
+    form = forms.FormDataItemAdminForm
+    model = models.FormDataItem
+
+
+class FormDataAdmin(admin.ModelAdmin):
+    form = forms.FormAdminForm
+    list_display = ["title"]
+    inlines = [FormFieldInline, FormActionThroughInline]
+    prepopulated_fields = {"slug": ["title"]}
+
+
 admin.site.register(models.Action, ActionModelAdmin)
 admin.site.register(models.FieldChoice, FieldChoiceModelAdmin)
 admin.site.register(models.Form, FormAdmin)

@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 
-from formfactory import actions, factory, SETTINGS, validators
+from formfactory import _registry, factory, SETTINGS
 
 
 FIELD_TYPES = tuple(
@@ -10,12 +10,11 @@ FIELD_TYPES = tuple(
 )
 
 ADDITIONAL_VALIDATORS = tuple(
-    (validator, validator)
-    for validator in validators.get_registered_validators()
+    (validator, validator) for validator in _registry["validators"]
 )
 
 FORM_ACTIONS = tuple(
-    (action, action) for action in actions.get_registered_actions()
+    (action, action) for action in _registry["actions"]
 )
 
 
@@ -29,7 +28,7 @@ class FormData(models.Model):
         ordering = ["uuid"]
 
 
-class FormDataItems(models.Model):
+class FormDataItem(models.Model):
     """A basic store for form data items.
     """
     form_data = models.ForeignKey(FormData, related_name="items")
@@ -52,7 +51,7 @@ class Action(models.Model):
 
     @property
     def action_class(self):
-        return actions.get_registered_actions()[self.action]
+        return _registry["actions"][self.action]
 
 
 class FormActionThrough(models.Model):

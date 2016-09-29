@@ -64,5 +64,4 @@ class FormFactory(forms.Form):
         """Performs the required actions in the defined sequence.
         """
         for action in self.actions:
-            action_instance = action()
-            action_instance.run(form_instance=self)
+            action(form_instance=self)

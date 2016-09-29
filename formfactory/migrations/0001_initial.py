@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='FormDataItems',
+            name='FormDataItem',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('value', models.TextField()),

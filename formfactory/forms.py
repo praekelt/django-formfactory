@@ -34,3 +34,15 @@ class FormFieldAdminForm(forms.ModelForm):
             "title", "position", "form", "field_type", "label", "initial",
             "label", "required", "disabled", "choices", "additional_validators"
         ]
+
+
+class FormDataAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.FormData
+        fields = ["uuid", "form"]
+
+
+class FormDataItemAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.FormDataItem
+        fields = ["form_data", "form_field", "value"]
