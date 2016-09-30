@@ -36,10 +36,9 @@ class FormDataItemInline(admin.StackedInline):
 
 
 class FormDataAdmin(admin.ModelAdmin):
-    form = forms.FormAdminForm
-    list_display = ["title"]
-    inlines = [FormFieldInline, FormActionThroughInline]
-    prepopulated_fields = {"slug": ["title"]}
+    form = forms.FormDataAdminForm
+    list_display = ["form__title"]
+    inlines = [FormDataItemInline]
 
 
 admin.site.register(models.Action, ActionModelAdmin)

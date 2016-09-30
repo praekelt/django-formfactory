@@ -172,6 +172,10 @@ class AdminTestCase(TestCase):
         response = self.client.get("/admin/formfactory/fieldchoice/add/")
         self.assertEqual(response.status_code, 200)
 
+    def test_admin_formdata(self):
+        response = self.client.get("/admin/formfactory/formdata/add/")
+        self.assertEqual(response.status_code, 200)
+
     def tearDown(self):
         pass
 
