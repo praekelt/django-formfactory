@@ -84,6 +84,8 @@ class Form(models.Model):
         max_length=256, db_index=True, unique=True
     )
     actions = models.ManyToManyField(Action, through=FormActionThrough)
+    success_message = models.CharField(max_length=256, blank=True, null=True)
+    failure_message = models.CharField(max_length=256, blank=True, null=True)
 
     class Meta:
         ordering = ["title"]
