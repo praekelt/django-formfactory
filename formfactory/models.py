@@ -27,6 +27,9 @@ class FormData(models.Model):
     class Meta:
         ordering = ["uuid"]
 
+    def __unicode__(self):
+        return "%s (%s)" % (self.form.title, self.uuid)
+
 
 class FormDataItem(models.Model):
     """A basic store for form data items.
