@@ -37,7 +37,6 @@ class FormDataItemInline(admin.StackedInline):
 
 class FormDataAdmin(admin.ModelAdmin):
     form = forms.FormDataAdminForm
-    list_display = ["form__title"]
     inlines = [FormDataItemInline]
 
 
