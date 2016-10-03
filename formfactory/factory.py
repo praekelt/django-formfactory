@@ -57,7 +57,7 @@ class FormFactory(forms.Form):
                 pass
             try:
                 if field.max_length:
-                    self.fields[field.slug].choices = field.max_length
+                    self.fields[field.slug].max_length = field.max_length
             except TypeError:
                 pass
 

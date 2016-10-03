@@ -1,3 +1,5 @@
+import uuid
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -14,6 +16,12 @@ def load_fixtures(kls):
     }
     kls.form = models.Form.objects.create(**kls.form_data)
 
+    kls.fieldchoice_data = {
+        "label": "Choice 1",
+        "value": "choice-1"
+    }
+    kls.fieldchoice = models.FieldChoice.objects.create(**kls.fieldchoice_data)
+
     for count, field_type in enumerate(models.FIELD_TYPES):
         setattr(kls, "formfield_data_%s" % count, {
             "title": "Form Field %s" % count,
@@ -22,10 +30,16 @@ def load_fixtures(kls):
             "form": kls.form,
             "field_type": field_type[0],
             "label": "Form Field %s" % count,
+            "placeholder": "Field Placeholder %s" % count
         })
+
+        if field_type[0] == "CharField":
+            getattr(kls, "formfield_data_%s" % count)["max_length"] = 100
+
         setattr(kls, "formfield_%s" % count, models.FormField.objects.create(
             **getattr(kls, "formfield_data_%s" % count)
         ))
+        getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
 
     kls.simpleform_data = {
         "title": "Subscribe Form",
@@ -45,6 +59,21 @@ def load_fixtures(kls):
     }
     kls.formactionthrough = models.FormActionThrough.objects.create(
         **kls.formactionthrough_data
+    )
+
+    kls.formdata_data = {
+        "uuid": unicode(uuid.uuid4()),
+        "form": kls.form
+    }
+    kls.formdata = models.FormData.objects.create(**kls.formdata_data)
+
+    kls.formdataitem_data = {
+        "form_data": kls.formdata,
+        "form_field": kls.formfield_1,
+        "value": "Form Data Item Value 1"
+    }
+    kls.formdataitem = models.FormDataItem.objects.create(
+        **kls.formdataitem_data
     )
 
     kls.simpleformfield_data = {
@@ -137,6 +166,10 @@ class ModelTestCase(TestCase):
         self.assertEqual(self.form.fields.count(), len(models.FIELD_TYPES))
         self.assertIsInstance(self.form.as_form(), forms.Form)
 
+    def test_fieldchoice(self):
+        for key, value in self.fieldchoice_data.items():
+            self.assertEqual(getattr(self.fieldchoice, key), value)
+
     def test_formfield(self):
         for count in range(len(models.FIELD_TYPES)):
             formfield_data = getattr(self, "formfield_data_%s" % count)
@@ -144,6 +177,13 @@ class ModelTestCase(TestCase):
                 formfield = getattr(self, "formfield_%s" % count)
                 self.assertEqual(getattr(formfield, key), value)
 
+    def test_formdata(self):
+        for key, value in self.formdata_data.items():
+            self.assertEqual(getattr(self.formdata, key), value)
+
+    def test_formdataitem(self):
+        for key, value in self.formdataitem_data.items():
+            self.assertEqual(getattr(self.formdataitem, key), value)
 
 class AdminTestCase(TestCase):
     def setUp(self):
