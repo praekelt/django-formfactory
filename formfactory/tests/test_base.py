@@ -128,6 +128,7 @@ class ModelTestCase(TestCase):
         self.assertIn(("DateTimeField", "DateTimeField"), models.FIELD_TYPES)
         self.assertIn(("BooleanField", "BooleanField"), models.FIELD_TYPES)
         self.assertIn(("CharField", "CharField"), models.FIELD_TYPES)
+        self.assertIn(self.action_data["action"], models.FORM_ACTIONS)
 
     def test_form(self):
         for key, value in self.form_data.items():
@@ -170,6 +171,16 @@ class AdminTestCase(TestCase):
 
         response = self.client.get("/admin/formfactory/form/add/")
         self.assertEqual(response.status_code, 200)
+
+    def test_admin_action(self):
+        response = self.client.get("/admin/formfactory/action/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/admin/formfactory/action/add/")
+        self.assertEqual(response.status_code, 200)
+
+        # Ensure that the action choice field is populated
+        self.assertContains(response, self.action_data["action"])
 
     def test_admin_fieldoption(self):
         response = self.client.get("/admin/formfactory/fieldchoice/")
