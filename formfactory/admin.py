@@ -16,6 +16,7 @@ class ActionModelAdmin(admin.ModelAdmin):
 class FormFieldInline(admin.StackedInline):
     form = forms.FormFieldAdminForm
     model = models.FormField
+    prepopulated_fields = {"slug": ["title"]}
 
 
 class FormActionThroughInline(admin.StackedInline):
