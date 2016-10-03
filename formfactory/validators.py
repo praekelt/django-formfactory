@@ -1,8 +1,9 @@
 from formfactory import _registry
+from formfactory.utils import clean_key
 
 
 def register(func):
-    key = "%s.%s" % (func.__module__, func.__name__)
+    key = clean_key(func)
     _registry["validators"][key] = func
 
     def wrapper(*args):
@@ -11,7 +12,7 @@ def register(func):
 
 
 def unregister(func):
-    key = "%s.%s" % (func.__module__, func.__name__)
+    key = clean_key(func)
     if key in _registry["validators"]:
         del _registry["validators"][key]
 

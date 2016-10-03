@@ -84,7 +84,7 @@ def load_fixtures(kls):
 
 class ValidatorTestCase(TestCase):
     def setUp(self):
-        self.validator = "formfactory.tests.formfactoryapp.validators.dummy_validator"
+        self.validator = "formfactory.tests.validators.dummy_validator"
 
     def test_registry(self):
         self.assertIn(self.validator, validators.get_registered_validators())
@@ -103,7 +103,7 @@ class ValidatorTestCase(TestCase):
 
 class ActionTestCase(TestCase):
     def setUp(self):
-        self.action = "formfactory.tests.formfactoryapp.actions.dummy_action"
+        self.action = "formfactory.tests.actions.dummy_action"
 
     def test_registry(self):
         self.assertIn(self.action, actions.get_registered_actions())
