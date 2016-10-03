@@ -26,6 +26,8 @@ def get_registered_actions():
 
 @register
 def store_data(form_instance):
+    """An action which store submitted form data in a simple key/value store.
+    """
     cleaned_data = form_instance.cleaned_data
     form_data = FormData.objects.create(
         uuid=cleaned_data.pop("uuid"),
@@ -41,6 +43,9 @@ def store_data(form_instance):
 
 @register
 def send_email(form_instance):
+    """An action which sends a plain text email with all submitted data.
+    A subject and to field must be provided.
+    """
     cleaned_data = form_instance.cleaned_data
 
     action_settings = SETTINGS.get("email-action", {})
