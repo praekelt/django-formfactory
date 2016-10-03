@@ -1,4 +1,6 @@
-from formfactory import _registry
+from django.core.mail import send_mail
+
+from formfactory import _registry, SETTINGS
 from formfactory.models import FormData, FormDataItem
 from formfactory.utils import clean_key
 
@@ -40,13 +42,19 @@ def store_data(form_instance):
 @register
 def send_email(form_instance):
     cleaned_data = form_instance.cleaned_data
-    form_data = FormData.objects.create(
-        uuid=cleaned_data.pop("uuid"),
-        form_id=cleaned_data.pop("form_id"),
-    )
-    for key, value in cleaned_data.items():
-        FormDataItem.objects.create(
-            form_data=form_data,
-            form_field_id=form_instance.fields[key].field_pk,
-            value=value
-        )
+
+    action_settings = SETTINGS.get("email-action", {})
+    from_email = action_settings["from-email"]
+    try:
+        to_email = cleaned_data.pop(action_settings["to-field"])
+    except KeyError:
+        raise KeyError("No to email field name setting provided.")
+    try:
+        subject = cleaned_data.pop(action_settings["subject-field"])
+    except KeyError:
+        raise KeyError("No subject field name setting provided.")
+
+    email_body = [
+        "%s: %s\n\r" % (label, value) for label, value in cleaned_data.items()
+    ]
+    send_mail(subject, email_body, from_email, [to_email])
