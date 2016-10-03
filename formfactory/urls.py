@@ -1,9 +1,8 @@
 from django.conf.urls import url
 
-from formfactory.views import FormDetailView, FormListView
+from formfactory.views import FormCreateView
 
 
 urlpatterns = [
-    url(r"^$", FormListView.as_view(), name="form-list"),
-    url(r"^(?P<slug>[-\w]+)/$", FormDetailView.as_view(), name="form-detail")
+    url(r"^(?P<slug>[-\w]+)/$", FormCreateView.as_view(), name="form-detail")
 ]

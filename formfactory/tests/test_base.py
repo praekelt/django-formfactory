@@ -39,7 +39,9 @@ def load_fixtures(kls):
         setattr(kls, "formfield_%s" % count, models.FormField.objects.create(
             **getattr(kls, "formfield_data_%s" % count)
         ))
-        getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
+
+        if field_type[0] == "ChoiceField":
+            getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
 
     kls.simpleform_data = {
         "title": "Subscribe Form",
@@ -61,6 +63,56 @@ def load_fixtures(kls):
         **kls.formactionthrough_data
     )
 
+    kls.simpleformfield_data = {
+        "salutation": {
+            "title": "Salutation",
+            "slug": "salutation",
+            "position": 0,
+            "form": kls.simpleform,
+            "field_type": "ChoiceField",
+            "label": "Salutation",
+            "required": False
+        },
+        "name": {
+            "title": "Name",
+            "slug": "name",
+            "position": 1,
+            "form": kls.simpleform,
+            "field_type": "CharField",
+            "label": "Full Name",
+            "required": False
+        },
+        "email_address": {
+            "title": "Email Address",
+            "slug": "email-address",
+            "position": 2,
+            "form": kls.simpleform,
+            "field_type": "EmailField",
+            "label": "Email",
+            "help_text": "The email you would like info to be sent to"
+        },
+        "accept_terms": {
+            "title": "Accept Terms",
+            "slug": "accept-terms",
+            "position": 3,
+            "form": kls.simpleform,
+            "field_type": "BooleanField",
+            "label": "Do you accept the terms and conditions",
+            "required": False
+        }
+    }
+    for key, value in kls.simpleformfield_data.items():
+        setattr(
+            kls, "simpleformfield_%s" % key,
+            models.FormField.objects.create(**value)
+        )
+
+    for salutation in ["Mr", "Mrs", "Dr", "Prof"]:
+        choice = models.FieldChoice.objects.create(
+            label=salutation, value=salutation
+        )
+        kls.simpleformfield_salutation.choices.add(choice)
+
     kls.formdata_data = {
         "uuid": unicode(uuid.uuid4()),
         "form": kls.form
@@ -75,41 +127,6 @@ def load_fixtures(kls):
     kls.formdataitem = models.FormDataItem.objects.create(
         **kls.formdataitem_data
     )
-
-    kls.simpleformfield_data = {
-        "name": {
-            "title": "Name",
-            "slug": "name",
-            "position": 0,
-            "form": kls.simpleform,
-            "field_type": "CharField",
-            "label": "Full Name",
-            "required": False
-        },
-        "email_address": {
-            "title": "Email Address",
-            "slug": "email-address",
-            "position": 1,
-            "form": kls.simpleform,
-            "field_type": "EmailField",
-            "label": "Email",
-            "help_text": "The email you would like info to be sent to"
-        },
-        "accept_terms": {
-            "title": "Accept Terms",
-            "slug": "accept-terms",
-            "position": 2,
-            "form": kls.simpleform,
-            "field_type": "BooleanField",
-            "label": "Do you accept the terms and conditions",
-            "required": False
-        }
-    }
-    for key, value in kls.simpleformfield_data.items():
-        setattr(
-            kls, "simpleformfield_%s" % key,
-            models.FormField.objects.create(**value)
-        )
 
 
 class ValidatorTestCase(TestCase):
@@ -245,48 +262,41 @@ class AdminTestCase(TestCase):
 class FactoryTestCase(TestCase):
     def setUp(self):
         load_fixtures(self)
-
-    def test_form(self):
-        form_factory = self.simpleform.as_form()
-        for value in self.simpleformfield_data.values():
-            self.assertIn(value["slug"], [f for f in form_factory.fields])
-            for k, v in value.items():
-                if k in ["label", "help_text", "required"]:
-                    self.assertEqual(
-                        v, getattr(form_factory.fields[value["slug"]], k)
-                    )
-
-        form_data = {
-            "uuid": form_factory.fields["uuid"].initial,
-            "form_id": form_factory.fields["form_id"].initial,
+        self.form_factory = self.simpleform.as_form()
+        self.form_data = {
+            "uuid": self.form_factory.fields["uuid"].initial,
+            "form_id": self.form_factory.fields["form_id"].initial,
+            "salutation": "Mr",
             "name": "Name Surname",
             "email-address": "test@test.com",
             "accept-terms": True
         }
-        form_factory = self.simpleform.as_form(data=form_data)
 
+    def test_form(self):
+        for value in self.simpleformfield_data.values():
+            self.assertIn(value["slug"], [f for f in self.form_factory.fields])
+            for k, v in value.items():
+                if k in ["label", "help_text", "required"]:
+                    self.assertEqual(
+                        v, getattr(self.form_factory.fields[value["slug"]], k)
+                    )
+
+        form_factory = self.simpleform.as_form(data=self.form_data)
         self.assertTrue(form_factory.is_bound)
         self.assertFalse(bool(form_factory.errors))
         self.assertTrue(form_factory.is_valid())
 
     def test_save(self):
-        form_factory = self.simpleform.as_form()
-        form_data = {
-            "uuid": form_factory.fields["uuid"].initial,
-            "form_id": form_factory.fields["form_id"].initial,
-            "name": "Name Surname",
-            "email-address": "test@test.com",
-            "accept-terms": True
-        }
-        form_factory = self.simpleform.as_form(data=form_data)
+        form_factory = self.simpleform.as_form(data=self.form_data)
         self.assertTrue(form_factory.is_valid())
 
         form_factory.save()
-        uuid = form_factory.fields["uuid"].initial
-        form_store = models.FormData.objects.get(uuid=uuid)
+        form_store = models.FormData.objects.get(
+            uuid=form_factory.fields["uuid"].initial
+        )
         for field in form_store.items.all():
             self.assertEqual(
-                field.value, str(form_data[field.form_field.slug])
+                field.value, str(self.form_data[field.form_field.slug])
             )
 
     def tearDown(self):
@@ -306,10 +316,11 @@ class ViewTestCase(TestCase):
             )
         )
         self.assertEqual(response.status_code, 200)
-
-    def test_list(self):
-        response = self.client.get(reverse("formfactory:form-list"))
-        self.assertEqual(response.status_code, 200)
+        for field in self.simpleform.fields.all():
+            self.assertContains(response, field.label)
+            for choice in field.choices.all():
+                self.assertContains(response, choice.label)
+                self.assertContains(response, choice.value)
 
     def tearDown(self):
         pass
