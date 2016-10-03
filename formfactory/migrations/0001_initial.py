@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
                 ('required', models.BooleanField(default=True)),
                 ('disabled', models.BooleanField(default=False)),
                 ('additional_validators', models.CharField(blank=True, max_length=128, null=True)),
-                ('choices', models.ManyToManyField(to='formfactory.FieldChoice')),
+                ('choices', models.ManyToManyField(blank=True, to='formfactory.FieldChoice', null=True)),
                 ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fields', to='formfactory.Form')),
             ],
             options={

@@ -146,7 +146,7 @@ class FormField(models.Model):
     placeholder = models.CharField(max_length=128, blank=True, null=True)
     required = models.BooleanField(default=True)
     disabled = models.BooleanField(default=False)
-    choices = models.ManyToManyField(FieldChoice)
+    choices = models.ManyToManyField(FieldChoice, blank=True, null=True)
     additional_validators = models.CharField(
         choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
     )
