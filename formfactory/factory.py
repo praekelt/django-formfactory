@@ -48,11 +48,13 @@ class FormFactory(forms.Form):
             # Adds the field choices and max_length but catches the exception
             # as not all fields allow for these attrs.
             try:
-                self.fields[field.slug].choices = field.choices
+                if field.choices.exists():
+                    self.fields[field.slug].choices = field.choices
             except TypeError:
                 pass
             try:
-                self.fields[field.slug].choices = field.max_length
+                if field.max_length:
+                    self.fields[field.slug].choices = field.max_length
             except TypeError:
                 pass
 
