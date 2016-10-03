@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 
@@ -258,12 +259,15 @@ class ViewTestCase(TestCase):
 
     def test_detail(self):
         response = self.client.get(
-            "/formfactory/%s/" % self.simpleform_data["slug"]
+            reverse(
+                "formfactory:form-detail",
+                kwargs={"slug": self.simpleform_data["slug"]}
+            )
         )
         self.assertEqual(response.status_code, 200)
 
     def test_list(self):
-        response = self.client.get("/formfactory/")
+        response = self.client.get(reverse("formfactory:form-list"))
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
