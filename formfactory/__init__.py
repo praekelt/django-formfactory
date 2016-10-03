@@ -10,7 +10,12 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "DateTimeField", "DecimalField", "EmailField", "FloatField",
         "GenericIPAddressField", "IntegerField", "MultipleChoiceField",
         "SlugField", "SplitDateTimeField", "TimeField", "URLField", "UUIDField"
-    ]
+    ],
+    "email-action": {
+        "from-email": settings.DEFAULT_FROM_EMAIL,
+        "to-field": "send-to",
+        "subject-field": "email-subject"
+    }
 })
 
 
