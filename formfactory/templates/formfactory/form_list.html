@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% load link_tags %}
+
+{% block content %}
+    {% for object in object_list %}
+        {% render_form object %}
+    {% endfor %}
+{% endblock %}
