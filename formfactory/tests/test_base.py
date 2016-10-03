@@ -246,10 +246,14 @@ class ViewTestCase(TestCase):
         load_fixtures(self)
 
     def test_detail(self):
-        pass
+        response = self.client.get(
+            "/formfactory/%s/" % self.simpleform_data["slug"]
+        )
+        self.assertEqual(response.status_code, 200)
 
     def test_list(self):
-        pass
+        response = self.client.get("/formfactory/")
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         pass
