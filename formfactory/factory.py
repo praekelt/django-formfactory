@@ -49,7 +49,10 @@ class FormFactory(forms.Form):
             # as not all fields allow for these attrs.
             try:
                 if field.choices.exists():
-                    self.fields[field.slug].choices = field.choices
+                    choices = tuple(
+                        (c.label, c.value) for c in field.choices.all()
+                    )
+                    self.fields[field.slug].choices = choices
             except TypeError:
                 pass
             try:
