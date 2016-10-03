@@ -127,3 +127,5 @@ def load_fixtures(kls):
     kls.formdataitem = models.FormDataItem.objects.create(
         **kls.formdataitem_data
     )
+    kls.dummy_validator = "formfactory.tests.validators.dummy_validator"
+    kls.dummy_action = "formfactory.tests.actions.dummy_action"

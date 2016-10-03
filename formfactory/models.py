@@ -1,7 +1,11 @@
 from django import forms
 from django.db import models
 
-from formfactory import _registry, factory, SETTINGS
+from formfactory import actions, _registry, factory, SETTINGS, validators
+
+
+actions.auto_discover()
+validators.auto_discover()
 
 
 FIELD_TYPES = tuple(
@@ -10,11 +14,12 @@ FIELD_TYPES = tuple(
 )
 
 ADDITIONAL_VALIDATORS = tuple(
-    (validator, validator) for validator in _registry["validators"]
+    (validator, validator)
+    for validator in validators.get_registered_validators()
 )
 
 FORM_ACTIONS = tuple(
-    (action, action) for action in _registry["actions"]
+    (action, action) for action in actions.get_registered_actions()
 )
 
 

@@ -1,5 +1,5 @@
 from formfactory import _registry
-from formfactory.utils import clean_key
+from formfactory.utils import auto_registration, clean_key
 
 
 def register(func):
@@ -19,3 +19,9 @@ def unregister(func):
 
 def get_registered_validators():
     return _registry["validators"]
+
+
+def auto_discover():
+    """Perform discovery of validator functions over all other installed apps.
+    """
+    auto_registration("validators")

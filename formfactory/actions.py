@@ -1,8 +1,7 @@
 from django.core.mail import send_mail
 
 from formfactory import _registry, SETTINGS
-from formfactory.models import FormData, FormDataItem
-from formfactory.utils import clean_key
+from formfactory.utils import auto_registration, clean_key
 
 
 def register(func):
@@ -24,10 +23,18 @@ def get_registered_actions():
     return _registry["actions"]
 
 
+def auto_discover():
+    """Perform discovery of action functions over all other installed apps.
+    """
+    auto_registration("actions")
+
+
 @register
 def store_data(form_instance):
     """An action which store submitted form data in a simple key/value store.
     """
+    from formfactory.models import FormData, FormDataItem
+
     cleaned_data = form_instance.cleaned_data
     form_data = FormData.objects.create(
         uuid=cleaned_data.pop("uuid"),
