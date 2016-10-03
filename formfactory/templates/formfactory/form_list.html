@@ -4,6 +4,7 @@
 
 {% block content %}
     {% for object in object_list %}
+        <h1>{{ object.title }}</h1>
         {% render_form object %}
     {% endfor %}
 {% endblock %}

@@ -185,6 +185,7 @@ class ModelTestCase(TestCase):
         for key, value in self.formdataitem_data.items():
             self.assertEqual(getattr(self.formdataitem, key), value)
 
+
 class AdminTestCase(TestCase):
     def setUp(self):
         load_fixtures(self)
