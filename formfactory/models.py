@@ -55,7 +55,7 @@ class Action(models.Model):
         return self.action
 
     @property
-    def action_class(self):
+    def as_function(self):
         return _registry["actions"][self.action]
 
 
@@ -64,7 +64,7 @@ class ActionParam(models.Model):
     """
     key = models.CharField(max_length=128)
     value = models.CharField(max_length=128)
-    action = models.ForeignKey(Action)
+    action = models.ForeignKey(Action, related_name="params")
 
     def __unicode__(self):
         return "%s:%s" % (self.key, self.value)
@@ -106,12 +106,6 @@ class Form(models.Model):
     def __unicode__(self):
         return self.title
 
-    @property
-    def action_classes(self):
-        return [
-            action.action_class for action in self.actions.all()
-        ]
-
     def as_form(self, data=None):
         """
         Builds the form factory object and returns it.
@@ -123,7 +117,7 @@ class Form(models.Model):
 
         return factory.FormFactory(
             data, fields=self.fields.all(), form_id=self.pk,
-            actions=self.action_classes
+            actions=self.actions.all()
         )
 
 

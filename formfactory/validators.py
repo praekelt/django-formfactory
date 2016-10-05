@@ -6,8 +6,8 @@ def register(func):
     key = clean_key(func)
     _registry["validators"][key] = func
 
-    def wrapper(*args):
-        return func(*args)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
     return wrapper
 
 

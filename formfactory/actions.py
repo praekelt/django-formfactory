@@ -8,8 +8,8 @@ def register(func):
     key = clean_key(func)
     _registry["actions"][key] = func
 
-    def wrapper(*args):
-        return func(*args)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
     return wrapper
 
 
@@ -30,7 +30,7 @@ def auto_discover():
 
 
 @register
-def store_data(form_instance):
+def store_data(form_instance, **kwargs):
     """An action which store submitted form data in a simple key/value store.
     """
     from formfactory.models import FormData, FormDataItem
@@ -49,22 +49,24 @@ def store_data(form_instance):
 
 
 @register
-def send_email(form_instance):
+def send_email(form_instance, **kwargs):
     """An action which sends a plain text email with all submitted data.
     A subject and to field must be provided.
     """
     cleaned_data = form_instance.cleaned_data
 
-    action_settings = SETTINGS.get("email-action", {})
-    from_email = action_settings["from-email"]
     try:
-        to_email = cleaned_data.pop(action_settings["to-field"])
+        from_email = cleaned_data.pop(kwargs["from_email_field"])
     except KeyError:
-        raise KeyError("No to email field name setting provided.")
+        raise KeyError("No to-field param provided.")
     try:
-        subject = cleaned_data.pop(action_settings["subject-field"])
+        to_email = cleaned_data.pop(kwargs["to_email_field"])
     except KeyError:
-        raise KeyError("No subject field name setting provided.")
+        raise KeyError("No to-field param provided.")
+    try:
+        subject = cleaned_data.pop(kwargs["subject_field"])
+    except KeyError:
+        raise KeyError("No subject-field param provided.")
 
     email_body = [
         "%s: %s\n\r" % (label, value) for label, value in cleaned_data.items()

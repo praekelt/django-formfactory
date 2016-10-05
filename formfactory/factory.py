@@ -69,4 +69,7 @@ class FormFactory(forms.Form):
         """Performs the required actions in the defined sequence.
         """
         for action in self.actions:
-            action(form_instance=self)
+            action_params = dict(
+                (obj.key, obj.value) for obj in action.params.all()
+            )
+            action.as_function(form_instance=self, **action_params)
