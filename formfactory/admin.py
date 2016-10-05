@@ -8,9 +8,15 @@ class FieldChoiceModelAdmin(admin.ModelAdmin):
     model = models.FieldChoice
 
 
+class FormActionParamInline(admin.StackedInline):
+    form = forms.ActionParamAdminForm
+    model = models.ActionParam
+
+
 class ActionModelAdmin(admin.ModelAdmin):
     form = forms.ActionAdminForm
     model = models.Action
+    inlines = [FormActionParamInline]
 
 
 class FormFieldInline(admin.StackedInline):
@@ -22,11 +28,6 @@ class FormFieldInline(admin.StackedInline):
 class FormActionThroughInline(admin.StackedInline):
     form = forms.FormActionThroughAdminForm
     model = models.FormActionThrough
-
-
-class FormActionParamInline(admin.StackedInline):
-    form = forms.ActionParamAdminForm
-    model = models.ActionParam
 
 
 class FormAdmin(admin.ModelAdmin):
