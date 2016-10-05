@@ -51,15 +51,23 @@ class Action(models.Model):
         choices=FORM_ACTIONS, max_length=128
     )
 
-    class Meta:
-        ordering = ["formactionthrough"]
-
     def __unicode__(self):
         return self.action
 
     @property
     def action_class(self):
         return _registry["actions"][self.action]
+
+
+class ActionParam(models.Model):
+    """Defines a constant that can be passed to the action function.
+    """
+    key = models.CharField(max_length=128)
+    value = models.CharField(max_length=128)
+    action = models.ForeignKey(Action)
+
+    def __unicode__(self):
+        return "%s:%s" % (self.key, self.value)
 
 
 class FormActionThrough(models.Model):

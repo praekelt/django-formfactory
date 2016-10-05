@@ -9,10 +9,16 @@ class FormAdminForm(forms.ModelForm):
         fields = ["title", "slug"]
 
 
-class ActionForm(forms.ModelForm):
+class ActionAdminForm(forms.ModelForm):
     class Meta:
         model = models.Action
         fields = ["action"]
+
+
+class ActionParamAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.ActionParam
+        fields = ["key", "value"]
 
 
 class FormActionThroughAdminForm(forms.ModelForm):
@@ -47,3 +53,9 @@ class FormDataItemAdminForm(forms.ModelForm):
     class Meta:
         model = models.FormDataItem
         fields = ["form_data", "form_field", "value"]
+
+
+class FormActionParamAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.ActionParam
+        fields = ["key", "value"]
