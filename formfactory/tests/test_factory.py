@@ -8,13 +8,14 @@ class FactoryTestCase(TestCase):
     def setUp(self):
         load_fixtures(self)
         self.form_factory = self.simpleform.as_form()
+        self.form_fields = self.form_factory.fields
         self.form_data = {
-            "uuid": self.form_factory.fields["uuid"].initial,
-            "form_id": self.form_factory.fields["form_id"].initial,
-            "salutation": "Mr",
-            "name": "Name Surname",
-            "email-address": "test@test.com",
-            "accept-terms": True
+            "subscribe-form-uuid": self.form_fields["uuid"].initial,
+            "subscribe-form-form_id": self.form_fields["form_id"].initial,
+            "subscribe-form-salutation": "Mr",
+            "subscribe-form-name": "Name Surname",
+            "subscribe-form-email-address": "test@test.com",
+            "subscribe-form-accept-terms": True
         }
 
     def test_form(self):
@@ -40,9 +41,8 @@ class FactoryTestCase(TestCase):
             uuid=form_factory.fields["uuid"].initial
         )
         for field in form_store.items.all():
-            self.assertEqual(
-                field.value, str(self.form_data[field.form_field.slug])
-            )
+            field_key = "%s-%s" % (form_factory.prefix, field.form_field.slug)
+            self.assertEqual(field.value, str(self.form_data[field_key]))
 
     def tearDown(self):
         pass

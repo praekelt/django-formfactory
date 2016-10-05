@@ -1,12 +1,6 @@
 import uuid
 
-from django import forms
-from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
-from django.test import TestCase
-from django.test.client import Client
-
-from formfactory import actions, models, validators
+from formfactory import models
 
 
 def load_fixtures(kls):
@@ -45,7 +39,7 @@ def load_fixtures(kls):
 
     kls.simpleform_data = {
         "title": "Subscribe Form",
-        "slug": "contact"
+        "slug": "subscribe-form"
     }
     kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
 
@@ -80,7 +74,7 @@ def load_fixtures(kls):
             "form": kls.simpleform,
             "field_type": "CharField",
             "label": "Full Name",
-            "required": False
+            "required": True
         },
         "email_address": {
             "title": "Email Address",
