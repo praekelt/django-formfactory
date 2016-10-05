@@ -1,4 +1,4 @@
-<form class="Form" method="POST">
+<form class="Form" method="POST">{% csrf_token %}   
     {{ object.as_form.as_p }}
     <input type="submit" value="submit" />
 </form>
