@@ -116,8 +116,8 @@ class Form(models.Model):
             )
 
         return factory.FormFactory(
-            data, fields=self.fields.all(), form_id=self.pk,
-            actions=self.actions.all(), prefix=self.slug
+            data, prefix=self.slug, fields=self.fields.all(), form_id=self.pk,
+            actions=self.actions.all()
         )
 
 
