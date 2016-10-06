@@ -106,7 +106,7 @@ class Form(models.Model):
     def __unicode__(self):
         return self.title
 
-    def as_form(self, data=None):
+    def as_form(self, data=None, files=None):
         """
         Builds the form factory object and returns it.
         """
@@ -116,8 +116,8 @@ class Form(models.Model):
             )
 
         return factory.FormFactory(
-            data, prefix=self.slug, fields=self.fields.all(), form_id=self.pk,
-            actions=self.actions.all()
+            data, files, prefix=self.slug, fields=self.fields.all(),
+            form_id=self.pk, actions=self.actions.all()
         )
 
 
