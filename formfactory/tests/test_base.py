@@ -39,7 +39,9 @@ def load_fixtures(kls):
 
     kls.simpleform_data = {
         "title": "Subscribe Form",
-        "slug": "subscribe-form"
+        "slug": "subscribe-form",
+        "success_message": "Success",
+        "failure_message": "Failure"
     }
     kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
 

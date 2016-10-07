@@ -44,6 +44,8 @@ class ViewTestCase(TestCase):
         )
         original_form_field = response.context["form"].fields
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Success")
+        self.assertNotContains(response, "Failure")
 
         form_store = models.FormData.objects.get(
             uuid=original_form_field["uuid"].initial

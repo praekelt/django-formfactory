@@ -26,8 +26,6 @@ Settings
 
 #. FORMFACTORY["field-types"]: Control the form fields types that can be selected in Admin.
 
-#. FORMFACTORY["email-action"]["email-action"]: Control the form fields types that can be selected in Admin.
-
 Views
 ~~~~~
 
@@ -43,4 +41,9 @@ Use the inclusion tag which has been provided:
 Models
 ~~~~~~
 
-...
+#. FormData: A basic store for user submitted form data.
+#. FormData: A basic store for user submitted form data.
+#. FormData: A basic store for user submitted form data.
+#. FormData: A basic store for user submitted form data.
+#. FormData: A basic store for user submitted form data.
+#. FormData: A basic store for user submitted form data.
