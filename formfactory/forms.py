@@ -6,7 +6,7 @@ from formfactory import models
 class FormAdminForm(forms.ModelForm):
     class Meta:
         model = models.Form
-        fields = ["title", "slug"]
+        fields = ["title", "slug", "success_message", "failure_message"]
 
 
 class ActionAdminForm(forms.ModelForm):
@@ -38,8 +38,8 @@ class FormFieldAdminForm(forms.ModelForm):
         model = models.FormField
         fields = [
             "title", "slug", "position", "form", "field_type", "label",
-            "initial", "label", "required", "disabled", "choices",
-            "additional_validators"
+            "initial", "max_length", "help_text", "placeholder", "required",
+            "disabled", "choices", "additional_validators"
         ]
 
 
