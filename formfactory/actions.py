@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
 
-from formfactory import _registry, SETTINGS
+from formfactory import _registry
 from formfactory.utils import auto_registration, clean_key
 
 

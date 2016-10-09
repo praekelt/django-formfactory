@@ -24,7 +24,11 @@ class FactoryFormView(generic.FormView):
         self.form_object = get_object_or_404(
             Form, slug=self.kwargs.get("slug")
         )
-        return self.form_object.as_form(self.request.POST, self.request.FILES)
+        if self.request.POST or self.request.FILES:
+            return self.form_object.as_form(
+                self.request.POST, self.request.FILES
+            )
+        return self.form_object.as_form()
 
     def get_success_url(self):
         return self.request.META.get(
