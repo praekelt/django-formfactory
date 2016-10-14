@@ -90,10 +90,6 @@ def login(form_instance, **kwargs):
         password = cleaned_data.pop(kwargs["password_field"])
     except KeyError:
         raise KeyError("No password_field action param provided.")
-    try:
-        redirect_to = kwargs["redirect_field"]
-    except KeyError:
-        raise KeyError("No redirect_field_name action param provided.")
 
     request = kwargs.get("request")
 

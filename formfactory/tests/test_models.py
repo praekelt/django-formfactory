@@ -13,12 +13,15 @@ class ModelTestCase(TestCase):
         self.assertIn(("DateTimeField", "DateTimeField"), models.FIELD_TYPES)
         self.assertIn(("BooleanField", "BooleanField"), models.FIELD_TYPES)
         self.assertIn(("CharField", "CharField"), models.FIELD_TYPES)
+
+        self.assertIn(("TextInput", "TextInput"), models.WIDGET_TYPES)
+        self.assertIn(("DateTimeInput", "DateTimeInput"), models.WIDGET_TYPES)
+        self.assertIn(("CheckboxInput", "CheckboxInput"), models.WIDGET_TYPES)
+
         self.assertIn(
             self.action_data["action"], [a[0] for a in models.FORM_ACTIONS]
         )
-        self.assertIn(
-            self.action_data["action"], [a[0] for a in models.FORM_ACTIONS]
-        )
+
         self.assertIn(
             self.dummy_validator,
             [v[0] for v in models.ADDITIONAL_VALIDATORS]

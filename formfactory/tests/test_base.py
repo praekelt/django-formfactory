@@ -109,6 +109,71 @@ def load_fixtures(kls):
         )
         kls.simpleformfield_salutation.choices.add(choice)
 
+    kls.loginform_data = {
+        "title": "Login Form",
+        "slug": "login-form",
+        "success_message": "Success",
+        "failure_message": "Failure"
+    }
+    kls.loginform = models.Form.objects.create(**kls.loginform_data)
+
+    kls.loginaction_data = {
+        "action": "formfactory.actions.login"
+    }
+    kls.loginaction = models.Action.objects.create(**kls.loginaction_data)
+
+    kls.loginactionparam_data = [
+        {
+            "key": "username_field",
+            "value": "username",
+            "action": kls.loginaction
+        }, {
+            "key": "password_field",
+            "value": "password",
+            "action": kls.loginaction
+        }
+    ]
+    for param in kls.loginactionparam_data:
+        setattr(
+            kls, "loginformfield_%s" % param["key"],
+            models.ActionParam.objects.create(**param)
+        )
+
+    kls.loginformactionthrough_data = {
+        "action": kls.loginaction,
+        "form": kls.loginform,
+        "order": 0
+    }
+    kls.loginformactionthrough = models.FormActionThrough.objects.create(
+        **kls.loginformactionthrough_data
+    )
+
+    kls.loginformfield_data = {
+        "username": {
+            "title": "Username",
+            "slug": "username",
+            "position": 0,
+            "form": kls.loginform,
+            "field_type": "CharField",
+            "label": "Username",
+            "required": True
+        },
+        "password": {
+            "title": "Password",
+            "slug": "password",
+            "position": 1,
+            "form": kls.loginform,
+            "field_type": "PasswordField",
+            "label": "Password",
+            "required": True
+        }
+    }
+    for key, value in kls.loginformfield_data.items():
+        setattr(
+            kls, "loginformfield_%s" % key,
+            models.FormField.objects.create(**value)
+        )
+
     kls.formdata_data = {
         "uuid": unicode(uuid.uuid4()),
         "form": kls.form

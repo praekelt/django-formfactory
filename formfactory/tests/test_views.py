@@ -1,4 +1,5 @@
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
 
@@ -19,6 +20,18 @@ class ViewTestCase(TestCase):
             "subscribe-form-name": "Name Surname",
             "subscribe-form-email-address": "test@test.com",
             "subscribe-form-accept-terms": True
+        }
+
+        self.user = User.objects.create(
+            username="testuser", password="testpass"
+        )
+        self.loginform_factory = self.loginform.as_form()
+        self.loginform_fields = self.loginform_factory.fields
+        self.loginform_data = {
+            "login-form-uuid": self.form_fields["uuid"].initial,
+            "login-form-form_id": self.form_fields["form_id"].initial,
+            "login-form-username": self.user.username,
+            "login-form-password": self.user.password
         }
 
     def test_detail(self):
@@ -56,6 +69,30 @@ class ViewTestCase(TestCase):
                 self.form_factory.prefix, field.form_field.slug
             )
             self.assertEqual(field.value, str(self.form_data[field_key]))
+
+    def test_login_detail(self):
+        response = self.client.get(
+            reverse(
+                "formfactory:form-detail",
+                kwargs={"slug": self.loginform_data["slug"]}
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        for field in self.loginform.fields.all():
+            self.assertContains(response, field.label)
+
+        response = self.client.post(
+            reverse(
+                "formfactory:form-detail",
+                kwargs={"slug": self.loginform_data["slug"]}
+            ),
+            data=self.form_data, follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Success")
+        self.assertNotContains(response, "Failure")
+        self.assertNotContains(response, "This field is required.")
+        self.assertTrue(self.user.is_autheticated())
 
     def tearDown(self):
         pass
