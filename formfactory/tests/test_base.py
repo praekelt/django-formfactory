@@ -163,7 +163,8 @@ def load_fixtures(kls):
             "slug": "password",
             "position": 1,
             "form": kls.loginform,
-            "field_type": "PasswordField",
+            "field_type": "CharField",
+            "widget": "PasswordInput",
             "label": "Password",
             "required": True
         }

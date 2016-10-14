@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.test.client import Client
 
@@ -13,7 +13,7 @@ class ViewTestCase(TestCase):
         self.client = Client()
         self.form_factory = self.simpleform.as_form()
         self.form_fields = self.form_factory.fields
-        self.form_data = {
+        self.form_postdata = {
             "subscribe-form-uuid": self.form_fields["uuid"].initial,
             "subscribe-form-form_id": self.form_fields["form_id"].initial,
             "subscribe-form-salutation": "Mr",
@@ -22,16 +22,17 @@ class ViewTestCase(TestCase):
             "subscribe-form-accept-terms": True
         }
 
-        self.user = User.objects.create(
-            username="testuser", password="testpass"
-        )
+        self.user = get_user_model().objects.create(username="testuser")
+        self.user.set_password("testpass")
+        self.user.save()
+
         self.loginform_factory = self.loginform.as_form()
         self.loginform_fields = self.loginform_factory.fields
-        self.loginform_data = {
+        self.loginform_postdata = {
             "login-form-uuid": self.form_fields["uuid"].initial,
             "login-form-form_id": self.form_fields["form_id"].initial,
-            "login-form-username": self.user.username,
-            "login-form-password": self.user.password
+            "login-form-username": "testuser",
+            "login-form-password": "testpass"
         }
 
     def test_detail(self):
@@ -53,7 +54,7 @@ class ViewTestCase(TestCase):
                 "formfactory:form-detail",
                 kwargs={"slug": self.simpleform_data["slug"]}
             ),
-            data=self.form_data, follow=True
+            data=self.form_postdata, follow=True
         )
         original_form_field = response.context["form"].fields
         self.assertEqual(response.status_code, 200)
@@ -68,7 +69,7 @@ class ViewTestCase(TestCase):
             field_key = "%s-%s" % (
                 self.form_factory.prefix, field.form_field.slug
             )
-            self.assertEqual(field.value, str(self.form_data[field_key]))
+            self.assertEqual(field.value, str(self.form_postdata[field_key]))
 
     def test_login_detail(self):
         response = self.client.get(
@@ -86,13 +87,12 @@ class ViewTestCase(TestCase):
                 "formfactory:form-detail",
                 kwargs={"slug": self.loginform_data["slug"]}
             ),
-            data=self.form_data, follow=True
+            data=self.loginform_postdata, follow=True
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Success")
         self.assertNotContains(response, "Failure")
         self.assertNotContains(response, "This field is required.")
-        self.assertTrue(self.user.is_autheticated())
 
     def tearDown(self):
         pass
