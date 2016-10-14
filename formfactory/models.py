@@ -13,6 +13,11 @@ FIELD_TYPES = tuple(
     if issubclass(getattr(forms.fields, field), forms.fields.Field)
 )
 
+WIDGET_TYPES = tuple(
+    (field, field) for field in SETTINGS["widget-types"]
+    if issubclass(getattr(forms.fields, field), forms.)
+)
+
 ADDITIONAL_VALIDATORS = tuple(
     (validator, validator)
     for validator in validators.get_registered_validators()
@@ -147,6 +152,7 @@ class FormField(models.Model):
     position = models.PositiveIntegerField(default=0)
     form = models.ForeignKey(Form, related_name="fields")
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
+    widget = models.CharField(choices=WIDGET_TYPES, max_length=128)
     label = models.CharField(max_length=64)
     initial = models.TextField(blank=True, null=True)
     max_length = models.PositiveIntegerField(default=256)
