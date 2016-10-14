@@ -24,7 +24,8 @@ Usage
 Settings
 ~~~~~~~~
 
-#. FORMFACTORY["field-types"]: Control the form fields types that can be selected in Admin.
+FORMFACTORY["field-types"]
+    Control the form fields types that can be selected in Admin.
 
 Views
 ~~~~~
@@ -41,9 +42,85 @@ Use the inclusion tag which has been provided:
 Models
 ~~~~~~
 
-#. FormData: A basic store for user submitted form data.
-#. FormData: A basic store for user submitted form data.
-#. FormData: A basic store for user submitted form data.
-#. FormData: A basic store for user submitted form data.
-#. FormData: A basic store for user submitted form data.
-#. FormData: A basic store for user submitted form data.
+**FormData:**
+    A basic store for user submitted form data.
+        - uuid: a common uuid for each data item in the data set
+        - form: the ``Form`` object
+
+**FormDataItem:**
+    A per field value store, encapsulated by a ``FormData`` object.
+        - form_data: the ``FormData`` object
+        - form_field: the ``FormField`` object
+        - value: a text value of what was submitted for a particular field
+
+**Action:**
+    An action which will be triggered in order when the form is saved.
+        - action: a choice of all registered actions in the project
+        - as_function: a property which returns the action function
+
+**ActionParam:**
+    Params that are required by the predefined or custom action functions. Passed to the action as a set of kwargs.
+        - key: param name
+        - value: param value
+        - action: the ``Action`` object
+
+**Form:**
+    A form object which encapsulates a set of form fields and defines the actions that will be performed on save.
+        - title: a descriptive title
+        - slug: url friendly identifier
+        - actions: a set of ``Action`` objects to be performed in order on save
+        - success_message: The message string that will be displayed by the django messages framework on successful submission of the form
+        - failure_message: The message string that will be displayed by the django messages framework if a form submission fails
+
+**FieldChoice:**
+    A set of field choices that a populated into `MultiSelect` and `Select` widgets
+         - label: human readable dropdown label
+         - value: the value that will be submitted
+
+**FormField:**
+    Defines a form field with all options and required attributes. Encapsulated by the ``Form`` object.
+        - title: a descriptive title
+        - slug: url friendly identifier
+        - position: the position at which the field should be rendered in the form
+        - form: the ``Form`` object
+        - field_type: a set of field type, defined in the app settings
+        - label: the field label text
+        - initial: an initial value the field will be populated with
+        - max_length: the maximum length a value can be
+        - help_text: a helpful string that will be rendered below the field
+        - placeholder: a string that will be rendered as the field placeholder
+        - required: boolean value to indicate if the field is required
+        - disabled: boolean value to disable field (readonly)
+        - choices: a set of ``FieldChoice`` objects
+        - additional_validators: a set of custom defined field validators
+
+Actions
+~~~~~~~
+
+FormFactory come with some predefined actions:
+    - store_data: stores the submitted date to a key/value store_data. Requires no ``ActionParam``
+    - send_email: sends the data via email. Requires the following ``ActionParam``
+        - from_email_field: mapping to the form field that the email will be sent from
+        - to_email_field: mapping to the form field that the email will be sent to
+        - subject_field: mapping to the form field that will be used for the email subject
+
+Custom actions can be added by creating a function in <yourapp or project>/formfactoryapp/actions.py. For example::
+
+    from formfactory import actions
+
+    @actions.register
+    def my_custom_action(form_instance, **kwargs):
+        # do some stuff
+
+Validation
+~~~~~~~~~~
+
+Custom validators can be added by creating a function in <yourapp or project>/formfactoryapp/validators.py. For example::
+
+    from formfactory import validators
+
+    @validators.register
+    def my_custom_validator(value):
+        if not condition:
+            raise ValidationError("Failed")
+        return True
