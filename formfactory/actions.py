@@ -47,7 +47,6 @@ def store_data(form_instance, **kwargs):
             form_field_id=form_instance.fields[key].field_pk,
             value=value
         )
-    return form_data
 
 
 @register
@@ -73,7 +72,7 @@ def send_email(form_instance, **kwargs):
     email_body = [
         "%s: %s\n\r" % (label, value) for label, value in cleaned_data.items()
     ]
-    return send_mail(subject, email_body, from_email, [to_email])
+    send_mail(subject, email_body, from_email, [to_email])
 
 
 @register
@@ -93,4 +92,4 @@ def login(form_instance, **kwargs):
         raise KeyError("No password_field action param provided.")
 
     request = kwargs.get("request")
-    return authenticate(username=username, password=password, request=request)
+    authenticate(username=username, password=password, request=request)
