@@ -8,7 +8,6 @@ from formfactory.models import Form
 
 class FactoryFormView(generic.FormView):
     template_name = "formfactory/form_detail.html"
-    action_results = []
     form_object = None
 
     def form_valid(self, form):
