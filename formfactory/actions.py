@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.contrib.auth import authenticate
 
 from formfactory import _registry
 from formfactory.utils import auto_registration, clean_key
@@ -58,17 +59,42 @@ def send_email(form_instance, **kwargs):
     try:
         from_email = cleaned_data.pop(kwargs["from_email_field"])
     except KeyError:
-        raise KeyError("No to-field param provided.")
+        raise KeyError("No from_email_field action param provided.")
     try:
         to_email = cleaned_data.pop(kwargs["to_email_field"])
     except KeyError:
-        raise KeyError("No to-field param provided.")
+        raise KeyError("No to_email_field action param provided.")
     try:
         subject = cleaned_data.pop(kwargs["subject_field"])
     except KeyError:
-        raise KeyError("No subject-field param provided.")
+        raise KeyError("No subject_field action param provided.")
 
     email_body = [
         "%s: %s\n\r" % (label, value) for label, value in cleaned_data.items()
     ]
     send_mail(subject, email_body, from_email, [to_email])
+
+
+@register
+def login(form_instance, **kwargs):
+    """An action which authenticates and logs a user in using the django auth
+    framework.
+    """
+    cleaned_data = form_instance.cleaned_data
+
+    try:
+        username = cleaned_data.pop(kwargs["username_field"])
+    except KeyError:
+        raise KeyError("No username_field action param provided.")
+    try:
+        password = cleaned_data.pop(kwargs["password_field"])
+    except KeyError:
+        raise KeyError("No password_field action param provided.")
+    try:
+        redirect_to = kwargs["redirect_field"]
+    except KeyError:
+        raise KeyError("No redirect_field_name action param provided.")
+
+    request = kwargs.get("request")
+
+    authenticate(username=username, password=password, request=request)
