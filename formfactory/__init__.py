@@ -7,7 +7,8 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "DateTimeField", "DecimalField", "EmailField", "FloatField",
         "GenericIPAddressField", "IntegerField", "MultipleChoiceField",
         "SlugField", "SplitDateTimeField", "TimeField", "URLField", "UUIDField"
-    ]
+    ],
+    "redirect-url-param-name": "next"
 })
 
 
