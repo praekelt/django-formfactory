@@ -7,7 +7,14 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "DateTimeField", "DecimalField", "EmailField", "FloatField",
         "GenericIPAddressField", "IntegerField", "MultipleChoiceField",
         "SlugField", "SplitDateTimeField", "TimeField", "URLField", "UUIDField"
-    ]
+    ],
+    "widget-types": [
+        "TextInput", "NumberInput", "EmailInput", "URLInput", "PasswordInput",
+        "HiddenInput", "DateInput", "DateTimeInput", "TimeInput",
+        "Textarea", "CheckboxInput", "Select", "NullBooleanSelect",
+        "SelectMultiple", "RadioSelect", "CheckboxSelectMultiple"
+    ],
+    "redirect-url-param-name": "next"
 })
 
 

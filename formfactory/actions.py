@@ -1,6 +1,7 @@
 from django.core.mail import send_mail
+from django.contrib.auth import authenticate
 
-from formfactory import _registry
+from formfactory import _registry, exceptions
 from formfactory.utils import auto_registration, clean_key
 
 
@@ -58,17 +59,37 @@ def send_email(form_instance, **kwargs):
     try:
         from_email = cleaned_data.pop(kwargs["from_email_field"])
     except KeyError:
-        raise KeyError("No to-field param provided.")
+        raise exceptions.MissingActionParam("send_email", "from_email_field")
     try:
         to_email = cleaned_data.pop(kwargs["to_email_field"])
     except KeyError:
-        raise KeyError("No to-field param provided.")
+        raise exceptions.MissingActionParam("send_email", "to_email_field")
     try:
         subject = cleaned_data.pop(kwargs["subject_field"])
     except KeyError:
-        raise KeyError("No subject-field param provided.")
+        raise exceptions.MissingActionParam("send_email", "subject_field")
 
     email_body = [
         "%s: %s\n\r" % (label, value) for label, value in cleaned_data.items()
     ]
     send_mail(subject, email_body, from_email, [to_email])
+
+
+@register
+def login(form_instance, **kwargs):
+    """An action which authenticates and logs a user in using the django auth
+    framework.
+    """
+    cleaned_data = form_instance.cleaned_data
+
+    try:
+        username = cleaned_data.pop(kwargs["username_field"])
+    except KeyError:
+        raise exceptions.MissingActionParam("login", "username_field")
+    try:
+        password = cleaned_data.pop(kwargs["password_field"])
+    except KeyError:
+        raise exceptions.MissingActionParam("login", "password_field")
+
+    request = kwargs.get("request")
+    authenticate(username=username, password=password, request=request)

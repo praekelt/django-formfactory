@@ -61,6 +61,11 @@ class FormFactory(forms.Form):
             except TypeError:
                 pass
 
+            # Sets the user defined widget if setUp
+            if field.widget:
+                widget = getattr(forms.widgets, field.widget)
+                self.fields[field.slug].widget = widget()
+
             # Adds widget-specific options to the form field
             widget_attrs = self.fields[field.slug].widget.attrs
             widget_attrs["placeholder"] = field.placeholder
@@ -69,7 +74,8 @@ class FormFactory(forms.Form):
         """Performs the required actions in the defined sequence.
         """
         for action in self.actions:
-            action_params = dict(
+            action_params = kwargs.copy()
+            action_params.update(dict(
                 (obj.key, obj.value) for obj in action.params.all()
-            )
+            ))
             action.as_function(form_instance=self, **action_params)

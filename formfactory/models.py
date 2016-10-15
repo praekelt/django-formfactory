@@ -13,6 +13,11 @@ FIELD_TYPES = tuple(
     if issubclass(getattr(forms.fields, field), forms.fields.Field)
 )
 
+WIDGET_TYPES = tuple(
+    (widget, widget) for widget in SETTINGS["widget-types"]
+    if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget)
+)
+
 ADDITIONAL_VALIDATORS = tuple(
     (validator, validator)
     for validator in validators.get_registered_validators()
@@ -147,6 +152,10 @@ class FormField(models.Model):
     position = models.PositiveIntegerField(default=0)
     form = models.ForeignKey(Form, related_name="fields")
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
+    widget = models.CharField(
+        choices=WIDGET_TYPES, max_length=128, blank=True, null=True,
+        help_text="Leave blank if you would prefer to use the default widget."
+    )
     label = models.CharField(max_length=64)
     initial = models.TextField(blank=True, null=True)
     max_length = models.PositiveIntegerField(default=256)
