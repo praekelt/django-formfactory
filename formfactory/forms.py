@@ -37,9 +37,9 @@ class FormFieldAdminForm(forms.ModelForm):
     class Meta:
         model = models.FormField
         fields = [
-            "title", "slug", "position", "form", "field_type", "label",
-            "initial", "max_length", "help_text", "placeholder", "required",
-            "disabled", "choices", "additional_validators"
+            "title", "slug", "position", "form", "field_type", "widget",
+            "label", "initial", "max_length", "help_text", "placeholder",
+            "required", "disabled", "choices", "additional_validators"
         ]
 
 
