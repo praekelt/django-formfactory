@@ -38,6 +38,4 @@ class FactoryFormView(generic.FormView):
         )
         if redirect_url:
             return redirect_url
-        return self.request.META.get(
-            "HTTP_REFERER", self.request.META.get("PATH_INFO")
-        )
+        return self.request.path_info
