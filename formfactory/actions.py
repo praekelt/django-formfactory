@@ -80,7 +80,6 @@ def login(form_instance, **kwargs):
     """An action which authenticates and logs a user in using the django auth
     framework.
     """
-    print "login"
     cleaned_data = form_instance.cleaned_data
 
     try:
