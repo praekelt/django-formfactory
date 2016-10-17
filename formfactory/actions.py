@@ -69,9 +69,9 @@ def send_email(form_instance, **kwargs):
     except KeyError:
         raise exceptions.MissingActionParam("send_email", "subject_field")
 
-    email_body = [
+    email_body = "".join([
         "%s: %s\n\r" % (label, value) for label, value in cleaned_data.items()
-    ]
+    ])
     send_mail(subject, email_body, from_email, [to_email])
 
 
