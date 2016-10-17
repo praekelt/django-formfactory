@@ -1,5 +1,5 @@
 from django.core.mail import send_mail
-from django.contrib.auth import authenticate
+from django.contrib import auth
 
 from formfactory import _registry, exceptions
 from formfactory.utils import auto_registration, clean_key
@@ -80,6 +80,7 @@ def login(form_instance, **kwargs):
     """An action which authenticates and logs a user in using the django auth
     framework.
     """
+    print "login"
     cleaned_data = form_instance.cleaned_data
 
     try:
@@ -92,4 +93,8 @@ def login(form_instance, **kwargs):
         raise exceptions.MissingActionParam("login", "password_field")
 
     request = kwargs.get("request")
-    authenticate(username=username, password=password, request=request)
+    user = auth.authenticate(
+        request=request, username=username, password=password
+    )
+    if user is not None:
+        auth.login(request, user)
