@@ -84,6 +84,7 @@ Models
         - position: the position at which the field should be rendered in the form
         - form: the ``Form`` object
         - field_type: a set of field type, defined in the app settings
+        - widget: a set of widgets, defined in app settings
         - label: the field label text
         - initial: an initial value the field will be populated with
         - max_length: the maximum length a value can be
@@ -103,6 +104,9 @@ FormFactory come with some predefined actions:
         - from_email_field: mapping to the form field that the email will be sent from
         - to_email_field: mapping to the form field that the email will be sent to
         - subject_field: mapping to the form field that will be used for the email subject
+    - login: logs a user in. Requires the following ``ActionParam``
+        - username_field: mapping to the form field where the username will be completed.
+        - password_field: mapping to the form field where the username will be completed.
 
 Custom actions can be added by creating a function in <yourapp or project>/formfactoryapp/actions.py. For example::
 
