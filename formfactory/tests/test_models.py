@@ -32,6 +32,9 @@ class ModelTestCase(TestCase):
             self.assertEqual(getattr(self.form, key), value)
         self.assertEqual(self.form.fields.count(), len(models.FIELD_TYPES))
         self.assertIsInstance(self.form.as_form(), forms.Form)
+        self.assertEqual(
+            self.form.get_absolute_url(), "/formfactory/%s/" % self.form.slug
+        )
 
     def test_fieldchoice(self):
         for key, value in self.fieldchoice_data.items():

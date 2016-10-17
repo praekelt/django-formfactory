@@ -1,5 +1,6 @@
 from django import forms
 from django.db import models
+from django.core.urlresolvers import reverse
 
 from formfactory import actions, _registry, factory, SETTINGS, validators
 
@@ -110,6 +111,9 @@ class Form(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("formfactory:form-detail", kwargs={"slug": self.slug})
 
     def as_form(self, data=None, files=None):
         """
