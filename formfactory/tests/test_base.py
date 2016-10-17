@@ -59,6 +59,41 @@ def load_fixtures(kls):
         **kls.formactionthrough_data
     )
 
+    kls.emailaction_data = {
+        "action": "formfactory.actions.send_email"
+    }
+    kls.emailaction = models.Action.objects.create(**kls.emailaction_data)
+
+    kls.emailactionparam_data = [
+        {
+            "key": "from_email_field",
+            "value": "email-address",
+            "action": kls.emailaction
+        }, {
+            "key": "to_email_field",
+            "value": "to-email",
+            "action": kls.emailaction
+        }, {
+            "key": "subject_field",
+            "value": "subject",
+            "action": kls.emailaction
+        }
+    ]
+    for param in kls.emailactionparam_data:
+        setattr(
+            kls, "emailactionparam_%s" % param["key"],
+            models.ActionParam.objects.create(**param)
+        )
+
+    kls.emailformactionthrough_data = {
+        "action": kls.emailaction,
+        "form": kls.simpleform,
+        "order": 1
+    }
+    kls.emailformactionthrough = models.FormActionThrough.objects.create(
+        **kls.emailformactionthrough_data
+    )
+
     kls.simpleformfield_data = {
         "salutation": {
             "title": "Salutation",
@@ -95,6 +130,26 @@ def load_fixtures(kls):
             "field_type": "BooleanField",
             "label": "Do you accept the terms and conditions",
             "required": False
+        },
+        "to_email": {
+            "title": "To Email",
+            "slug": "to-email",
+            "position": 4,
+            "form": kls.simpleform,
+            "field_type": "CharField",
+            "widget": "HiddenInput",
+            "initial": "dev@praekelt.com",
+            "required": True
+        },
+        "subject": {
+            "title": "Subject",
+            "slug": "subject",
+            "position": 5,
+            "form": kls.simpleform,
+            "field_type": "CharField",
+            "widget": "HiddenInput",
+            "initial": "Test Email",
+            "required": True
         }
     }
     for key, value in kls.simpleformfield_data.items():
@@ -135,7 +190,7 @@ def load_fixtures(kls):
     ]
     for param in kls.loginactionparam_data:
         setattr(
-            kls, "loginformfield_%s" % param["key"],
+            kls, "loginactionparam_%s" % param["key"],
             models.ActionParam.objects.create(**param)
         )
 

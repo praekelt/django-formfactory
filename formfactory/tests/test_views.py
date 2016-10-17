@@ -19,7 +19,9 @@ class ViewTestCase(TestCase):
             "subscribe-form-salutation": "Mr",
             "subscribe-form-name": "Name Surname",
             "subscribe-form-email-address": "test@test.com",
-            "subscribe-form-accept-terms": True
+            "subscribe-form-accept-terms": True,
+            "subscribe-form-to-email": "dev@praekelt.com",
+            "subscribe-form-subject": "Test Email"
         }
 
         self.user = get_user_model().objects.create(username="testuser")

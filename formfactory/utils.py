@@ -15,3 +15,7 @@ def auto_registration(func_type):
             import_module("%s.formfactoryapp.%s" % (app.name, func_type))
         except ImportError:
             pass
+
+
+def get_label(field_instance, field_name):
+    return field_instance.fields[field_name].label

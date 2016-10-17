@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from django.contrib import auth
 
 from formfactory import _registry, exceptions
-from formfactory.utils import auto_registration, clean_key
+from formfactory.utils import auto_registration, clean_key, get_label
 
 
 def register(func):
@@ -70,7 +70,8 @@ def send_email(form_instance, **kwargs):
         raise exceptions.MissingActionParam("send_email", "subject_field")
 
     email_body = "".join([
-        "%s: %s\n\r" % (label, value) for label, value in cleaned_data.items()
+        "%s: %s\n\r" % (get_label(form_instance, label), value)
+        for label, value in cleaned_data.items()
     ])
     send_mail(subject, email_body, from_email, [to_email])
 

@@ -15,7 +15,9 @@ class FactoryTestCase(TestCase):
             "subscribe-form-salutation": "Mr",
             "subscribe-form-name": "Name Surname",
             "subscribe-form-email-address": "test@test.com",
-            "subscribe-form-accept-terms": True
+            "subscribe-form-accept-terms": True,
+            "subscribe-form-to-email": "dev@praekelt.com",
+            "subscribe-form-subject": "Test Email"
         }
 
     def test_form(self):

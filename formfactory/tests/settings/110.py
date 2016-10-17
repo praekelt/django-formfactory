@@ -50,3 +50,4 @@ TEMPLATES = [
 SITE_ID = 1
 STATIC_URL = "/static/"
 SECRET_KEY = "SECRET_KEY"
+EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"

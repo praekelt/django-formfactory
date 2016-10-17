@@ -21,6 +21,7 @@ class FactoryFormView(generic.FormView):
         messages.add_message(
             self.request, messages.ERROR, self.form_object.failure_message
         )
+        return super(FactoryFormView, self).form_invalid(form)
 
     def get_form(self, form_class=None):
         self.form_object = get_object_or_404(
