@@ -6,6 +6,10 @@ Django Form Factory
    :align: center
    :alt: Travis
 
+.. figure:: https://coveralls.io/repos/github/praekelt/django-formfactory/badge.svg?branch=develop
+  :align: center
+  :alt: Coverage
+
 .. contents:: Contents
     :depth: 5
 
