@@ -2,13 +2,12 @@ Django Form Factory
 ===================
 **Dynamic django form builder.**
 
-.. figure:: https://travis-ci.org/praekelt/django-formfactory.svg?branch=develop
-   :align: center
-   :alt: Travis
+.. image:: https://travis-ci.org/praekelt/django-formfactory.svg?branch=develop
+    :target: https://travis-ci.org/praekelt/django-formfactory
 
-.. figure:: https://coveralls.io/repos/github/praekelt/django-formfactory/badge.svg?branch=develop
-  :align: center
-  :alt: Coverage
+.. image:: https://coveralls.io/repos/github/praekelt/django-formfactory/badge.svg?branch=develop
+    :target: https://coveralls.io/github/praekelt/django-formfactory?branch=develop
+
 
 .. contents:: Contents
     :depth: 5
