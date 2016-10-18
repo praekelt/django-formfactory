@@ -8,7 +8,6 @@ Django Form Factory
 .. image:: https://coveralls.io/repos/github/praekelt/django-formfactory/badge.svg?branch=develop
     :target: https://coveralls.io/github/praekelt/django-formfactory?branch=develop
 
-
 .. contents:: Contents
     :depth: 5
 
