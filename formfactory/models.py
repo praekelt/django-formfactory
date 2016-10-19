@@ -1,6 +1,7 @@
 from django import forms
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 from formfactory import actions, _registry, factory, SETTINGS, validators
 
@@ -97,7 +98,7 @@ class Form(models.Model):
     when the form processed.
     """
     title = models.CharField(
-        max_length=256, help_text="A short descriptive title."
+        max_length=256, help_text=_("A short descriptive title.")
     )
     slug = models.SlugField(
         max_length=256, db_index=True, unique=True
@@ -148,7 +149,7 @@ class FormField(models.Model):
     """
     title = models.CharField(
         max_length=256,
-        help_text="A short descriptive title."
+        help_text=_("A short descriptive title.")
     )
     slug = models.SlugField(
         max_length=256, db_index=True, unique=True
@@ -158,7 +159,7 @@ class FormField(models.Model):
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
     widget = models.CharField(
         choices=WIDGET_TYPES, max_length=128, blank=True, null=True,
-        help_text="Leave blank if you would prefer to use the default widget."
+        help_text=_("Leave blank if you prefer to use the default widget.")
     )
     label = models.CharField(max_length=64, blank=True, null=True)
     initial = models.TextField(blank=True, null=True)
