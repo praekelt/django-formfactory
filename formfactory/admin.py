@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from formfactory import forms, models
+from formfactory import forms, models, utils
 
 
 class FieldChoiceModelAdmin(admin.ModelAdmin):
@@ -40,11 +40,14 @@ class FormAdmin(admin.ModelAdmin):
 class FormDataItemInline(admin.StackedInline):
     form = forms.FormDataItemAdminForm
     model = models.FormDataItem
+    readonly_fields = utils.get_all_model_fields(models.FormDataItem)
 
 
 class FormDataAdmin(admin.ModelAdmin):
     form = forms.FormDataAdminForm
+    model = models.FormData
     inlines = [FormDataItemInline]
+    readonly_fields = utils.get_all_model_fields(models.FormData)
 
 
 admin.site.register(models.Action, ActionModelAdmin)
