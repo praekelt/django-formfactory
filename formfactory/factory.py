@@ -47,21 +47,23 @@ class FormFactory(forms.Form):
 
             # Adds the field choices and max_length but catches the exception
             # as not all fields allow for these attrs.
-            try:
-                if field.choices.exists():
-                    choices = tuple(
-                        (c.label, c.value) for c in field.choices.all()
-                    )
+            choices = None
+            if field.choices.exists():
+                choices = tuple(
+                    (c.value, c.label) for c in field.choices.all()
+                )
+                try:
                     self.fields[field.slug].choices = choices
-            except TypeError:
-                pass
+                except TypeError:
+                    pass
+
             try:
                 if field.max_length:
                     self.fields[field.slug].max_length = field.max_length
             except TypeError:
                 pass
 
-            # Sets the user defined widget if setUp
+            # Sets the user defined widget if setup
             if field.widget:
                 widget = getattr(forms.widgets, field.widget)
                 self.fields[field.slug].widget = widget()
@@ -69,6 +71,8 @@ class FormFactory(forms.Form):
             # Adds widget-specific options to the form field
             widget_attrs = self.fields[field.slug].widget.attrs
             widget_attrs["placeholder"] = field.placeholder
+            if choices:
+                widget_attrs["choices"] = choices
 
     def save(self, *args, **kwargs):
         """Performs the required actions in the defined sequence.
