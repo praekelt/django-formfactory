@@ -72,7 +72,7 @@ class FormFactory(forms.Form):
             widget_attrs = self.fields[field.slug].widget.attrs
             widget_attrs["placeholder"] = field.placeholder
             if choices:
-                widget_attrs["choices"] = choices
+                self.fields[field.slug].widget.choices = choices
 
     def save(self, *args, **kwargs):
         """Performs the required actions in the defined sequence.
