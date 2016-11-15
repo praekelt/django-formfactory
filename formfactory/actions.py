@@ -94,7 +94,7 @@ def login(form_instance, **kwargs):
 
     request = kwargs.get("request")
     user = auth.authenticate(
-        request=request, username=username, password=password
+        request=request, username=username, password=password, **cleaned_data
     )
     if user is not None:
         auth.login(request, user)
