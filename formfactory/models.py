@@ -113,6 +113,9 @@ class Form(models.Model):
     def __unicode__(self):
         return self.title
 
+    def absolute_url(self):
+        return self.get_absolute_url()
+
     def get_absolute_url(self):
         return reverse("formfactory:form-detail", kwargs={"slug": self.slug})
 
