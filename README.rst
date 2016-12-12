@@ -23,6 +23,9 @@ Installation
 Usage
 -----
 
+``django-formfactory`` allows you to create dynamic forms in the CMS. One can also specify the form's field types and the
+actions to be performed when the form is submitted.
+
 Settings
 ~~~~~~~~
 
