@@ -8,7 +8,11 @@ from formfactory.models import Form
 
 class FactoryFormView(generic.FormView):
     template_name = "formfactory/form_detail.html"
-    form_object = None
+    form_slug = None
+
+    def __init__(self, *args, **kwargs):
+        super(FactoryFormView, self).__init__(*args, **kwargs)
+        self.form_object = None
 
     def form_valid(self, form):
         form.save(request=self.request)
@@ -25,7 +29,7 @@ class FactoryFormView(generic.FormView):
 
     def get_form(self, form_class=None):
         self.form_object = get_object_or_404(
-            Form, slug=self.kwargs.get("slug")
+            Form, slug=self.kwargs.get("slug", self.form_slug)
         )
         if self.request.POST or self.request.FILES:
             return self.form_object.as_form(
