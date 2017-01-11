@@ -9,6 +9,7 @@ from formfactory.models import Form
 class FactoryFormView(generic.FormView):
     template_name = "formfactory/form_detail.html"
     form_slug = None
+    redirect_to = None
 
     def __init__(self, *args, **kwargs):
         super(FactoryFormView, self).__init__(*args, **kwargs)
@@ -40,7 +41,7 @@ class FactoryFormView(generic.FormView):
     def get_success_url(self):
         redirect_url = self.request.GET.get(
             SETTINGS["redirect-url-param-name"]
-        )
+        ) or self.redirect_to
         if redirect_url:
             return redirect_url
         return self.request.path_info
