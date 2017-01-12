@@ -57,7 +57,6 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return "%s-%s" % (self.__class__.__name__, kwargs["slug"])
 
     def dispatch(self, request, *args, **kwargs):
-        #import pdb;pdb.set_trace()
         # TODO Read config from DB
         wizard_slug = kwargs.get("slug")
         wizard = Wizard.objects.get(slug=wizard_slug)
