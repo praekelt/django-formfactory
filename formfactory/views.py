@@ -54,18 +54,24 @@ class FactoryWizardView(NamedUrlSessionWizardView):
     form_list = [EmptyForm, ]
 
     def dispatch(self, request, *args, **kwargs):
+        import pdb;pdb.set_trace()
         # TODO Read config from DB
         wizard_slug = kwargs.get("slug")
         wizard = Wizard.objects.get(slug=wizard_slug)
-        form_list = wizard.forms.all()
-        forms = ()
-        for form in form_list:
-            forms += (form.slug, form.as_form)
+        # import pdb;pdb.set_trace()
+        form_list = []
+        self.form_list_map = {}
+        for obj in wizard.forms.all():
+            klass = obj.as_form().__class__
+            form_list.append((obj.slug, klass))
+            self.form_list_map[obj.slug] = obj
+        # form_list = [obj.as_form().__class__ for obj in wizard.forms.all()]
+        # forms = tuple((form.slug, form) for form in form_list)
         # We need to re-initialise the form kwargs for this particular
         # request.
         # TODO: We may have to add context_dict, etc.
-        init_kwargs = self.get_initkwargs(form_list=forms, url_name="wizard")
-        self.form_list = init_kwargs["form_list"]
+        init_kwargs = self.get_initkwargs(form_list=form_list, url_name="formfactory:wizard")
+        # self.form_list = init_kwargs["form_list"]
         # self.form_kwargs = config["form_kwargs"]
         # self.context_dict = config["context_dict"]
         return super(FactoryWizardView, self).dispatch(request, *args, **kwargs)
@@ -74,6 +80,10 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         """We need to override this method so that we can create
         form instances from formfactory on-the-fly. """
         # cherry-picking some stuff from parents
+        import pdb;pdb.set_trace()
+        result = super(FactoryWizardView, self).get_form(step, data, files)
+        obj = self.form_list_map[step]
+        return obj.as_form(**result.original_kwargs)
         if step is None:
             step = self.steps.current
         kwargs = self.get_form_kwargs(step)
@@ -83,6 +93,11 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         })
         obj = self.form_list["step"]
         return obj.as_form(**kwargs)
+
+    def get_step_url(self, step):
+        from django.core.urlresolvers import reverse
+        return reverse(self.url_name, kwargs={'step': step,
+                                              "slug": "profile"})
 
     def done(self, form_list, **kwargs):
         import pdb;pdb.set_trace()
