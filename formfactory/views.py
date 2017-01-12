@@ -53,8 +53,11 @@ class FactoryFormView(generic.FormView):
 class FactoryWizardView(NamedUrlSessionWizardView):
     form_list = [EmptyForm, ]
 
+    def get_prefix(self, request, *args, **kwargs):
+        return "%s-%s" % (self.__class__.__name__, kwargs["slug"])
+
     def dispatch(self, request, *args, **kwargs):
-        import pdb;pdb.set_trace()
+        #import pdb;pdb.set_trace()
         # TODO Read config from DB
         wizard_slug = kwargs.get("slug")
         wizard = Wizard.objects.get(slug=wizard_slug)
@@ -71,27 +74,42 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         # request.
         # TODO: We may have to add context_dict, etc.
         init_kwargs = self.get_initkwargs(form_list=form_list, url_name="formfactory:wizard")
-        # self.form_list = init_kwargs["form_list"]
+        self.form_list = init_kwargs["form_list"]
         # self.form_kwargs = config["form_kwargs"]
         # self.context_dict = config["context_dict"]
-        return super(FactoryWizardView, self).dispatch(request, *args, **kwargs)
+        result = super(FactoryWizardView, self).dispatch(request, *args, **kwargs)
+        return result
 
     def get_form(self, step=None, data=None, files=None):
         """We need to override this method so that we can create
         form instances from formfactory on-the-fly. """
         # cherry-picking some stuff from parents
-        import pdb;pdb.set_trace()
-        result = super(FactoryWizardView, self).get_form(step, data, files)
-        obj = self.form_list_map[step]
-        return obj.as_form(**result.original_kwargs)
+
+        from django import forms
+
         if step is None:
             step = self.steps.current
+        form_class = self.form_list[step]
+        # prepare the kwargs for the form instance.
         kwargs = self.get_form_kwargs(step)
         kwargs.update({
-            "data": data,
-            "files": files,
+            'data': data,
+            'files': files,
         })
-        obj = self.form_list["step"]
+        if issubclass(form_class, (forms.ModelForm,
+                                   forms.models.BaseInlineFormSet)):
+            # If the form is based on ModelForm or InlineFormSet,
+            # add instance if available and not previously set.
+            kwargs.setdefault('instance', self.get_form_instance(step))
+        elif issubclass(form_class, forms.models.BaseModelFormSet):
+            # If the form is based on ModelFormSet, add queryset if available
+            # and not previous set.
+            kwargs.setdefault('queryset', self.get_form_instance(step))
+
+
+        #import pdb;pdb.set_trace()
+        #result = super(FactoryWizardView, self).get_form(step, data, files)
+        obj = self.form_list_map[step]
         return obj.as_form(**kwargs)
 
     def get_step_url(self, step):
@@ -100,4 +118,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
                                               "slug": "profile"})
 
     def done(self, form_list, **kwargs):
-        import pdb;pdb.set_trace()
+        #import pdb;pdb.set_trace()
+        from django.http import HttpResponse
+        self.storage.reset()
+        return HttpResponse("done")
