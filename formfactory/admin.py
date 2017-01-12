@@ -50,7 +50,22 @@ class FormDataAdmin(admin.ModelAdmin):
     readonly_fields = utils.get_all_model_fields(models.FormData)
 
 
+class FormThroughInline(admin.StackedInline):
+    form = forms.FormThroughAdminForm
+    model = models.FormOrderThrough
+    extra = 1
+
+
+class WizardAdmin(admin.ModelAdmin):
+    form = forms.WizardAdminForm
+    model = models.Wizard
+    list_display = ["title"]
+    inlines = [FormThroughInline, ]
+    prepopulated_fields = {"slug": ["title"]}
+
+
 admin.site.register(models.Action, ActionModelAdmin)
 admin.site.register(models.FieldChoice, FieldChoiceModelAdmin)
 admin.site.register(models.Form, FormAdmin)
 admin.site.register(models.FormData, FormDataAdmin)
+admin.site.register(models.Wizard, WizardAdmin)

@@ -1,6 +1,7 @@
 from django import forms
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 
 from formfactory import actions, _registry, factory, SETTINGS, validators
@@ -132,6 +133,39 @@ class Form(models.Model):
             data, files, prefix=self.slug, fields=self.fields.all(),
             form_id=self.pk, actions=self.actions.all()
         )
+
+
+class Wizard(models.Model):
+    """
+    Wizard model that groups forms together.
+    """
+    title = models.CharField(
+        max_length=30, help_text=_("A short descriptive title.")
+    )
+    slug = models.SlugField(
+        max_length=40, db_index=True, unique=True
+    )
+    forms = models.ManyToManyField(Form, through="FormOrderThrough")
+
+    @cached_property
+    def form_list(self):
+        pass
+
+
+class FormOrderThrough(models.Model):
+    """Through table for forms to wizards which defines an order.
+    """
+    wizard = models.ForeignKey(Wizard)
+    form = models.ForeignKey(Form)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = "Form"
+        verbose_name_plural = "Forms"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.form.title, self.order)
 
 
 class FieldChoice(models.Model):
