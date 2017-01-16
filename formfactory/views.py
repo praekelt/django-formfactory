@@ -60,11 +60,10 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def dispatch(self, request, *args, **kwargs):
         wizard_slug = kwargs.get("slug")
-        import pdb;pdb.set_trace()
         self.wizard_object = Wizard.objects.get(slug=wizard_slug)
         form_list = []
         self.form_list_map = {}
-        for obj in self.wizard_object.form_list:
+        for obj in self.wizard_object.forms.all():
             klass = obj.as_form().__class__
             form_list.append((obj.slug, klass))
             self.form_list_map[obj.slug] = obj

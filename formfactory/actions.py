@@ -98,9 +98,3 @@ def login(form_instance, **kwargs):
     )
     if user is not None:
         auth.login(request, user)
-
-
-@register
-def wizard_done_step(form_dict, **kwargs):
-    """An action that displays all the data entered in each step"""
-    return form_dict

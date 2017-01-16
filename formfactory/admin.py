@@ -23,13 +23,11 @@ class FormFieldInline(admin.StackedInline):
     form = forms.FormFieldAdminForm
     model = models.FormField
     prepopulated_fields = {"slug": ["title"]}
-    extra = 1
 
 
 class FormActionThroughInline(admin.StackedInline):
     form = forms.FormActionThroughAdminForm
     model = models.FormActionThrough
-    extra = 1
 
 
 class FormAdmin(admin.ModelAdmin):
@@ -55,13 +53,11 @@ class FormDataAdmin(admin.ModelAdmin):
 class FormThroughInline(admin.StackedInline):
     form = forms.FormThroughAdminForm
     model = models.FormOrderThrough
-    extra = 1
 
 
 class WizardActionThroughInline(admin.StackedInline):
     form = forms.WizardActionThroughAdminForm
     model = models.WizardActionThrough
-    extra = 1
 
 
 class WizardAdmin(admin.ModelAdmin):

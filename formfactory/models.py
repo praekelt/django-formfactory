@@ -199,17 +199,6 @@ class Wizard(models.Model):
     forms = models.ManyToManyField(Form, through="FormOrderThrough")
     actions = models.ManyToManyField(Action, through="WizardActionThrough")
 
-    @cached_property
-    def form_list(self):
-        return self.forms.all()
-
-    @cached_property
-    def as_wizard(self):
-        return {
-            "form_list": self.form_list,
-            "actions": self.actions.all(),
-        }
-
 
 class FormOrderThrough(models.Model):
     """Through table for forms to wizards which defines an order.
