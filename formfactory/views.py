@@ -129,8 +129,6 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def get(self, *args, **kwargs):
         step_name = kwargs.get("step", None)
-
-        # TODO: Hook a redirect that was specified
         if step_name is None:
             self.storage.extra_data["next"] = self.get_success_url()
         return super(FactoryWizardView, self).get(*args, **kwargs)
