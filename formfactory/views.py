@@ -1,5 +1,7 @@
 from django import forms
+from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views import generic
 
@@ -84,7 +86,6 @@ class FactoryWizardView(NamedUrlSessionWizardView):
     def get_form(self, step=None, data=None, files=None):
         """We need to override this method so that we can create
         form instances from formfactory on-the-fly. """
-
         if step is None:
             step = self.steps.current
         form_class = self.form_list[step]
@@ -110,13 +111,13 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return obj.as_form(**kwargs)
 
     def get_step_url(self, step):
-        from django.core.urlresolvers import reverse
         return reverse(
             self.url_name, kwargs={'step': step, "slug": "profile"}
         )
 
     def done(self, form_list, form_dict, **kwargs):
-        # Run through all the wizard actions
+        """Run through all the wizard actions
+        """
         for action in self.wizard_object.as_wizard["actions"]:
             action_params = kwargs.copy()
             action_params.update(dict(
@@ -124,15 +125,20 @@ class FactoryWizardView(NamedUrlSessionWizardView):
             ))
             action.as_function(form_instance=self, **action_params)
 
-        # TODO: provide a way a specify a redirect URL.
-        from django.http import HttpResponse
-        self.storage.reset()
-        return HttpResponse("done")
+        return HttpResponseRedirect(self.get_success_url())
 
     def get(self, *args, **kwargs):
         step_name = kwargs.get("step", None)
 
         # TODO: Hook a redirect that was specified
         if step_name is None:
-            self.storage.extra_data["next"] = self.request.GET.get("next")
+            self.storage.extra_data["next"] = self.get_success_url()
         return super(FactoryWizardView, self).get(*args, **kwargs)
+
+    def get_success_url(self):
+        redirect_url = self.request.GET.get(
+            SETTINGS["redirect-url-param-name"]
+        ) or self.redirect_to
+        if redirect_url:
+            return redirect_url
+        return self.request.path_info
