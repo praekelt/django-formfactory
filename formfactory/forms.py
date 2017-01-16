@@ -73,5 +73,11 @@ class FormThroughAdminForm(forms.ModelForm):
         fields = ["wizard", "form", "order"]
 
 
+class WizardActionThroughAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.WizardActionThrough
+        fields = ["action", "wizard", "order"]
+
+
 class EmptyForm(forms.Form):
     pass

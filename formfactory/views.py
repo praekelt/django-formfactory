@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.views import generic
@@ -52,62 +53,52 @@ class FactoryFormView(generic.FormView):
 
 class FactoryWizardView(NamedUrlSessionWizardView):
     form_list = [EmptyForm, ]
+    redirect_to = None
 
     def get_prefix(self, request, *args, **kwargs):
         return "%s-%s" % (self.__class__.__name__, kwargs["slug"])
 
     def dispatch(self, request, *args, **kwargs):
-        # TODO Read config from DB
         wizard_slug = kwargs.get("slug")
-        wizard = Wizard.objects.get(slug=wizard_slug)
-        # import pdb;pdb.set_trace()
+        import pdb;pdb.set_trace()
+        self.wizard_object = Wizard.objects.get(slug=wizard_slug)
         form_list = []
         self.form_list_map = {}
-        for obj in wizard.forms.all():
+        for obj in self.wizard_object.form_list:
             klass = obj.as_form().__class__
             form_list.append((obj.slug, klass))
             self.form_list_map[obj.slug] = obj
-        # form_list = [obj.as_form().__class__ for obj in wizard.forms.all()]
-        # forms = tuple((form.slug, form) for form in form_list)
+
         # We need to re-initialise the form kwargs for this particular
-        # request.
-        # TODO: We may have to add context_dict, etc.
-        init_kwargs = self.get_initkwargs(form_list=form_list, url_name="formfactory:wizard")
+        # request. This allows for the next form_list to be added.
+        init_kwargs = self.get_initkwargs(form_list=form_list, url_name=self.url_name)
         self.form_list = init_kwargs["form_list"]
-        # self.form_kwargs = config["form_kwargs"]
-        # self.context_dict = config["context_dict"]
         result = super(FactoryWizardView, self).dispatch(request, *args, **kwargs)
         return result
 
     def get_form(self, step=None, data=None, files=None):
         """We need to override this method so that we can create
         form instances from formfactory on-the-fly. """
-        # cherry-picking some stuff from parents
-
-        from django import forms
-
         if step is None:
             step = self.steps.current
         form_class = self.form_list[step]
+
         # prepare the kwargs for the form instance.
         kwargs = self.get_form_kwargs(step)
         kwargs.update({
-            'data': data,
-            'files': files,
+            "data": data,
+            "files": files,
         })
         if issubclass(form_class, (forms.ModelForm,
                                    forms.models.BaseInlineFormSet)):
             # If the form is based on ModelForm or InlineFormSet,
             # add instance if available and not previously set.
-            kwargs.setdefault('instance', self.get_form_instance(step))
+            kwargs.setdefault("instance", self.get_form_instance(step))
         elif issubclass(form_class, forms.models.BaseModelFormSet):
             # If the form is based on ModelFormSet, add queryset if available
             # and not previous set.
-            kwargs.setdefault('queryset', self.get_form_instance(step))
+            kwargs.setdefault("queryset", self.get_form_instance(step))
 
-
-        #import pdb;pdb.set_trace()
-        #result = super(FactoryWizardView, self).get_form(step, data, files)
         obj = self.form_list_map[step]
         return obj.as_form(**kwargs)
 
@@ -116,8 +107,24 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return reverse(self.url_name, kwargs={'step': step,
                                               "slug": "profile"})
 
-    def done(self, form_list, **kwargs):
-        #import pdb;pdb.set_trace()
+    def done(self, form_list, form_dict, **kwargs):
+        # run through all the wizard actions
+        for action in self.wizard_object.as_wizard["actions"]:
+            action_params = kwargs.copy()
+            action_params.update(dict(
+                (obj.key, obj.value) for obj in action.params.all()
+            ))
+            action.as_function(form_instance=self, **action_params)
+
+        # TODO: provide a way a specify a redirect URL.
         from django.http import HttpResponse
         self.storage.reset()
         return HttpResponse("done")
+
+    def get(self, *args, **kwargs):
+        step_name = kwargs.get("step", None)
+
+        # TODO: Hook a redirect that was specified
+        if step_name is None:
+            self.storage.extra_data["next"] = self.request.GET.get("next")
+        return super(FactoryWizardView, self).get(*args, **kwargs)

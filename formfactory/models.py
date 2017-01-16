@@ -135,39 +135,6 @@ class Form(models.Model):
         )
 
 
-class Wizard(models.Model):
-    """
-    Wizard model that groups forms together.
-    """
-    title = models.CharField(
-        max_length=30, help_text=_("A short descriptive title.")
-    )
-    slug = models.SlugField(
-        max_length=40, db_index=True, unique=True
-    )
-    forms = models.ManyToManyField(Form, through="FormOrderThrough")
-
-    @cached_property
-    def form_list(self):
-        pass
-
-
-class FormOrderThrough(models.Model):
-    """Through table for forms to wizards which defines an order.
-    """
-    wizard = models.ForeignKey(Wizard)
-    form = models.ForeignKey(Form)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["order"]
-        verbose_name = "Form"
-        verbose_name_plural = "Forms"
-
-    def __unicode__(self):
-        return "%s (%s)" % (self.form.title, self.order)
-
-
 class FieldChoice(models.Model):
     """Defines options for select or multiselect field types.
     """
@@ -217,3 +184,60 @@ class FormField(models.Model):
 
     def __unicode__(self):
         return self.title
+
+
+class Wizard(models.Model):
+    """
+    Wizard model that groups forms together.
+    """
+    title = models.CharField(
+        max_length=30, help_text=_("A short descriptive title.")
+    )
+    slug = models.SlugField(
+        max_length=40, db_index=True, unique=True
+    )
+    forms = models.ManyToManyField(Form, through="FormOrderThrough")
+    actions = models.ManyToManyField(Action, through="WizardActionThrough")
+
+    @cached_property
+    def form_list(self):
+        return self.forms.all()
+
+    @cached_property
+    def as_wizard(self):
+        return {
+            "form_list": self.form_list,
+            "actions": self.actions.all(),
+        }
+
+
+class FormOrderThrough(models.Model):
+    """Through table for forms to wizards which defines an order.
+    """
+    wizard = models.ForeignKey(Wizard)
+    form = models.ForeignKey(Form)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = "Form"
+        verbose_name_plural = "Forms"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.form.title, self.order)
+
+
+class WizardActionThrough(models.Model):
+    """Through table for wizard actions with a defined order.
+    """
+    action = models.ForeignKey(Action)
+    wizard = models.ForeignKey(Wizard)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = "Wizard Action"
+        verbose_name_plural = "Wizard Actions"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.action.action, self.order)

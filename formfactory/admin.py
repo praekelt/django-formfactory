@@ -58,11 +58,17 @@ class FormThroughInline(admin.StackedInline):
     extra = 1
 
 
+class WizardActionThroughInline(admin.StackedInline):
+    form = forms.WizardActionThroughAdminForm
+    model = models.WizardActionThrough
+    extra = 1
+
+
 class WizardAdmin(admin.ModelAdmin):
     form = forms.WizardAdminForm
     model = models.Wizard
     list_display = ["title"]
-    inlines = [FormThroughInline, ]
+    inlines = [FormThroughInline, WizardActionThroughInline]
     prepopulated_fields = {"slug": ["title"]}
 
 
