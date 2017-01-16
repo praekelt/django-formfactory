@@ -1,7 +1,6 @@
 from django import forms
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 
 from formfactory import actions, _registry, factory, SETTINGS, validators
@@ -37,7 +36,7 @@ class FormData(models.Model):
     uuid = models.UUIDField(db_index=True)
     form = models.ForeignKey("Form")
 
-    class Meta:
+    class Meta(object):
         ordering = ["uuid"]
 
     def __unicode__(self):
@@ -55,9 +54,7 @@ class FormDataItem(models.Model):
 class Action(models.Model):
     """Defines a form action.
     """
-    action = models.CharField(
-        choices=FORM_ACTIONS, max_length=128
-    )
+    action = models.CharField(choices=FORM_ACTIONS, max_length=128)
 
     def __unicode__(self):
         return self.action
@@ -85,7 +82,7 @@ class FormActionThrough(models.Model):
     form = models.ForeignKey("Form")
     order = models.PositiveIntegerField(default=0)
 
-    class Meta:
+    class Meta(object):
         ordering = ["order"]
         verbose_name = "Form Action"
         verbose_name_plural = "Form Actions"
@@ -108,7 +105,7 @@ class Form(models.Model):
     success_message = models.CharField(max_length=256, blank=True, null=True)
     failure_message = models.CharField(max_length=256, blank=True, null=True)
 
-    class Meta:
+    class Meta(object):
         ordering = ["title"]
 
     def __unicode__(self):
@@ -141,7 +138,7 @@ class FieldChoice(models.Model):
     label = models.CharField(max_length=128)
     value = models.CharField(max_length=128)
 
-    class Meta:
+    class Meta(object):
         ordering = ["label"]
 
     def __unicode__(self):
@@ -179,7 +176,7 @@ class FormField(models.Model):
         choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
     )
 
-    class Meta:
+    class Meta(object):
         ordering = ["position"]
 
     def __unicode__(self):
@@ -207,7 +204,7 @@ class FormOrderThrough(models.Model):
     form = models.ForeignKey(Form)
     order = models.PositiveIntegerField(default=0)
 
-    class Meta:
+    class Meta(object):
         ordering = ["order"]
         verbose_name = "Form"
         verbose_name_plural = "Forms"
@@ -223,7 +220,7 @@ class WizardActionThrough(models.Model):
     wizard = models.ForeignKey(Wizard)
     order = models.PositiveIntegerField(default=0)
 
-    class Meta:
+    class Meta(object):
         ordering = ["order"]
         verbose_name = "Wizard Action"
         verbose_name_plural = "Wizard Actions"

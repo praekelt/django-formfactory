@@ -60,9 +60,11 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def dispatch(self, request, *args, **kwargs):
         wizard_slug = kwargs.get("slug")
+
         self.wizard_object = Wizard.objects.get(slug=wizard_slug)
-        form_list = []
         self.form_list_map = {}
+
+        form_list = []
         for obj in self.wizard_object.forms.all():
             klass = obj.as_form().__class__
             form_list.append((obj.slug, klass))
@@ -70,14 +72,19 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
         # We need to re-initialise the form kwargs for this particular
         # request. This allows for the next form_list to be added.
-        init_kwargs = self.get_initkwargs(form_list=form_list, url_name=self.url_name)
+        init_kwargs = self.get_initkwargs(
+            form_list=form_list, url_name=self.url_name
+        )
         self.form_list = init_kwargs["form_list"]
-        result = super(FactoryWizardView, self).dispatch(request, *args, **kwargs)
+        result = super(FactoryWizardView, self).dispatch(
+            request, *args, **kwargs
+        )
         return result
 
     def get_form(self, step=None, data=None, files=None):
         """We need to override this method so that we can create
         form instances from formfactory on-the-fly. """
+
         if step is None:
             step = self.steps.current
         form_class = self.form_list[step]
@@ -93,6 +100,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
             # If the form is based on ModelForm or InlineFormSet,
             # add instance if available and not previously set.
             kwargs.setdefault("instance", self.get_form_instance(step))
+
         elif issubclass(form_class, forms.models.BaseModelFormSet):
             # If the form is based on ModelFormSet, add queryset if available
             # and not previous set.
@@ -103,11 +111,12 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def get_step_url(self, step):
         from django.core.urlresolvers import reverse
-        return reverse(self.url_name, kwargs={'step': step,
-                                              "slug": "profile"})
+        return reverse(
+            self.url_name, kwargs={'step': step, "slug": "profile"}
+        )
 
     def done(self, form_list, form_dict, **kwargs):
-        # run through all the wizard actions
+        # Run through all the wizard actions
         for action in self.wizard_object.as_wizard["actions"]:
             action_params = kwargs.copy()
             action_params.update(dict(
