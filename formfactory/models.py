@@ -29,6 +29,8 @@ FORM_ACTIONS = tuple(
     (action, action) for action in actions.get_registered_actions()
 )
 
+FIELD_GROUP_TAG_TYPES = (("Formset", "formset"), ("Div", "div"))
+
 
 class FormData(models.Model):
     """A basic store for form data.
@@ -147,6 +149,15 @@ class FieldChoice(models.Model):
         return "%s:%s" % (self.label, self.value)
 
 
+class FormFieldGroup(models.Model):
+    """Enable the grouping of fields and how that field should be rendered.
+    """
+    parent = models.ForeignKey("self", related_name="fieldgroups")
+    tag_type = models.CharField(
+        choices=FIELD_GROUP_TAG_TYPES, default="formset"
+    )
+
+
 class FormField(models.Model):
     """Defines a form field with all options and required attributes.
     """
@@ -159,6 +170,7 @@ class FormField(models.Model):
     )
     position = models.PositiveIntegerField(default=0)
     form = models.ForeignKey(Form, related_name="fields")
+    field_group = models.ForeignKey(FormFieldGroup, blank=True, null=True)
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
     widget = models.CharField(
         choices=WIDGET_TYPES, max_length=128, blank=True, null=True,
