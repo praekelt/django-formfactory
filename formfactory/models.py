@@ -209,9 +209,11 @@ class FieldChoice(models.Model):
 class FormFieldGroup(models.Model):
     """Enable the grouping of fields and how that field should be rendered.
     """
-    parent = models.ForeignKey("self", related_name="fieldgroups")
+    parent = models.ForeignKey(
+        "self", related_name="subfieldgroups", blank=True, null=True
+    )
     tag_type = models.CharField(
-        choices=FIELD_GROUP_TAG_TYPES, default="formset"
+        choices=FIELD_GROUP_TAG_TYPES, max_length=16, default="formset"
     )
 
 
