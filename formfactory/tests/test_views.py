@@ -73,6 +73,24 @@ class ViewTestCase(TestCase):
             )
             self.assertEqual(field.value, str(self.form_postdata[field_key]))
 
+    def tearDown(self):
+        pass
+
+
+class LoginViewDetailTestCase(TestCase):
+    def setUp(self):
+        super(LoginViewDetailTestCase, self).setUp()
+        load_fixtures(self)
+        self.form_factory = self.simpleform.as_form()
+        self.form_fields = self.form_factory.fields
+        self.loginform_postdata = {
+            "login-form-uuid": self.form_fields["uuid"].initial,
+            "login-form-form_id": self.form_fields["form_id"].initial,
+            "login-form-username": "testuser",
+            "login-form-password": "testpass"
+        }
+
+
     def test_login_detail(self):
         response = self.client.get(
             reverse(
@@ -96,5 +114,6 @@ class ViewTestCase(TestCase):
         self.assertNotContains(response, "Failure")
         self.assertNotContains(response, "This field is required.")
 
-    def tearDown(self):
-        pass
+
+class WizardViewTestCase(TestCase):
+    pass
