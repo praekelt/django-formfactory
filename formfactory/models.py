@@ -91,7 +91,7 @@ class FormActionThrough(models.Model):
         return "%s (%s)" % (self.action.action, self.order)
 
 
-class Form(models.Model):
+class BaseFormModel(models.Model):
     """Form model which encompasses a set of form fields and defines an action
     when the form processed.
     """
@@ -101,9 +101,22 @@ class Form(models.Model):
     slug = models.SlugField(
         max_length=256, db_index=True, unique=True
     )
-    actions = models.ManyToManyField(Action, through=FormActionThrough)
     success_message = models.CharField(max_length=256, blank=True, null=True)
     failure_message = models.CharField(max_length=256, blank=True, null=True)
+    redirect_to = models.CharField(
+        max_length=256, blank=True, null=True,
+        help_text="URL to which this form will redirect to after processesing."
+    )
+
+    class Meta(object):
+        abstract = True
+
+
+class Form(BaseFormModel):
+    """Form model which encompasses a set of form fields and defines an action
+    when the form processed.
+    """
+    actions = models.ManyToManyField(Action, through=FormActionThrough)
 
     class Meta(object):
         ordering = ["title"]
@@ -130,6 +143,52 @@ class Form(models.Model):
             data, files, prefix=self.slug, fields=self.fields.all(),
             form_id=self.pk, actions=self.actions.all()
         )
+
+
+class Wizard(BaseFormModel):
+    """
+    Wizard model that groups forms together.
+    """
+    actions = models.ManyToManyField(Action, through="WizardActionThrough")
+    forms = models.ManyToManyField(Form, through="FormOrderThrough")
+
+    def absolute_url(self):
+        return self.get_absolute_url()
+
+    def get_absolute_url(self):
+        return reverse("formfactory:wizard-detail", kwargs={"slug": self.slug})
+
+
+class FormOrderThrough(models.Model):
+    """Through table for forms to wizards which defines an order.
+    """
+    wizard = models.ForeignKey(Wizard)
+    form = models.ForeignKey(Form)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta(object):
+        ordering = ["order"]
+        verbose_name = "Form"
+        verbose_name_plural = "Forms"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.form.title, self.order)
+
+
+class WizardActionThrough(models.Model):
+    """Through table for wizard actions with a defined order.
+    """
+    action = models.ForeignKey(Action)
+    wizard = models.ForeignKey(Wizard)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta(object):
+        ordering = ["order"]
+        verbose_name = "Wizard Action"
+        verbose_name_plural = "Wizard Actions"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.action.action, self.order)
 
 
 class FieldChoice(models.Model):
@@ -181,49 +240,3 @@ class FormField(models.Model):
 
     def __unicode__(self):
         return self.title
-
-
-class Wizard(models.Model):
-    """
-    Wizard model that groups forms together.
-    """
-    title = models.CharField(
-        max_length=30, help_text=_("A short descriptive title.")
-    )
-    slug = models.SlugField(
-        max_length=40, db_index=True, unique=True
-    )
-    forms = models.ManyToManyField(Form, through="FormOrderThrough")
-    actions = models.ManyToManyField(Action, through="WizardActionThrough")
-
-
-class FormOrderThrough(models.Model):
-    """Through table for forms to wizards which defines an order.
-    """
-    wizard = models.ForeignKey(Wizard)
-    form = models.ForeignKey(Form)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta(object):
-        ordering = ["order"]
-        verbose_name = "Form"
-        verbose_name_plural = "Forms"
-
-    def __unicode__(self):
-        return "%s (%s)" % (self.form.title, self.order)
-
-
-class WizardActionThrough(models.Model):
-    """Through table for wizard actions with a defined order.
-    """
-    action = models.ForeignKey(Action)
-    wizard = models.ForeignKey(Wizard)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta(object):
-        ordering = ["order"]
-        verbose_name = "Wizard Action"
-        verbose_name_plural = "Wizard Actions"
-
-    def __unicode__(self):
-        return "%s (%s)" % (self.action.action, self.order)
