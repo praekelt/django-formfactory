@@ -129,12 +129,14 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def get(self, *args, **kwargs):
         step_name = kwargs.get("step", None)
+        redirect_name = SETTINGS["redirect-url-param-name"]
         if step_name is None:
-            self.storage.extra_data["next"] = self.get_success_url()
+            self.storage.extra_data[redirect_name] = \
+                self.request.GET.get(redirect_name)
         return super(FactoryWizardView, self).get(*args, **kwargs)
 
     def get_success_url(self):
-        redirect_url = self.request.GET.get(
+        redirect_url = self.storage.extra_data(
             SETTINGS["redirect-url-param-name"]
         ) or self.redirect_to
         if redirect_url:
