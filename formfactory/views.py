@@ -45,9 +45,8 @@ class FactoryFormView(generic.FormView):
         return self.form_object.as_form()
 
     def get_success_url(self):
-        redirect_url = self.request.GET.get(
-            SETTINGS["redirect-url-param-name"]
-        ) or self.redirect_to
+        redirect_url = self.form_object.redirect_to or self.request.GET.get(
+            SETTINGS["redirect-url-param-name"]) or self.redirect_to
         if redirect_url:
             return redirect_url
         return self.request.path_info
@@ -136,9 +135,11 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return super(FactoryWizardView, self).get(*args, **kwargs)
 
     def get_success_url(self):
-        redirect_url = self.storage.extra_data(
+        stored_redirect = self.storage.extra_data(
             SETTINGS["redirect-url-param-name"]
-        ) or self.redirect_to
+        )
+        redirect_url = self.wizard_object.redirect_to or \
+            stored_redirect or self.redirect_to
         if redirect_url:
             return redirect_url
         return self.request.path_info
