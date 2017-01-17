@@ -59,3 +59,25 @@ class FormActionParamAdminForm(forms.ModelForm):
     class Meta:
         model = models.ActionParam
         fields = ["key", "value"]
+
+
+class WizardAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.Wizard
+        fields = ["title", "slug"]
+
+
+class FormThroughAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.FormOrderThrough
+        fields = ["wizard", "form", "order"]
+
+
+class WizardActionThroughAdminForm(forms.ModelForm):
+    class Meta:
+        model = models.WizardActionThrough
+        fields = ["action", "wizard", "order"]
+
+
+class EmptyForm(forms.Form):
+    pass
