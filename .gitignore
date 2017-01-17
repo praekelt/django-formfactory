@@ -10,3 +10,5 @@ coverage.xml
 pep8.txt
 .tox/
 .coverage
+manage.py
+*.db
