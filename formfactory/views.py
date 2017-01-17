@@ -60,6 +60,10 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return "%s-%s" % (self.__class__.__name__, kwargs["slug"])
 
     def dispatch(self, request, *args, **kwargs):
+        """
+        This method is overridden to allow for the creation of `form_list`
+        from the list of forms associated with this wizard instance
+        """
         wizard_slug = kwargs.get("slug")
 
         self.wizard_object = Wizard.objects.get(slug=wizard_slug)
@@ -111,13 +115,13 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def get_step_url(self, step):
         return reverse(
-            self.url_name, kwargs={'step': step, "slug": "profile"}
+            self.url_name, kwargs={'step': step, "slug": self.wizard_object.slug}
         )
 
     def done(self, form_list, form_dict, **kwargs):
         """Run through all the wizard actions
         """
-        for action in self.wizard_object.as_wizard["actions"]:
+        for action in self.wizard_object.actions.all():
             action_params = kwargs.copy()
             action_params.update(dict(
                 (obj.key, obj.value) for obj in action.params.all()
