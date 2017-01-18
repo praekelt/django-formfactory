@@ -124,19 +124,29 @@ class WizardViewTestCase(TestCase):
             "title": "Test wizard",
             "slug": "test-wizard",
             "success_message": "Success",
-            "failure_message": "Failure"
+            "failure_message": "Failure",
+            "redirect_to": "/"
         }
         self.wizard = models.Wizard.objects.create(**wizard_data)
 
         # add forms to the wizard
         models.FormOrderThrough.objects.create(
-            wizard=self.wizard, form=self.simpleform, order=0
+            wizard=self.wizard, form=self.simpleform, order=1
         )
         models.FormOrderThrough.objects.create(
-            wizard=self.wizard, form=self.loginform, order=1
+            wizard=self.wizard, form=self.loginform, order=2
         )
 
-    def post_simple_form_step(self):
+    def get_first_step(self):
+        response = self.client.get(
+            reverse("formfactory:wizard-detail", kwargs={
+                "slug": self.wizard.slug,
+                "step": "subscribe-form"
+            })
+        )
+        return response
+
+    def post_first_step(self):
         simple_form_uuid_field = self.simpleform.as_form().fields["uuid"].initial
         post_data = {
             "FactoryWizardView-test-wizard-current_step": "subscribe-form",
@@ -159,7 +169,7 @@ class WizardViewTestCase(TestCase):
         )
         return response
 
-    def post_login_form_step(self):
+    def post_second_step(self):
         login_form_uuid_field = self.loginform.as_form().fields["uuid"].initial
         post_data = {
             "FactoryWizardView-test-wizard-current_step": "login-form",
@@ -183,32 +193,35 @@ class WizardViewTestCase(TestCase):
         from the DB wizard object; and that the forms are rendered in the defined
         order.
         """
-        response = self.client.get(
-            reverse("formfactory:wizard-detail", kwargs={
-                "slug": self.wizard.slug,
-                "step": "subscribe-form"
-            })
-        )
+        response = self.get_first_step()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.simpleform.id, response.context["form"].fields["form_id"].initial)
 
         # post first wizard step and redirect to second step
-        response = self.post_simple_form_step()
+        response = self.post_first_step()
         url, status_code = response.redirect_chain[-1]
         self.assertEqual("/formfactory/test-wizard/login-form/", url)
 
         # post second step and redirect to url specified for wizard object in DB
-        self.post_login_form_step()
-        # TODO
+        response = self.post_second_step()
+        url, status_code = response.redirect_chain[-1]
+        self.assertEqual("/", url)
 
     # These tests exist because we overwrote existing functionality, and we
-    # need to make sure that it stills works as expected
-    def test_wizard_redirect_to_first_step(self):
-        pass
-
-    def test_redirect_to_url_specified_in_urls(self):
-        pass
+    # need to make sure that it still works as expected
+    # def test_redirect_to_url_specified_in_urls(self):
+    #     # import pdb;pdb.set_trace()
+    #     self.wizard.redirect_to = "/formfactory/form-1/"
+    #     self.wizard.save()
+    #
+    #     self.get_first_step()
+    #     self.post_first_step()
+    #     response = self.post_second_step()
+    #     import pdb;pdb.set_trace()
 
     # One way of performing per-form actions in the wizard is to step through the
     # wizard and call each form's save() method, because form actions are called there.
     # This could be achieved by having a wizard action that calls each form's save
+
+    def tearDown(self):
+        pass
