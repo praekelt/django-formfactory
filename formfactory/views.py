@@ -70,7 +70,9 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         self.form_list_map = {}
 
         form_list = []
-        for obj in self.wizard_object.forms.all():
+        for obj in self.wizard_object.forms.all().order_by(
+            "formorderthrough"
+        ):
             klass = obj.as_form().__class__
             form_list.append((obj.slug, klass))
             self.form_list_map[obj.slug] = obj
@@ -115,7 +117,9 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def get_step_url(self, step):
         return reverse(
-            self.url_name, kwargs={'step': step, "slug": self.wizard_object.slug}
+            self.url_name, kwargs={
+                "step": step, "slug": self.wizard_object.slug
+            }
         )
 
     def done(self, form_list, form_dict, **kwargs):
@@ -139,7 +143,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return super(FactoryWizardView, self).get(*args, **kwargs)
 
     def get_success_url(self):
-        stored_redirect = self.storage.extra_data(
+        stored_redirect = self.storage.extra_data.get(
             SETTINGS["redirect-url-param-name"]
         )
         redirect_url = self.wizard_object.redirect_to or \
