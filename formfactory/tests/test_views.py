@@ -186,7 +186,7 @@ class WizardViewTestCase(TestCase):
         # post first wizard step and redirect to second step
         response = self.post_first_step()
         url, status_code = response.redirect_chain[-1]
-        self.assertEqual("/formfactory/test-wizard/login-form/", url)
+        self.assertEqual("/formfactory/wizard/test-wizard/login-form/", url)
 
         # post second step and redirect to url specified for wizard
         # object in DB

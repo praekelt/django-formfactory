@@ -5,7 +5,7 @@ from formfactory.views import FactoryFormView, FactoryWizardView
 
 urlpatterns = [
     url(
-        r"^(?P<slug>[\w-]+)(?:/(?P<step>[\w-]+))?/$",
+        r"^wizard/(?P<slug>[\w-]+)(?:/(?P<step>[\w-]+))?/$",
         FactoryWizardView.as_view(url_name="formfactory:wizard-detail"),
         name="wizard-detail"
     ),

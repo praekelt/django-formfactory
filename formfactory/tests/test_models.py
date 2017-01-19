@@ -61,5 +61,6 @@ class ModelTestCase(TestCase):
             [repr(self.simpleform), repr(self.loginform)]
         )
         self.assertEqual(
-            self.wizard.get_absolute_url(), "/formfactory/%s/" % self.wizard.slug
+            self.wizard.get_absolute_url(),
+            "/formfactory/wizard/%s/" % self.wizard.slug
         )
