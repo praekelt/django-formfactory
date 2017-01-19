@@ -201,16 +201,16 @@ class WizardViewTestCase(TestCase):
         save() method calls the form's actions.
         The `simpleform` form has two actions; `store_data` and `send_email`.
         """
-        # action_data = {
-        #     "action": "formfactory.tests.actions.store_form_data"
-        # }
-        # action = models.Action.objects.create(**action_data)
-        # wizard_actionthrough_data = {
-        #     "action": action,
-        #     "wizard": self.wizard,
-        #     "order": 0
-        # }
-        # models.WizardActionThrough.objects.create(**wizard_actionthrough_data)
+        action_data = {
+            "action": "formfactory.tests.actions.dummy_wizard_action"
+        }
+        action = models.Action.objects.create(**action_data)
+        wizard_actionthrough_data = {
+            "action": action,
+            "wizard": self.wizard,
+            "order": 0
+        }
+        models.WizardActionThrough.objects.create(**wizard_actionthrough_data)
 
         self.get_first_step()
         self.post_first_step()
