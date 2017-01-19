@@ -119,24 +119,6 @@ class WizardViewTestCase(TestCase):
         super(WizardViewTestCase, self).setUp()
         load_fixtures(self)
 
-        # create wizard object
-        wizard_data = {
-            "title": "Test wizard",
-            "slug": "test-wizard",
-            "success_message": "Success",
-            "failure_message": "Failure",
-            "redirect_to": "/"
-        }
-        self.wizard = models.Wizard.objects.create(**wizard_data)
-
-        # add forms to the wizard
-        models.FormOrderThrough.objects.create(
-            wizard=self.wizard, form=self.simpleform, order=1
-        )
-        models.FormOrderThrough.objects.create(
-            wizard=self.wizard, form=self.loginform, order=2
-        )
-
     def get_first_step(self):
         response = self.client.get(
             reverse("formfactory:wizard-detail", kwargs={
@@ -212,23 +194,23 @@ class WizardViewTestCase(TestCase):
         url, status_code = response.redirect_chain[-1]
         self.assertEqual("/", url)
 
-    def test_wizard_action(self):
-        """Verify that wizard actions are called on the wizard's done()
+    def test_form_actions_at_done_step(self):
+        """Verify that form actions are called on the wizard's done()
         step.
-        `store_form_data` calls save() on each form in the wizard. This in turn
-        calls the form's actions.
+        Each form is saved in the wizard's done() step, and each form's
+        save() method calls the form's actions.
         The `simpleform` form has two actions; `store_data` and `send_email`.
         """
-        action_data = {
-            "action": "formfactory.tests.actions.store_form_data"
-        }
-        action = models.Action.objects.create(**action_data)
-        wizard_actionthrough_data = {
-            "action": action,
-            "wizard": self.wizard,
-            "order": 0
-        }
-        models.WizardActionThrough.objects.create(**wizard_actionthrough_data)
+        # action_data = {
+        #     "action": "formfactory.tests.actions.store_form_data"
+        # }
+        # action = models.Action.objects.create(**action_data)
+        # wizard_actionthrough_data = {
+        #     "action": action,
+        #     "wizard": self.wizard,
+        #     "order": 0
+        # }
+        # models.WizardActionThrough.objects.create(**wizard_actionthrough_data)
 
         self.get_first_step()
         self.post_first_step()
