@@ -234,15 +234,12 @@ class WizardViewTestCase(TestCase):
         self.post_first_step()
         self.post_second_step()
 
-        # validate that the `store_data` action was performed for `simpleform`
+        # validate `store_data` action was performed for `simpleform`
+        form_data = models.FormData.objects.get(form_id=self.simpleform.id)
 
-
-    # These tests exist because we overwrote existing functionality, and we
-    # need to make sure that it still works as expected
-    # One way of performing per-form actions in the wizard is to step
-    # through the wizard and call each form's save() method, because
-    # form actions are called there. This could be achieved by
-    # having a wizard action that calls each form's save
-
-    def tearDown(self):
-        pass
+        self.assertTrue(models.FormDataItem.objects.filter(
+            form_data=form_data, value="Mr").exists())
+        self.assertTrue(models.FormDataItem.objects.filter(
+            form_data=form_data, value="Tester").exists())
+        self.assertTrue(models.FormDataItem.objects.filter(
+            form_data=form_data, value="tester@example.com").exists())
