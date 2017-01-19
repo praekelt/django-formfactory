@@ -219,7 +219,7 @@ class FormFieldGroup(models.Model):
 class FieldGroupFormThrough(models.Model):
     """Through table for field groups forms with a defined order.
     """
-    field_group = models.ForeignKey(Wizard)
+    field_group = models.ForeignKey(FormFieldGroup)
     form = models.ForeignKey(Form)
     order = models.PositiveIntegerField(default=0)
 
@@ -274,8 +274,8 @@ class FormField(models.Model):
 class FieldGroupThrough(models.Model):
     """Through table for form fields and field groups with a defined order.
     """
-    field = models.ForeignKey(Action)
-    field_group = models.ForeignKey(Wizard)
+    field = models.ForeignKey(FormField)
+    field_group = models.ForeignKey(FormFieldGroup)
     order = models.PositiveIntegerField(default=0)
 
     class Meta(object):

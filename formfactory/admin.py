@@ -19,12 +19,6 @@ class ActionModelAdmin(admin.ModelAdmin):
     inlines = [FormActionParamInline]
 
 
-class FormFieldInline(admin.StackedInline):
-    form = forms.FormFieldAdminForm
-    model = models.FormField
-    prepopulated_fields = {"slug": ["title"]}
-
-
 class FormActionThroughInline(admin.StackedInline):
     form = forms.FormActionThroughAdminForm
     model = models.FormActionThrough
@@ -33,7 +27,7 @@ class FormActionThroughInline(admin.StackedInline):
 class FormAdmin(admin.ModelAdmin):
     form = forms.FormAdminForm
     list_display = ["title"]
-    inlines = [FormFieldInline, FormActionThroughInline]
+    inlines = [FormActionThroughInline]
     prepopulated_fields = {"slug": ["title"]}
 
 
@@ -50,9 +44,9 @@ class FormDataAdmin(admin.ModelAdmin):
     readonly_fields = utils.get_all_model_fields(models.FormData)
 
 
-class FormThroughInline(admin.StackedInline):
+class WizardFormThroughInline(admin.StackedInline):
     form = forms.FormThroughAdminForm
-    model = models.FormOrderThrough
+    model = models.WizardFormThrough
 
 
 class WizardActionThroughInline(admin.StackedInline):
@@ -64,7 +58,7 @@ class WizardAdmin(admin.ModelAdmin):
     form = forms.WizardAdminForm
     model = models.Wizard
     list_display = ["title"]
-    inlines = [FormThroughInline, WizardActionThroughInline]
+    inlines = [WizardFormThroughInline, WizardActionThroughInline]
     prepopulated_fields = {"slug": ["title"]}
 
 

@@ -40,7 +40,7 @@ class FormFieldAdminForm(forms.ModelForm):
     class Meta(object):
         model = models.FormField
         fields = [
-            "title", "slug", "position", "form", "field_group", "field_type",
+            "title", "slug", "position", "field_group", "field_type",
             "widget", "label", "initial", "max_length", "help_text",
             "placeholder", "required", "disabled", "choices",
             "additional_validators"
@@ -73,7 +73,7 @@ class WizardAdminForm(forms.ModelForm):
 
 class FormThroughAdminForm(forms.ModelForm):
     class Meta(object):
-        model = models.FormOrderThrough
+        model = models.WizardFormThrough
         fields = ["wizard", "form", "order"]
 
 
