@@ -212,18 +212,33 @@ class WizardViewTestCase(TestCase):
         url, status_code = response.redirect_chain[-1]
         self.assertEqual("/", url)
 
+    def test_wizard_action(self):
+        """Verify that wizard actions are called on the wizard's done()
+        step.
+        `store_form_data` calls save() on each form in the wizard. This in turn
+        calls the form's actions.
+        The `simpleform` form has two actions; `store_data` and `send_email`.
+        """
+        action_data = {
+            "action": "formfactory.tests.actions.store_form_data"
+        }
+        action = models.Action.objects.create(**action_data)
+        wizard_actionthrough_data = {
+            "action": action,
+            "wizard": self.wizard,
+            "order": 0
+        }
+        models.WizardActionThrough.objects.create(**wizard_actionthrough_data)
+
+        self.get_first_step()
+        self.post_first_step()
+        self.post_second_step()
+
+        # validate that the `store_data` action was performed for `simpleform`
+
+
     # These tests exist because we overwrote existing functionality, and we
     # need to make sure that it still works as expected
-    # def test_redirect_to_url_specified_in_urls(self):
-    #     # import pdb;pdb.set_trace()
-    #     self.wizard.redirect_to = "/formfactory/form-1/"
-    #     self.wizard.save()
-    #
-    #     self.get_first_step()
-    #     self.post_first_step()
-    #     response = self.post_second_step()
-    #     import pdb;pdb.set_trace()
-
     # One way of performing per-form actions in the wizard is to step
     # through the wizard and call each form's save() method, because
     # form actions are called there. This could be achieved by

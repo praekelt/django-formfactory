@@ -130,7 +130,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
             action_params.update(dict(
                 (obj.key, obj.value) for obj in action.params.all()
             ))
-            action.as_function(form_instance=self, **action_params)
+            action.as_function(form_dict=form_dict, **action_params)
 
         return HttpResponseRedirect(self.get_success_url())
 
