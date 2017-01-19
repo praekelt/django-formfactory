@@ -246,3 +246,22 @@ def load_fixtures(kls):
     )
     kls.dummy_validator = "formfactory.tests.validators.dummy_validator"
     kls.dummy_action = "formfactory.tests.actions.dummy_action"
+
+    wizard_data = {
+        "title": "Test wizard",
+        "slug": "test-wizard",
+        "success_message": "Success",
+        "failure_message": "Failure",
+        "redirect_to": "/"
+    }
+
+    # create wizard
+    kls.wizard = models.Wizard.objects.create(**wizard_data)
+
+    # add forms to the wizard
+    models.FormOrderThrough.objects.create(
+        wizard=kls.wizard, form=kls.simpleform, order=1
+    )
+    models.FormOrderThrough.objects.create(
+        wizard=kls.wizard, form=kls.loginform, order=2
+    )
