@@ -68,7 +68,7 @@ class FormActionParamAdminForm(forms.ModelForm):
 class WizardAdminForm(forms.ModelForm):
     class Meta(object):
         model = models.Wizard
-        fields = ["title", "slug"]
+        fields = ["title", "slug", "redirect_to"]
 
 
 class FormThroughAdminForm(forms.ModelForm):

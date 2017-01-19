@@ -45,9 +45,8 @@ class FactoryFormView(generic.FormView):
         return self.form_object.as_form()
 
     def get_success_url(self):
-        redirect_url = self.request.GET.get(
-            SETTINGS["redirect-url-param-name"]
-        ) or self.redirect_to
+        redirect_url = self.form_object.redirect_to or self.request.GET.get(
+            SETTINGS["redirect-url-param-name"]) or self.redirect_to
         if redirect_url:
             return redirect_url
         return self.request.path_info
@@ -61,13 +60,19 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return "%s-%s" % (self.__class__.__name__, kwargs["slug"])
 
     def dispatch(self, request, *args, **kwargs):
+        """
+        This method is overridden to allow for the creation of `form_list`
+        from the list of forms associated with this wizard instance
+        """
         wizard_slug = kwargs.get("slug")
 
         self.wizard_object = Wizard.objects.get(slug=wizard_slug)
         self.form_list_map = {}
 
         form_list = []
-        for obj in self.wizard_object.forms.all():
+        for obj in self.wizard_object.forms.all().order_by(
+            "formorderthrough"
+        ):
             klass = obj.as_form().__class__
             form_list.append((obj.slug, klass))
             self.form_list_map[obj.slug] = obj
@@ -112,18 +117,20 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def get_step_url(self, step):
         return reverse(
-            self.url_name, kwargs={'step': step, "slug": "profile"}
+            self.url_name, kwargs={
+                "step": step, "slug": self.wizard_object.slug
+            }
         )
 
     def done(self, form_list, form_dict, **kwargs):
         """Run through all the wizard actions
         """
-        for action in self.wizard_object.as_wizard["actions"]:
+        for action in self.wizard_object.actions.all():
             action_params = kwargs.copy()
             action_params.update(dict(
                 (obj.key, obj.value) for obj in action.params.all()
             ))
-            action.as_function(form_instance=self, **action_params)
+            action.as_function(form_dict=form_dict, **action_params)
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -136,9 +143,11 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return super(FactoryWizardView, self).get(*args, **kwargs)
 
     def get_success_url(self):
-        redirect_url = self.storage.extra_data(
+        stored_redirect = self.storage.extra_data.get(
             SETTINGS["redirect-url-param-name"]
-        ) or self.redirect_to
+        )
+        redirect_url = self.wizard_object.redirect_to or \
+            stored_redirect or self.redirect_to
         if redirect_url:
             return redirect_url
         return self.request.path_info
