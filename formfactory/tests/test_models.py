@@ -55,6 +55,10 @@ class ModelTestCase(TestCase):
         for key, value in self.formdataitem_data.items():
             self.assertEqual(getattr(self.formdataitem, key), value)
 
+    def test_fieldgroup(self):
+        for key, value in self.fieldgroup_data.items():
+            self.assertEqual(getattr(self.fieldgroup, key), value)
+
     def test_wizard(self):
         self.assertQuerysetEqual(
             self.wizard.forms.all().order_by("wizardformthrough"),
