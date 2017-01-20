@@ -69,9 +69,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         self.form_list_map = {}
 
         form_list = []
-        for obj in self.wizard_object.forms.all().order_by(
-            "formorderthrough"
-        ):
+        for obj in self.wizard_object.forms.all().order_by("wizardformthrough"):
             klass = obj.as_form().__class__
             form_list.append((obj.slug, klass))
             self.form_list_map[obj.slug] = obj

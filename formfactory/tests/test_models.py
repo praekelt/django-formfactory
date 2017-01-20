@@ -30,7 +30,7 @@ class ModelTestCase(TestCase):
     def test_form(self):
         for key, value in self.form_data.items():
             self.assertEqual(getattr(self.form, key), value)
-        self.assertEqual(self.form.fields.count(), len(models.FIELD_TYPES))
+        self.assertEqual(self.form.fieldgroups.count(), 1)
         self.assertIsInstance(self.form.as_form(), forms.Form)
         self.assertEqual(
             self.form.get_absolute_url(), "/formfactory/%s/" % self.form.slug
@@ -57,7 +57,7 @@ class ModelTestCase(TestCase):
 
     def test_wizard(self):
         self.assertQuerysetEqual(
-            self.wizard.forms.all().order_by("formorderthrough"),
+            self.wizard.forms.all().order_by("wizardformthrough"),
             [repr(self.simpleform), repr(self.loginform)]
         )
         self.assertEqual(

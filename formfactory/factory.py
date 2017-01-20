@@ -19,7 +19,7 @@ class FormFactory(forms.Form):
         self.actions = kwargs.pop("actions")
 
         form_id = kwargs.pop("form_id")
-        defined_fields = kwargs.pop("fields")
+        defined_field_groups = kwargs.pop("field_groups")
 
         super(FormFactory, self).__init__(*args, **kwargs)
 
@@ -30,56 +30,55 @@ class FormFactory(forms.Form):
 
         # Interates over the fields defined in the Form model and sets the
         # appropriate attributes and builds up the fieldgroups.
-        self.field_groups = []
-        for field in defined_fields:
-            self.field_groups.append([field.field_group.title])
-            field_type = getattr(forms, field.field_type)
+        for field_group in defined_field_groups:
+            for field in field_group.fields.all():
+                field_type = getattr(forms, field.field_type)
 
-            additional_validators = []
-            if field.additional_validators:
-                additional_validators = [field.additional_validators]
+                additional_validators = []
+                if field.additional_validators:
+                    additional_validators = [field.additional_validators]
 
-            self.fields[field.slug] = field_type(
-                label=field.label,
-                initial=field.initial,
-                required=field.required,
-                disabled=field.disabled,
-                help_text=field.help_text,
-                validators=additional_validators
-            )
-
-            # Saves the field model pk to the form field to prevent the need
-            # for another query in the save method.
-            self.fields[field.slug].field_pk = field.pk
-
-            # Adds the field choices and max_length but catches the exception
-            # as not all fields allow for these attrs.
-            choices = None
-            if field.choices.exists():
-                choices = tuple(
-                    (c.value, c.label) for c in field.choices.all()
+                self.fields[field.slug] = field_type(
+                    label=field.label,
+                    initial=field.initial,
+                    required=field.required,
+                    disabled=field.disabled,
+                    help_text=field.help_text,
+                    validators=additional_validators
                 )
+
+                # Saves the field model pk to the form field to prevent the
+                # need for another query in the save method.
+                self.fields[field.slug].field_pk = field.pk
+
+                # Adds the field choices and max_length but catches the
+                # exception as not all fields allow for these attrs.
+                choices = None
+                if field.choices.exists():
+                    choices = tuple(
+                        (c.value, c.label) for c in field.choices.all()
+                    )
+                    try:
+                        self.fields[field.slug].choices = choices
+                    except TypeError:
+                        pass
+
                 try:
-                    self.fields[field.slug].choices = choices
+                    if field.max_length:
+                        self.fields[field.slug].max_length = field.max_length
                 except TypeError:
                     pass
 
-            try:
-                if field.max_length:
-                    self.fields[field.slug].max_length = field.max_length
-            except TypeError:
-                pass
+                # Sets the user defined widget if setup
+                if field.widget:
+                    widget = getattr(forms.widgets, field.widget)
+                    self.fields[field.slug].widget = widget()
 
-            # Sets the user defined widget if setup
-            if field.widget:
-                widget = getattr(forms.widgets, field.widget)
-                self.fields[field.slug].widget = widget()
-
-            # Adds widget-specific options to the form field
-            widget_attrs = self.fields[field.slug].widget.attrs
-            widget_attrs["placeholder"] = field.placeholder
-            if choices:
-                self.fields[field.slug].widget.choices = choices
+                # Adds widget-specific options to the form field
+                widget_attrs = self.fields[field.slug].widget.attrs
+                widget_attrs["placeholder"] = field.placeholder
+                if choices:
+                    self.fields[field.slug].widget.choices = choices
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html,
                      errors_on_separate_row):

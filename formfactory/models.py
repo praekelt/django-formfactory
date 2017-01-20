@@ -140,7 +140,7 @@ class Form(BaseFormModel):
             )
 
         return factory.FormFactory(
-            data, files, prefix=self.slug, fields=self.fields.all(),
+            data, files, prefix=self.slug, field_groups=self.fieldgroups.all(),
             form_id=self.pk, actions=self.actions.all()
         )
 
@@ -210,7 +210,9 @@ class FormFieldGroup(models.Model):
     title = models.CharField(
         max_length=256, help_text=_("A short descriptive title.")
     )
-    form = models.ManyToManyField(Form, through="FieldGroupFormThrough")
+    form = models.ManyToManyField(
+        Form, through="FieldGroupFormThrough", related_name="fieldgroups"
+    )
     parent = models.ForeignKey(
         "self", related_name="subfieldgroups", blank=True, null=True
     )
@@ -242,7 +244,7 @@ class FormField(models.Model):
         max_length=256, db_index=True, unique=True
     )
     field_group = models.ManyToManyField(
-        FormFieldGroup, through="FieldGroupThrough"
+        FormFieldGroup, through="FieldGroupThrough", related_name="fields"
     )
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
     widget = models.CharField(

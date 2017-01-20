@@ -45,11 +45,12 @@ class ViewTestCase(TestCase):
             )
         )
         self.assertEqual(response.status_code, 200)
-        for field in self.simpleform.fields.all():
-            self.assertContains(response, field.label)
-            for choice in field.choices.all():
-                self.assertContains(response, choice.label)
-                self.assertContains(response, choice.value)
+        for field_group in self.form.fieldgroups.all():
+            for field in field_group.fields.all():
+                self.assertContains(response, field.label)
+                for choice in field.choices.all():
+                    self.assertContains(response, choice.label)
+                    self.assertContains(response, choice.value)
 
         response = self.client.post(
             reverse(
@@ -98,8 +99,10 @@ class LoginViewDetailTestCase(TestCase):
             )
         )
         self.assertEqual(response.status_code, 200)
-        for field in self.loginform.fields.all():
-            self.assertContains(response, field.label)
+        for field_group in self.form.fieldgroups.all():
+            self.assertContains(response, field_group.title)
+            for field in field_group.fields.all():
+                self.assertContains(response, field.label)
 
         response = self.client.post(
             reverse(
