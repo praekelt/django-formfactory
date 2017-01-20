@@ -110,13 +110,13 @@ Models
         - success_message: The message string that will be displayed by the django messages framework on successful submission of the form
         - failure_message: The message string that will be displayed by the django messages framework if a form submission fails
 
-In the ``done`` step, each form's ``save()`` method is called. This ensures that all actions defined for each form are
-performed. Following that, wizard actions are then performed before the WizardView redirects.
+    In the ``done`` step, each form's ``save()`` method is called. This ensures that all actions defined for each form are
+    performed. Following that, wizard actions are then performed before the WizardView redirects.
 
-The URL to which the WizardView redirects can be specified in one of two ways:
+    The URL to which the WizardView redirects can be specified in one of two ways:
     - It can be specified in the CMS in the ``redirect_to`` field on the wizard object.
     - It can be specified as a GET query parameter on the URL. The query parameter key can be specified by setting
-    ``FORMFACTORY["redirect-url-param-name"]`` in your settings (e.g. ``FORMFACTORY["redirect-url-param-name"] = "next"``.
+    ``FORMFACTORY["redirect-url-param-name"]`` in your settings file.
 
 Actions
 ~~~~~~~
