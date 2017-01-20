@@ -78,7 +78,7 @@ Models
 
 **FieldChoice:**
     A set of field choices that a populated into `MultiSelect` and `Select` widgets
-         - label: human readable dropdown label
+        - label: human readable dropdown label
          - value: the value that will be submitted
 
 **FormField:**
@@ -101,7 +101,6 @@ Models
 
 **Wizard:**
     A wizard object that encapsulates a list of forms and actions that will be performed on the WizardView's ``done`` step.
-    This model defines the following fields:
         - title: a descriptive title
         - slug: url friendly identifier
         - forms: a set of ordered forms mapping to each step in the WizardView.
@@ -110,7 +109,7 @@ Models
         - success_message: The message string that will be displayed by the django messages framework on successful submission of the form
         - failure_message: The message string that will be displayed by the django messages framework if a form submission fails
 
-    In the ``done`` step, each form's ``save()`` method is called. This ensures that all actions defined for each form are
+    Each form's ``save()`` method is called in the ``done`` step. This ensures that all actions defined for each form are
     performed. Following that, wizard actions are then performed before the WizardView redirects.
 
     The URL to which the WizardView redirects can be specified in one of two ways:
