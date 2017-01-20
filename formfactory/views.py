@@ -65,7 +65,6 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         from the list of forms associated with this wizard instance
         """
         wizard_slug = kwargs.get("slug")
-
         self.wizard_object = Wizard.objects.get(slug=wizard_slug)
         self.form_list_map = {}
 
@@ -123,8 +122,11 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         )
 
     def done(self, form_list, form_dict, **kwargs):
-        """Run through all the wizard actions
+        """ Save each form and run through all the wizard actions
         """
+        for key, form in form_dict.items():
+            form.save()
+
         for action in self.wizard_object.actions.all():
             action_params = kwargs.copy()
             action_params.update(dict(
