@@ -23,6 +23,8 @@ Installation
 Usage
 -----
 
+``django-formfactory`` allows users to create forms and wizards in the CMS.
+
 Settings
 ~~~~~~~~
 
@@ -96,6 +98,25 @@ Models
         - disabled: boolean value to disable field (readonly)
         - choices: a set of ``FieldChoice`` objects
         - additional_validators: a set of custom defined field validators
+
+**Wizard:**
+    A wizard object that encapsulates a list of forms and actions that will be performed on the WizardView's ``done`` step.
+    This model defines the following fields:
+        - title: a descriptive title
+        - slug: url friendly identifier
+        - forms: a set of ordered forms mapping to each step in the WizardView.
+        - redirect_to: The URL which should should be redirect to after the wizard's done step (e.g. "/").
+        - actions: a set of ordered ``Action`` objects to be performed in order in the WizardView's ``done`` step.
+        - success_message: The message string that will be displayed by the django messages framework on successful submission of the form
+        - failure_message: The message string that will be displayed by the django messages framework if a form submission fails
+
+In the ``done`` step, each form's ``save()`` method is called. This ensures that all actions defined for each form are
+performed. Following that, wizard actions are then performed before the WizardView redirects.
+
+The URL to which the WizardView redirects can be specified in one of two ways:
+    - It can be specified in the CMS in the ``redirect_to`` field on the wizard object.
+    - It can be specified as a GET query parameter on the URL. The query parameter key can be specified by setting
+    ``FORMFACTORY["redirect-url-param-name"]`` in your settings (e.g. ``FORMFACTORY["redirect-url-param-name"] = "next"``.
 
 Actions
 ~~~~~~~
