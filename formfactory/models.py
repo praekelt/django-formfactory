@@ -241,7 +241,6 @@ class FormField(models.Model):
     slug = models.SlugField(
         max_length=256, db_index=True, unique=True
     )
-    position = models.PositiveIntegerField(default=0)
     field_group = models.ManyToManyField(
         FormFieldGroup, through="FieldGroupThrough"
     )
@@ -263,9 +262,6 @@ class FormField(models.Model):
     additional_validators = models.CharField(
         choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
     )
-
-    class Meta(object):
-        ordering = ["position"]
 
     def __unicode__(self):
         return self.title
