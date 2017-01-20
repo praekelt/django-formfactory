@@ -16,12 +16,26 @@ def load_fixtures(kls):
     }
     kls.fieldchoice = models.FieldChoice.objects.create(**kls.fieldchoice_data)
 
+    kls.fieldgroup_data = {
+        "title": "Field Group 1"
+    }
+    kls.fieldgroup = models.FormFieldGroup.objects.create(
+        **kls.fieldgroup_data
+    )
+
+    kls.fieldgroupformthrough_data = {
+        "form": kls.form,
+        "field_group": kls.fieldgroup,
+        "order": 0
+    }
+    kls.fieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.fieldgroupformthrough_data
+    )
+
     for count, field_type in enumerate(models.FIELD_TYPES):
         setattr(kls, "formfield_data_%s" % count, {
             "title": "Form Field %s" % count,
             "slug": "form-field-%s" % count,
-            "position": count,
-            "form": kls.form,
             "field_type": field_type[0],
             "label": "Form Field %s" % count,
             "placeholder": "Field Placeholder %s" % count
@@ -36,6 +50,15 @@ def load_fixtures(kls):
 
         if field_type[0] == "ChoiceField":
             getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
+
+        setattr(kls, "fieldgroupthrough_data_%s" % count, {
+            "field_group": kls.fieldgroup,
+            "field": getattr(kls, "formfield_%s" % count),
+            "order": count
+        })
+        setattr(kls, "fieldgroupthrough_%s" % count, models.FieldGroupThrough.objects.create(
+            **getattr(kls, "fieldgroupthrough_data_%s" % count)
+        ))
 
     kls.simpleform_data = {
         "title": "Subscribe Form",
@@ -98,8 +121,6 @@ def load_fixtures(kls):
         "salutation": {
             "title": "Salutation",
             "slug": "salutation",
-            "position": 0,
-            "form": kls.simpleform,
             "field_type": "ChoiceField",
             "label": "Salutation",
             "required": False
@@ -107,8 +128,6 @@ def load_fixtures(kls):
         "name": {
             "title": "Name",
             "slug": "name",
-            "position": 1,
-            "form": kls.simpleform,
             "field_type": "CharField",
             "label": "Full Name",
             "required": True
@@ -116,8 +135,6 @@ def load_fixtures(kls):
         "email_address": {
             "title": "Email Address",
             "slug": "email-address",
-            "position": 2,
-            "form": kls.simpleform,
             "field_type": "EmailField",
             "label": "Email",
             "help_text": "The email you would like info to be sent to"
@@ -125,8 +142,6 @@ def load_fixtures(kls):
         "accept_terms": {
             "title": "Accept Terms",
             "slug": "accept-terms",
-            "position": 3,
-            "form": kls.simpleform,
             "field_type": "BooleanField",
             "label": "Do you accept the terms and conditions",
             "required": False
@@ -134,8 +149,6 @@ def load_fixtures(kls):
         "to_email": {
             "title": "To Email",
             "slug": "to-email",
-            "position": 4,
-            "form": kls.simpleform,
             "field_type": "CharField",
             "widget": "HiddenInput",
             "initial": "dev@praekelt.com",
@@ -144,8 +157,6 @@ def load_fixtures(kls):
         "subject": {
             "title": "Subject",
             "slug": "subject",
-            "position": 5,
-            "form": kls.simpleform,
             "field_type": "CharField",
             "widget": "HiddenInput",
             "initial": "Test Email",
@@ -207,8 +218,6 @@ def load_fixtures(kls):
         "username": {
             "title": "Username",
             "slug": "username",
-            "position": 0,
-            "form": kls.loginform,
             "field_type": "CharField",
             "label": "Username",
             "required": True
@@ -216,8 +225,6 @@ def load_fixtures(kls):
         "password": {
             "title": "Password",
             "slug": "password",
-            "position": 1,
-            "form": kls.loginform,
             "field_type": "CharField",
             "widget": "PasswordInput",
             "label": "Password",
