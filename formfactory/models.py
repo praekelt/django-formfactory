@@ -213,9 +213,6 @@ class FormFieldGroup(models.Model):
     form = models.ManyToManyField(
         Form, through="FieldGroupFormThrough", related_name="fieldgroups"
     )
-    parent = models.ForeignKey(
-        "self", related_name="subfieldgroups", blank=True, null=True
-    )
 
 
 class FieldGroupFormThrough(models.Model):
