@@ -214,6 +214,9 @@ class FormFieldGroup(models.Model):
         Form, through="FieldGroupFormThrough", related_name="fieldgroups"
     )
 
+    def __unicode__(self):
+        return self.title
+
 
 class FieldGroupFormThrough(models.Model):
     """Through table for field groups forms with a defined order.
@@ -279,4 +282,4 @@ class FieldGroupThrough(models.Model):
         verbose_name_plural = "Field Groups"
 
     def __unicode__(self):
-        return "%s (%s)" % (self.field_group.title, self.order)
+        return "%s (%s)" % (self.field.title, self.order)
