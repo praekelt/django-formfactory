@@ -56,9 +56,12 @@ def load_fixtures(kls):
             "field": getattr(kls, "formfield_%s" % count),
             "order": count
         })
-        setattr(kls, "fieldgroupthrough_%s" % count, models.FieldGroupThrough.objects.create(
-            **getattr(kls, "fieldgroupthrough_data_%s" % count)
-        ))
+        setattr(
+            kls, "fieldgroupthrough_%s" % count,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "fieldgroupthrough_data_%s" % count)
+            )
+        )
 
     kls.simpleform_data = {
         "title": "Subscribe Form",
@@ -67,6 +70,22 @@ def load_fixtures(kls):
         "failure_message": "Failure"
     }
     kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
+
+    kls.simplefieldgroup_data = {
+        "title": "Field Group 1"
+    }
+    kls.simplefieldgroup = models.FormFieldGroup.objects.create(
+        **kls.simplefieldgroup_data
+    )
+
+    kls.simplefieldgroupformthrough_data = {
+        "form": kls.simpleform,
+        "field_group": kls.simplefieldgroup,
+        "order": 0
+    }
+    kls.simplefieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.simplefieldgroupformthrough_data
+    )
 
     kls.action_data = {
         "action": "formfactory.actions.store_data"
@@ -163,11 +182,27 @@ def load_fixtures(kls):
             "required": True
         }
     }
+
+    count = 0
     for key, value in kls.simpleformfield_data.items():
         setattr(
             kls, "simpleformfield_%s" % key,
             models.FormField.objects.create(**value)
         )
+
+        setattr(kls, "simplefieldgroupthrough_data_%s" % key, {
+            "field_group": kls.simplefieldgroup,
+            "field": getattr(kls, "simpleformfield_%s" % key),
+            "order": count
+        })
+        setattr(
+            kls, "simplefieldgroupthrough_%s" % key,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "simplefieldgroupthrough_data_%s" % key)
+            )
+        )
+
+        count += 1
 
     for salutation in ["Mr", "Mrs", "Dr", "Prof"]:
         choice = models.FieldChoice.objects.create(
@@ -182,6 +217,22 @@ def load_fixtures(kls):
         "failure_message": "Failure"
     }
     kls.loginform = models.Form.objects.create(**kls.loginform_data)
+
+    kls.loginfieldgroup_data = {
+        "title": "Field Group 1"
+    }
+    kls.loginfieldgroup = models.FormFieldGroup.objects.create(
+        **kls.loginfieldgroup_data
+    )
+
+    kls.loginfieldgroupformthrough_data = {
+        "form": kls.loginform,
+        "field_group": kls.loginfieldgroup,
+        "order": 0
+    }
+    kls.loginfieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.loginfieldgroupformthrough_data
+    )
 
     kls.loginaction_data = {
         "action": "formfactory.actions.login"
@@ -199,6 +250,7 @@ def load_fixtures(kls):
             "action": kls.loginaction
         }
     ]
+
     for param in kls.loginactionparam_data:
         setattr(
             kls, "loginactionparam_%s" % param["key"],
@@ -231,11 +283,27 @@ def load_fixtures(kls):
             "required": True
         }
     }
+
+    count = 0
     for key, value in kls.loginformfield_data.items():
         setattr(
             kls, "loginformfield_%s" % key,
             models.FormField.objects.create(**value)
         )
+
+        setattr(kls, "loginfieldgroupthrough_data_%s" % key, {
+            "field_group": kls.loginfieldgroup,
+            "field": getattr(kls, "loginformfield_%s" % key),
+            "order": count
+        })
+        setattr(
+            kls, "loginfieldgroupthrough_%s" % key,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "loginfieldgroupthrough_data_%s" % key)
+            )
+        )
+
+        count += 1
 
     kls.formdata_data = {
         "uuid": unicode(uuid.uuid4()),

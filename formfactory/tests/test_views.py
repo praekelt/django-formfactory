@@ -45,9 +45,9 @@ class ViewTestCase(TestCase):
             )
         )
         self.assertEqual(response.status_code, 200)
-        for field_group in self.form.fieldgroups.all():
+        for field_group in self.simpleform.fieldgroups.all():
             for field in field_group.fields.all():
-                self.assertContains(response, field.label)
+                self.assertContains(response, field.slug)
                 for choice in field.choices.all():
                     self.assertContains(response, choice.label)
                     self.assertContains(response, choice.value)
@@ -99,7 +99,7 @@ class LoginViewDetailTestCase(TestCase):
             )
         )
         self.assertEqual(response.status_code, 200)
-        for field_group in self.form.fieldgroups.all():
+        for field_group in self.loginform.fieldgroups.all():
             self.assertContains(response, field_group.title)
             for field in field_group.fields.all():
                 self.assertContains(response, field.label)

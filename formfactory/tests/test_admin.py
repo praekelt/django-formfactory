@@ -33,9 +33,6 @@ class AdminTestCase(TestCase):
         response = self.client.get("/admin/formfactory/form/add/")
         self.assertEqual(response.status_code, 200)
 
-        # Ensure that the additional validators choice field is populated
-        self.assertContains(response, self.dummy_validator)
-
     def test_admin_action(self):
         response = self.client.get("/admin/formfactory/action/")
         self.assertEqual(response.status_code, 200)

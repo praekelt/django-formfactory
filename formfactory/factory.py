@@ -30,8 +30,13 @@ class FormFactory(forms.Form):
 
         # Interates over the fields defined in the Form model and sets the
         # appropriate attributes and builds up the fieldgroups.
+        self.field_group = []
         for field_group in defined_field_groups:
-            for field in field_group.fields.all():
+            fields = field_group.fields.all()
+            self.field_group.append(
+                [field_group.title, [f.slug for f in fields]]
+            )
+            for field in fields:
                 field_type = getattr(forms, field.field_type)
 
                 additional_validators = []
@@ -90,20 +95,11 @@ class FormFactory(forms.Form):
         top_errors = self.non_field_errors()
 
         output, hidden_fields = [], []
-        Meta = getattr(self, "Meta", None)
-        raw_fieldsets = getattr(Meta, "fieldsets", None)
-        if raw_fieldsets is None:
-            fieldsets = (("", self.fields.keys()),)
-        else:
-            fieldsets = raw_fieldsets
-
-        for fieldset_label, fieldnames in fieldsets:
-
-            if raw_fieldsets:
-                s = """<div class="Fieldgroup">"""
-                if fieldset_label:
-                    s += "<div Fieldgroup--header>%s</div>" % fieldset_label
-                output.append(s)
+        for fieldset_label, fieldnames in self.field_group:
+            snippet = """<div class="Fieldgroup">"""
+            if fieldset_label:
+                snippet += "<div Fieldgroup--header>%s</div>" % fieldset_label
+            output.append(snippet)
 
             for name in fieldnames:
                 field = self.fields[name]
@@ -161,8 +157,7 @@ class FormFactory(forms.Form):
                         "field_id": "id_%s" % name
                     })
 
-            if raw_fieldsets:
-                output.append("</div>")
+            output.append("</div>")
 
         if top_errors:
             output.insert(0, error_row % force_text(top_errors))
@@ -181,7 +176,7 @@ class FormFactory(forms.Form):
                     # so insert a new, empty row.
                     last_row = (normal_row % {
                         "errors": "", "label": "",
-                        "field": "", "help_text":"",
+                        "field": "", "help_text": "",
                         "html_class_attr": html_class_attr,
                         "field_id": ""
                     })
