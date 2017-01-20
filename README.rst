@@ -79,7 +79,7 @@ Models
 **FieldChoice:**
     A set of field choices that a populated into `MultiSelect` and `Select` widgets
         - label: human readable dropdown label
-         - value: the value that will be submitted
+        - value: the value that will be submitted
 
 **FormField:**
     Defines a form field with all options and required attributes. Encapsulated by the ``Form`` object.
