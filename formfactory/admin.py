@@ -47,7 +47,7 @@ class FormDataAdmin(admin.ModelAdmin):
     form = forms.FormDataAdminForm
     model = models.FormData
     inlines = [FormDataItemInline]
-    readonly_fields = utils.get_all_model_fields(models.FormData)
+    readonly_fields = ("form", "uuid")
 
 
 admin.site.register(models.Action, ActionModelAdmin)
