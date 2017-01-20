@@ -116,6 +116,10 @@ class LoginViewDetailTestCase(TestCase):
         self.assertNotContains(response, "Failure")
         self.assertNotContains(response, "This field is required.")
 
+        # Ensure the correct template was used, in this case the login template
+        # is overridden with formfactory/tests/templates/form_detail-login.html
+        self.assertContains(response, "Login Templete Override")
+
 
 class WizardViewTestCase(TestCase):
     def setUp(self):

@@ -13,13 +13,18 @@ from formfactory.models import Form, Wizard
 
 
 class FactoryFormView(generic.FormView):
-    template_name = "formfactory/form_detail.html"
     form_slug = None
     redirect_to = None
 
     def __init__(self, *args, **kwargs):
         super(FactoryFormView, self).__init__(*args, **kwargs)
         self.form_object = None
+
+    def get_template_names(self):
+        return [
+            "formfactory/form_detail_%s.html" % self.form_object.slug,
+            "formfactory/form_detail.html"
+        ]
 
     def form_valid(self, form):
         form.save(request=self.request)

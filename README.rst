@@ -37,6 +37,14 @@ Views
 ``django-formfactory`` provide a base ``FormView`` which can be used directly or
 subclassed if you require extra context or form data processing.
 
+Templates
+~~~~~~~~~
+
+``django-formfactory`` allows you to either override the template for all forms
+by adding a template ``formfactory/form_detail.html`` or an individual form by
+adding a template ``formfactory/form_detail_<form-slug>.html``to your project's
+template dir.
+
 Inclusiontag
 ~~~~~~~~~~~~
 
