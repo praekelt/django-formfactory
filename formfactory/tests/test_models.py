@@ -54,3 +54,13 @@ class ModelTestCase(TestCase):
     def test_formdataitem(self):
         for key, value in self.formdataitem_data.items():
             self.assertEqual(getattr(self.formdataitem, key), value)
+
+    def test_wizard(self):
+        self.assertQuerysetEqual(
+            self.wizard.forms.all().order_by("formorderthrough"),
+            [repr(self.simpleform), repr(self.loginform)]
+        )
+        self.assertEqual(
+            self.wizard.get_absolute_url(),
+            "/formfactory/wizard/%s/" % self.wizard.slug
+        )
