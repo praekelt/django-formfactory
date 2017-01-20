@@ -210,7 +210,7 @@ class FormFieldGroup(models.Model):
     title = models.CharField(
         max_length=256, help_text=_("A short descriptive title.")
     )
-    form = models.ManyToManyField(
+    forms = models.ManyToManyField(
         Form, through="FieldGroupFormThrough", related_name="fieldgroups"
     )
 
@@ -243,7 +243,7 @@ class FormField(models.Model):
     slug = models.SlugField(
         max_length=256, db_index=True, unique=True
     )
-    field_group = models.ManyToManyField(
+    field_groups = models.ManyToManyField(
         FormFieldGroup, through="FieldGroupThrough", related_name="fields"
     )
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)

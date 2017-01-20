@@ -69,7 +69,7 @@ class WizardActionThroughAdminForm(forms.ModelForm):
 class FormFieldGroupAdminForm(forms.ModelForm):
     class Meta(object):
         model = models.FormFieldGroup
-        fields = ["title", "form"]
+        fields = ["title", "forms"]
 
 
 class FieldGroupFormThroughAdminForm(forms.ModelForm):
@@ -94,7 +94,7 @@ class FormFieldAdminForm(forms.ModelForm):
     class Meta(object):
         model = models.FormField
         fields = [
-            "title", "slug", "field_group", "field_type", "widget", "label",
+            "title", "slug", "field_groups", "field_type", "widget", "label",
             "initial", "max_length", "help_text", "placeholder", "required",
             "disabled", "choices", "additional_validators"
         ]
