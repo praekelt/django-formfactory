@@ -96,9 +96,9 @@ class FormFactory(forms.Form):
 
         output, hidden_fields = [], []
         for fieldset_label, fieldnames in self.field_group:
-            snippet = """<div class="Fieldgroup">"""
+            snippet = """<fieldset class="Fieldset">"""
             if fieldset_label:
-                snippet += "<div Fieldgroup--header>%s</div>" % fieldset_label
+                snippet += "<legend Fieldsetlegend>%s</legend>" % fieldset_label
             output.append(snippet)
 
             for name in fieldnames:
@@ -157,7 +157,7 @@ class FormFactory(forms.Form):
                         "field_id": "id_%s" % name
                     })
 
-            output.append("</div>")
+            output.append("</legend>")
 
         if top_errors:
             output.insert(0, error_row % force_text(top_errors))
