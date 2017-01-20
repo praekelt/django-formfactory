@@ -197,7 +197,7 @@ class FormFactory(forms.Form):
     def save(self, *args, **kwargs):
         """Performs the required actions in the defined sequence.
         """
-        for action in self.actions:
+        for action in self.actions.order_by("formactionthrough"):
             action_params = kwargs.copy()
             action_params.update(dict(
                 (obj.key, obj.value) for obj in action.params.all()
