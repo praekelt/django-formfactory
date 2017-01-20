@@ -24,10 +24,15 @@ class FormActionThroughInline(admin.StackedInline):
     model = models.FormActionThrough
 
 
+class FieldGroupFormThroughInline(admin.StackedInline):
+    form = forms.FieldGroupFormThroughAdminForm
+    model = models.FieldGroupFormThrough
+
+
 class FormAdmin(admin.ModelAdmin):
     form = forms.FormAdminForm
     list_display = ["title"]
-    inlines = [FormActionThroughInline]
+    inlines = [FieldGroupFormThroughInline, FormActionThroughInline]
     prepopulated_fields = {"slug": ["title"]}
 
 
@@ -45,7 +50,7 @@ class FormDataAdmin(admin.ModelAdmin):
 
 
 class WizardFormThroughInline(admin.StackedInline):
-    form = forms.FormThroughAdminForm
+    form = forms.WizardFormThroughAdminForm
     model = models.WizardFormThrough
 
 
@@ -57,13 +62,30 @@ class WizardActionThroughInline(admin.StackedInline):
 class WizardAdmin(admin.ModelAdmin):
     form = forms.WizardAdminForm
     model = models.Wizard
-    list_display = ["title"]
     inlines = [WizardFormThroughInline, WizardActionThroughInline]
     prepopulated_fields = {"slug": ["title"]}
+
+
+class FieldGroupThroughInline(admin.StackedInline):
+    form = forms.FieldGroupThroughAdminForm
+    model = models.FieldGroupThrough
+
+
+class FormFieldGroupAdmin(admin.ModelAdmin):
+    form = forms.FormFieldGroupAdminForm
+    model = models.FormFieldGroup
+    inlines = [FieldGroupThroughInline]
+
+
+class FormFieldAdmin(admin.ModelAdmin):
+    form = forms.FormFieldAdminForm
+    model = models.FormField
 
 
 admin.site.register(models.Action, ActionModelAdmin)
 admin.site.register(models.FieldChoice, FieldChoiceModelAdmin)
 admin.site.register(models.Form, FormAdmin)
 admin.site.register(models.FormData, FormDataAdmin)
+admin.site.register(models.FormFieldGroup, FormFieldGroupAdmin)
+admin.site.register(models.FormField, FormFieldAdmin)
 admin.site.register(models.Wizard, WizardAdmin)
