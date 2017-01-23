@@ -14,7 +14,8 @@ setup(
     packages=find_packages(),
     dependency_links=[],
     install_requires=[
-        "django"
+        "django",
+        "django-formtools"
     ],
     classifiers=[
         "Programming Language :: Python",

@@ -17,8 +17,8 @@ def auto_registration(func_type):
             pass
 
 
-def get_label(field_instance, field_name):
-    return field_instance.fields[field_name].label
+def get_label(form_instance, field_name):
+    return form_instance.fields[field_name].label
 
 
 def get_all_model_fields(model):

@@ -23,6 +23,8 @@ Installation
 Usage
 -----
 
+``django-formfactory`` allows users to create forms and wizards in the CMS.
+
 Settings
 ~~~~~~~~
 
@@ -32,14 +34,24 @@ FORMFACTORY["field-types"]
 Views
 ~~~~~
 
-``django-formfactory`` provide a base ``FormView`` which can be used directly or
-subclassed if you require extra context or form data processing.
+``django-formfactory`` provide a base ``FormView`` and ``FactoryWizardView``
+which can both be used directly or subclassed if you require extra context
+or form data processing.
+
+Templates
+~~~~~~~~~
+
+``django-formfactory`` allows you to either override the template for all forms
+by adding a template ``formfactory/form_detail.html`` or an individual form by
+adding a template ``formfactory/form_detail_<form-slug>.html`` to your project's
+template dir.
 
 Inclusiontag
 ~~~~~~~~~~~~
 
 Use the inclusion tag which has been provided:
 ``{% render_form form_object %}``
+
 
 Models
 ~~~~~~
@@ -74,17 +86,41 @@ Models
         - success_message: The message string that will be displayed by the django messages framework on successful submission of the form
         - failure_message: The message string that will be displayed by the django messages framework if a form submission fails
 
+
+**Wizard:**
+    A wizard object that encapsulates a list of forms and actions that will be performed on the WizardView's ``done`` step.
+        - title: a descriptive title
+        - slug: url friendly identifier
+        - forms: a set of ordered forms mapping to each step in the WizardView.
+        - redirect_to: The URL which should should be redirect to after the wizard's done step (e.g. "/").
+        - actions: a set of ordered ``Action`` objects to be performed in order in the WizardView's ``done`` step.
+        - success_message: The message string that will be displayed by the django messages framework on successful submission of the form
+        - failure_message: The message string that will be displayed by the django messages framework if a form submission fails
+
+    Each form's ``save()`` method is called in the ``done`` step. This ensures that all actions defined for each form are
+    performed. Following that, wizard actions are then performed before the WizardView redirects.
+
+    The URL to which the WizardView redirects can be specified in one of two ways:
+    - It can be specified in the CMS in the ``redirect_to`` field on the wizard object.
+    - It can be specified as a GET query parameter on the URL. The query parameter key can be specified by setting
+    ``FORMFACTORY["redirect-url-param-name"]`` in your settings file.
+
 **FieldChoice:**
     A set of field choices that a populated into `MultiSelect` and `Select` widgets
-         - label: human readable dropdown label
-         - value: the value that will be submitted
+        - label: human readable dropdown label
+        - value: the value that will be submitted
+
+**FormFieldGroup:**
+    A model which encapsulates a set of form fields.
+        - title: the title to be used in the formset legend when rendered
+        - forms: the ``Form``s this grouping is associated to
 
 **FormField:**
     Defines a form field with all options and required attributes. Encapsulated by the ``Form`` object.
         - title: a descriptive title
         - slug: url friendly identifier
         - position: the position at which the field should be rendered in the form
-        - form: the ``Form`` object
+        - form_groups: the ``FormFieldGroup``s this field is associated to
         - field_type: a set of field type, defined in the app settings
         - widget: a set of widgets, defined in app settings
         - label: the field label text
@@ -96,6 +132,8 @@ Models
         - disabled: boolean value to disable field (readonly)
         - choices: a set of ``FieldChoice`` objects
         - additional_validators: a set of custom defined field validators
+
+
 
 Actions
 ~~~~~~~

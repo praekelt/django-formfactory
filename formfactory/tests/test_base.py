@@ -16,12 +16,26 @@ def load_fixtures(kls):
     }
     kls.fieldchoice = models.FieldChoice.objects.create(**kls.fieldchoice_data)
 
+    kls.fieldgroup_data = {
+        "title": "Field Group 1"
+    }
+    kls.fieldgroup = models.FormFieldGroup.objects.create(
+        **kls.fieldgroup_data
+    )
+
+    kls.fieldgroupformthrough_data = {
+        "form": kls.form,
+        "field_group": kls.fieldgroup,
+        "order": 0
+    }
+    kls.fieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.fieldgroupformthrough_data
+    )
+
     for count, field_type in enumerate(models.FIELD_TYPES):
         setattr(kls, "formfield_data_%s" % count, {
             "title": "Form Field %s" % count,
             "slug": "form-field-%s" % count,
-            "position": count,
-            "form": kls.form,
             "field_type": field_type[0],
             "label": "Form Field %s" % count,
             "placeholder": "Field Placeholder %s" % count
@@ -37,6 +51,18 @@ def load_fixtures(kls):
         if field_type[0] == "ChoiceField":
             getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
 
+        setattr(kls, "fieldgroupthrough_data_%s" % count, {
+            "field_group": kls.fieldgroup,
+            "field": getattr(kls, "formfield_%s" % count),
+            "order": count
+        })
+        setattr(
+            kls, "fieldgroupthrough_%s" % count,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "fieldgroupthrough_data_%s" % count)
+            )
+        )
+
     kls.simpleform_data = {
         "title": "Subscribe Form",
         "slug": "subscribe-form",
@@ -44,6 +70,22 @@ def load_fixtures(kls):
         "failure_message": "Failure"
     }
     kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
+
+    kls.simplefieldgroup_data = {
+        "title": "Field Group 1"
+    }
+    kls.simplefieldgroup = models.FormFieldGroup.objects.create(
+        **kls.simplefieldgroup_data
+    )
+
+    kls.simplefieldgroupformthrough_data = {
+        "form": kls.simpleform,
+        "field_group": kls.simplefieldgroup,
+        "order": 0
+    }
+    kls.simplefieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.simplefieldgroupformthrough_data
+    )
 
     kls.action_data = {
         "action": "formfactory.actions.store_data"
@@ -98,8 +140,6 @@ def load_fixtures(kls):
         "salutation": {
             "title": "Salutation",
             "slug": "salutation",
-            "position": 0,
-            "form": kls.simpleform,
             "field_type": "ChoiceField",
             "label": "Salutation",
             "required": False
@@ -107,8 +147,6 @@ def load_fixtures(kls):
         "name": {
             "title": "Name",
             "slug": "name",
-            "position": 1,
-            "form": kls.simpleform,
             "field_type": "CharField",
             "label": "Full Name",
             "required": True
@@ -116,8 +154,6 @@ def load_fixtures(kls):
         "email_address": {
             "title": "Email Address",
             "slug": "email-address",
-            "position": 2,
-            "form": kls.simpleform,
             "field_type": "EmailField",
             "label": "Email",
             "help_text": "The email you would like info to be sent to"
@@ -125,8 +161,6 @@ def load_fixtures(kls):
         "accept_terms": {
             "title": "Accept Terms",
             "slug": "accept-terms",
-            "position": 3,
-            "form": kls.simpleform,
             "field_type": "BooleanField",
             "label": "Do you accept the terms and conditions",
             "required": False
@@ -134,8 +168,6 @@ def load_fixtures(kls):
         "to_email": {
             "title": "To Email",
             "slug": "to-email",
-            "position": 4,
-            "form": kls.simpleform,
             "field_type": "CharField",
             "widget": "HiddenInput",
             "initial": "dev@praekelt.com",
@@ -144,19 +176,33 @@ def load_fixtures(kls):
         "subject": {
             "title": "Subject",
             "slug": "subject",
-            "position": 5,
-            "form": kls.simpleform,
             "field_type": "CharField",
             "widget": "HiddenInput",
             "initial": "Test Email",
             "required": True
         }
     }
+
+    count = 0
     for key, value in kls.simpleformfield_data.items():
         setattr(
             kls, "simpleformfield_%s" % key,
             models.FormField.objects.create(**value)
         )
+
+        setattr(kls, "simplefieldgroupthrough_data_%s" % key, {
+            "field_group": kls.simplefieldgroup,
+            "field": getattr(kls, "simpleformfield_%s" % key),
+            "order": count
+        })
+        setattr(
+            kls, "simplefieldgroupthrough_%s" % key,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "simplefieldgroupthrough_data_%s" % key)
+            )
+        )
+
+        count += 1
 
     for salutation in ["Mr", "Mrs", "Dr", "Prof"]:
         choice = models.FieldChoice.objects.create(
@@ -171,6 +217,22 @@ def load_fixtures(kls):
         "failure_message": "Failure"
     }
     kls.loginform = models.Form.objects.create(**kls.loginform_data)
+
+    kls.loginfieldgroup_data = {
+        "title": "Field Group 1"
+    }
+    kls.loginfieldgroup = models.FormFieldGroup.objects.create(
+        **kls.loginfieldgroup_data
+    )
+
+    kls.loginfieldgroupformthrough_data = {
+        "form": kls.loginform,
+        "field_group": kls.loginfieldgroup,
+        "order": 0
+    }
+    kls.loginfieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.loginfieldgroupformthrough_data
+    )
 
     kls.loginaction_data = {
         "action": "formfactory.actions.login"
@@ -188,6 +250,7 @@ def load_fixtures(kls):
             "action": kls.loginaction
         }
     ]
+
     for param in kls.loginactionparam_data:
         setattr(
             kls, "loginactionparam_%s" % param["key"],
@@ -207,8 +270,6 @@ def load_fixtures(kls):
         "username": {
             "title": "Username",
             "slug": "username",
-            "position": 0,
-            "form": kls.loginform,
             "field_type": "CharField",
             "label": "Username",
             "required": True
@@ -216,19 +277,33 @@ def load_fixtures(kls):
         "password": {
             "title": "Password",
             "slug": "password",
-            "position": 1,
-            "form": kls.loginform,
             "field_type": "CharField",
             "widget": "PasswordInput",
             "label": "Password",
             "required": True
         }
     }
+
+    count = 0
     for key, value in kls.loginformfield_data.items():
         setattr(
             kls, "loginformfield_%s" % key,
             models.FormField.objects.create(**value)
         )
+
+        setattr(kls, "loginfieldgroupthrough_data_%s" % key, {
+            "field_group": kls.loginfieldgroup,
+            "field": getattr(kls, "loginformfield_%s" % key),
+            "order": count
+        })
+        setattr(
+            kls, "loginfieldgroupthrough_%s" % key,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "loginfieldgroupthrough_data_%s" % key)
+            )
+        )
+
+        count += 1
 
     kls.formdata_data = {
         "uuid": unicode(uuid.uuid4()),
@@ -246,3 +321,19 @@ def load_fixtures(kls):
     )
     kls.dummy_validator = "formfactory.tests.validators.dummy_validator"
     kls.dummy_action = "formfactory.tests.actions.dummy_action"
+
+    kls.wizard_data = {
+        "title": "Test wizard",
+        "slug": "test-wizard",
+        "success_message": "Success",
+        "failure_message": "Failure",
+        "redirect_to": "/"
+    }
+
+    kls.wizard = models.Wizard.objects.create(**kls.wizard_data)
+    kls.wizardformthrough_simple = models.WizardFormThrough.objects.create(
+        wizard=kls.wizard, form=kls.simpleform, order=1
+    )
+    kls.wizardformthrough_login = models.WizardFormThrough.objects.create(
+        wizard=kls.wizard, form=kls.loginform, order=2
+    )

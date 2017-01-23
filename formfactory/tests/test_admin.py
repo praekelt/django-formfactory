@@ -33,9 +33,6 @@ class AdminTestCase(TestCase):
         response = self.client.get("/admin/formfactory/form/add/")
         self.assertEqual(response.status_code, 200)
 
-        # Ensure that the additional validators choice field is populated
-        self.assertContains(response, self.dummy_validator)
-
     def test_admin_action(self):
         response = self.client.get("/admin/formfactory/action/")
         self.assertEqual(response.status_code, 200)
@@ -59,6 +56,27 @@ class AdminTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get("/admin/formfactory/formdata/add/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_fieldgroup(self):
+        response = self.client.get("/admin/formfactory/formfieldgroup/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/admin/formfactory/formfieldgroup/add/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_field(self):
+        response = self.client.get("/admin/formfactory/formfield/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/admin/formfactory/formfield/add/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_wizard(self):
+        response = self.client.get("/admin/formfactory/wizard/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/admin/formfactory/wizard/add/")
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):

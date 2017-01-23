@@ -2,7 +2,8 @@ DEBUG = True
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3"
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "test19.db"
     }
 }
 
@@ -12,6 +13,7 @@ INSTALLED_APPS = [
     "test_without_migrations",
     "formfactory",
     "formfactory.tests",
+    "formtools",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

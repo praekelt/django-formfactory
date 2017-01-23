@@ -69,6 +69,12 @@ def send_email(form_instance, **kwargs):
     except KeyError:
         raise exceptions.MissingActionParam("send_email", "subject_field")
 
+    if "uuid" in cleaned_data:
+        del cleaned_data["uuid"]
+
+    if "form_id" in cleaned_data:
+        del cleaned_data["form_id"]
+
     email_body = "".join([
         "%s: %s\n\r" % (get_label(form_instance, label), value)
         for label, value in cleaned_data.items()

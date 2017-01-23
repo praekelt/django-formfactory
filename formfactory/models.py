@@ -36,7 +36,7 @@ class FormData(models.Model):
     uuid = models.UUIDField(db_index=True)
     form = models.ForeignKey("Form")
 
-    class Meta:
+    class Meta(object):
         ordering = ["uuid"]
 
     def __unicode__(self):
@@ -54,9 +54,7 @@ class FormDataItem(models.Model):
 class Action(models.Model):
     """Defines a form action.
     """
-    action = models.CharField(
-        choices=FORM_ACTIONS, max_length=128
-    )
+    action = models.CharField(choices=FORM_ACTIONS, max_length=128)
 
     def __unicode__(self):
         return self.action
@@ -84,7 +82,7 @@ class FormActionThrough(models.Model):
     form = models.ForeignKey("Form")
     order = models.PositiveIntegerField(default=0)
 
-    class Meta:
+    class Meta(object):
         ordering = ["order"]
         verbose_name = "Form Action"
         verbose_name_plural = "Form Actions"
@@ -93,7 +91,7 @@ class FormActionThrough(models.Model):
         return "%s (%s)" % (self.action.action, self.order)
 
 
-class Form(models.Model):
+class BaseFormModel(models.Model):
     """Form model which encompasses a set of form fields and defines an action
     when the form processed.
     """
@@ -103,11 +101,24 @@ class Form(models.Model):
     slug = models.SlugField(
         max_length=256, db_index=True, unique=True
     )
-    actions = models.ManyToManyField(Action, through=FormActionThrough)
     success_message = models.CharField(max_length=256, blank=True, null=True)
     failure_message = models.CharField(max_length=256, blank=True, null=True)
+    redirect_to = models.CharField(
+        max_length=256, blank=True, null=True,
+        help_text="URL to which this form will redirect to after processesing."
+    )
 
-    class Meta:
+    class Meta(object):
+        abstract = True
+
+
+class Form(BaseFormModel):
+    """Form model which encompasses a set of form fields and defines an action
+    when the form processed.
+    """
+    actions = models.ManyToManyField(Action, through=FormActionThrough)
+
+    class Meta(object):
         ordering = ["title"]
 
     def __unicode__(self):
@@ -128,10 +139,60 @@ class Form(models.Model):
                 "The model needs to be saved before a form can be generated."
             )
 
+        ordered_field_groups = self.fieldgroups.all().order_by(
+            "fieldgroupformthrough"
+        )
+
         return factory.FormFactory(
-            data, files, prefix=self.slug, fields=self.fields.all(),
+            data, files, prefix=self.slug, field_groups=ordered_field_groups,
             form_id=self.pk, actions=self.actions.all()
         )
+
+
+class Wizard(BaseFormModel):
+    """
+    Wizard model that groups forms together.
+    """
+    actions = models.ManyToManyField(Action, through="WizardActionThrough")
+    forms = models.ManyToManyField(Form, through="WizardFormThrough")
+
+    def absolute_url(self):
+        return self.get_absolute_url()
+
+    def get_absolute_url(self):
+        return reverse("formfactory:wizard-detail", kwargs={"slug": self.slug})
+
+
+class WizardFormThrough(models.Model):
+    """Through table for forms to wizards which defines an order.
+    """
+    wizard = models.ForeignKey(Wizard)
+    form = models.ForeignKey(Form)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta(object):
+        ordering = ["order"]
+        verbose_name = "Form"
+        verbose_name_plural = "Forms"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.form.title, self.order)
+
+
+class WizardActionThrough(models.Model):
+    """Through table for wizard actions with a defined order.
+    """
+    action = models.ForeignKey(Action)
+    wizard = models.ForeignKey(Wizard)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta(object):
+        ordering = ["order"]
+        verbose_name = "Wizard Action"
+        verbose_name_plural = "Wizard Actions"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.action.action, self.order)
 
 
 class FieldChoice(models.Model):
@@ -140,25 +201,55 @@ class FieldChoice(models.Model):
     label = models.CharField(max_length=128)
     value = models.CharField(max_length=128)
 
-    class Meta:
+    class Meta(object):
         ordering = ["label"]
 
     def __unicode__(self):
         return "%s:%s" % (self.label, self.value)
 
 
+class FormFieldGroup(models.Model):
+    """Enable the grouping of fields and how that field should be rendered.
+    """
+    title = models.CharField(
+        max_length=256, help_text=_("A short descriptive title.")
+    )
+    forms = models.ManyToManyField(
+        Form, through="FieldGroupFormThrough", related_name="fieldgroups"
+    )
+
+    def __unicode__(self):
+        return self.title
+
+
+class FieldGroupFormThrough(models.Model):
+    """Through table for field groups forms with a defined order.
+    """
+    field_group = models.ForeignKey(FormFieldGroup)
+    form = models.ForeignKey(Form)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta(object):
+        ordering = ["order"]
+        verbose_name = "Field Group"
+        verbose_name_plural = "Field Groups"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.field_group.title, self.order)
+
+
 class FormField(models.Model):
     """Defines a form field with all options and required attributes.
     """
     title = models.CharField(
-        max_length=256,
-        help_text=_("A short descriptive title.")
+        max_length=256, help_text=_("A short descriptive title.")
     )
     slug = models.SlugField(
         max_length=256, db_index=True, unique=True
     )
-    position = models.PositiveIntegerField(default=0)
-    form = models.ForeignKey(Form, related_name="fields")
+    field_groups = models.ManyToManyField(
+        FormFieldGroup, through="FieldGroupThrough", related_name="fields"
+    )
     field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
     widget = models.CharField(
         choices=WIDGET_TYPES, max_length=128, blank=True, null=True,
@@ -178,8 +269,21 @@ class FormField(models.Model):
         choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
     )
 
-    class Meta:
-        ordering = ["position"]
-
     def __unicode__(self):
         return self.title
+
+
+class FieldGroupThrough(models.Model):
+    """Through table for form fields and field groups with a defined order.
+    """
+    field = models.ForeignKey(FormField)
+    field_group = models.ForeignKey(FormFieldGroup)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta(object):
+        ordering = ["order"]
+        verbose_name = "Field"
+        verbose_name_plural = "Fields"
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.field.title, self.order)
