@@ -214,7 +214,8 @@ def load_fixtures(kls):
         "title": "Login Form",
         "slug": "login-form",
         "success_message": "Success",
-        "failure_message": "Failure"
+        "failure_message": "Failure",
+        "submit_button_text": "Login"
     }
     kls.loginform = models.Form.objects.create(**kls.loginform_data)
 

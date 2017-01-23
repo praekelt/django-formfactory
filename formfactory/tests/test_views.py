@@ -91,7 +91,7 @@ class LoginViewDetailTestCase(TestCase):
             "login-form-password": "testpass"
         }
 
-    def test_login_detail(self):
+    def test_detail(self):
         response = self.client.get(
             reverse(
                 "formfactory:form-detail",
@@ -119,6 +119,11 @@ class LoginViewDetailTestCase(TestCase):
         # Ensure the correct template was used, in this case the login template
         # is overridden with formfactory/tests/templates/form_detail-login.html
         self.assertContains(response, "Login Templete Override")
+
+        # Ensure the correct button text is rendered
+        self.assertContains(
+            response, self.loginform_data["submit_button_text"]
+        )
 
 
 class WizardViewTestCase(TestCase):
@@ -178,7 +183,7 @@ class WizardViewTestCase(TestCase):
         )
         return response
 
-    def test_wizard_detail(self):
+    def test_detail(self):
         """Validate that the WizardView is instantiated correctly
         from the DB wizard object; and that the forms are rendered in the
         defined order.
