@@ -28,11 +28,11 @@ class FormFactory(forms.Form):
             initial=form_id, widget=forms.HiddenInput()
         )
 
-        # Interates over the fields defined in the Form model and sets the
+        # Iterates over the fields defined in the Form model and sets the
         # appropriate attributes and builds up the fieldgroups.
         self.field_group = []
         for field_group in defined_field_groups:
-            fields = field_group.fields.all()
+            fields = field_group.fields.all().order_by("fieldgroupthrough")
             self.field_group.append(
                 [field_group.title, [f.slug for f in fields]]
             )

@@ -139,8 +139,12 @@ class Form(BaseFormModel):
                 "The model needs to be saved before a form can be generated."
             )
 
+        ordered_field_groups = self.fieldgroups.all().order_by(
+            "fieldgroupformthrough"
+        )
+
         return factory.FormFactory(
-            data, files, prefix=self.slug, field_groups=self.fieldgroups.all(),
+            data, files, prefix=self.slug, field_groups=ordered_field_groups,
             form_id=self.pk, actions=self.actions.all()
         )
 
@@ -227,8 +231,8 @@ class FieldGroupFormThrough(models.Model):
 
     class Meta(object):
         ordering = ["order"]
-        verbose_name = "Form"
-        verbose_name_plural = "Forms"
+        verbose_name = "Field Group"
+        verbose_name_plural = "Field Groups"
 
     def __unicode__(self):
         return "%s (%s)" % (self.field_group.title, self.order)
@@ -278,8 +282,8 @@ class FieldGroupThrough(models.Model):
 
     class Meta(object):
         ordering = ["order"]
-        verbose_name = "Field Group"
-        verbose_name_plural = "Field Groups"
+        verbose_name = "Field"
+        verbose_name_plural = "Fields"
 
     def __unicode__(self):
         return "%s (%s)" % (self.field.title, self.order)
