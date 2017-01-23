@@ -8,7 +8,7 @@ class FormAdminForm(forms.ModelForm):
         model = models.Form
         fields = [
             "title", "slug", "success_message", "failure_message",
-            "redirect_to"
+            "post_to", "redirect_to", "submit_button_text"
         ]
 
 
