@@ -101,8 +101,6 @@ class FormFactory(forms.Form):
             bf = self[name]
             # Escape and cache in local variable.
             bf_errors = self.error_class([conditional_escape(error) for error in bf.errors])
-
-            # We only need to consider hidden fields at this stage because
             if bf.is_hidden:
                 if bf_errors:
                     top_errors.extend(
