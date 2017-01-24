@@ -95,6 +95,21 @@ class FormFactory(forms.Form):
         top_errors = self.non_field_errors()
 
         output, hidden_fields = [], []
+
+        for name, field in self.fields.items():
+            html_class_attr = ''
+            bf = self[name]
+            # Escape and cache in local variable.
+            bf_errors = self.error_class([conditional_escape(error) for error in bf.errors])
+
+            # We only need to consider hidden fields at this stage because
+            if bf.is_hidden:
+                if bf_errors:
+                    top_errors.extend(
+                        [_('(Hidden field %(name)s) %(error)s') % {'name': name, 'error': force_text(e)}
+                         for e in bf_errors])
+                hidden_fields.append(six.text_type(bf))
+
         for fieldset_label, fieldnames in self.field_group:
             snippet = """<fieldset class="Fieldset">"""
             if fieldset_label:
@@ -113,17 +128,7 @@ class FormFactory(forms.Form):
                 bf_errors = self.error_class(
                     [conditional_escape(error) for error in bf.errors]
                 )
-                if bf.is_hidden:
-                    if bf_errors:
-                        top_errors.extend([
-                            _("(Hidden field %(name)s) %(error)s") % {
-                                "name": name,
-                                "error": force_text(e)
-                            }
-                            for e in bf_errors
-                        ])
-                    hidden_fields.append(six.text_type(bf))
-                else:
+                if not bf.is_hidden:
                     # Create a 'class="..."' atribute if the row should have
                     # any CSS classes applied.
                     css_classes = bf.css_classes()
@@ -157,7 +162,7 @@ class FormFactory(forms.Form):
                         "field_id": "id_%s" % name
                     })
 
-            output.append("</legend>")
+            output.append("</fieldset>")
 
         if top_errors:
             output.insert(0, error_row % force_text(top_errors))

@@ -3,10 +3,10 @@ from rest_framework import serializers
 
 import rest_framework_extras
 
-from formfactory.models import Form, FormField
+from formfactory.models import Form, FormFieldGroup
 
 
-class FormRelatedMixin(serializers.Serializer):
+class FieldGroupRelatedMixin(serializers.Serializer):
     fields = serializers.HyperlinkedRelatedField(
         many=True, read_only=True, view_name="formfield-detail"
     )
@@ -15,11 +15,31 @@ class FormRelatedMixin(serializers.Serializer):
         fields = ("fields", )
 
 
+class FormRelatedMixin(serializers.Serializer):
+    fieldgroups = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="formfieldgroup-detail"
+    )
+
+    class Meta(object):
+        fields = ("fieldgroups", )
+
+
 class PropertiesMixin(serializers.Serializer):
     absolute_url = serializers.ReadOnlyField()
 
     class Meta(object):
         fields = ("absolute_url", )
+
+
+class FieldGroupSerializer(
+        FieldGroupRelatedMixin, serializers.HyperlinkedModelSerializer):
+    class Meta(object):
+        model = FormFieldGroup
+
+
+class FieldGroupObjectsViewSet(viewsets.ModelViewSet):
+    queryset = FormFieldGroup.objects.all()
+    serializer_class = FieldGroupSerializer
 
 
 class FormSerializer(
@@ -38,5 +58,6 @@ def register(router):
     return rest_framework_extras.register(
         router, (
             ("formfactory-form", FormObjectsViewSet),
+            ("formfactory-formfieldgroup", FieldGroupObjectsViewSet),
         )
     )
