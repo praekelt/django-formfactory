@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form class="Form" method="POST" action="{{ object.post_to|default:"" }}">
+    <form class="Form" method="POST" action="{{ request.get_full_path }}">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="{{ object.submit_button_text }}" />
+        <input type="submit" value="{{ view.form_object.submit_button_text }}" />
     </form>
 {% endblock %}

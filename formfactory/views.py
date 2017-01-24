@@ -17,7 +17,6 @@ class FactoryFormView(generic.FormView):
     redirect_to = None
 
     def __init__(self, *args, **kwargs):
-        super(FactoryFormView, self).__init__(*args, **kwargs)
         self.form_object = None
 
     def get_template_names(self):
