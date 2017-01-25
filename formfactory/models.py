@@ -229,7 +229,7 @@ class FormFieldGroup(models.Model):
     )
     show_title = models.BooleanField(
         default=False,
-        help_text=_("Select this is you want the Field group title to be displayed.")
+        help_text=_("Select this for Field group title to be displayed.")
     )
     forms = models.ManyToManyField(
         Form, through="FieldGroupFormThrough", related_name="fieldgroups"
