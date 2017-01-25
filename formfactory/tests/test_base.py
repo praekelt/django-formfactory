@@ -17,7 +17,8 @@ def load_fixtures(kls):
     kls.fieldchoice = models.FieldChoice.objects.create(**kls.fieldchoice_data)
 
     kls.fieldgroup_data = {
-        "title": "Field Group 1"
+        "title": "Field Group 1",
+        "show_title": True
     }
     kls.fieldgroup = models.FormFieldGroup.objects.create(
         **kls.fieldgroup_data
@@ -220,7 +221,8 @@ def load_fixtures(kls):
     kls.loginform = models.Form.objects.create(**kls.loginform_data)
 
     kls.loginfieldgroup_data = {
-        "title": "Field Group 1"
+        "title": "Field Group 1",
+        "show_title": True
     }
     kls.loginfieldgroup = models.FormFieldGroup.objects.create(
         **kls.loginfieldgroup_data

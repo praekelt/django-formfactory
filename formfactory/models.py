@@ -166,6 +166,9 @@ class Wizard(BaseFormModel):
     actions = models.ManyToManyField(Action, through="WizardActionThrough")
     forms = models.ManyToManyField(Form, through="WizardFormThrough")
 
+    def __unicode__(self):
+        return self.title
+
     def absolute_url(self):
         return self.get_absolute_url()
 
@@ -224,6 +227,7 @@ class FormFieldGroup(models.Model):
     title = models.CharField(
         max_length=256, help_text=_("A short descriptive title.")
     )
+    show_title = models.BooleanField(default=False)
     forms = models.ManyToManyField(
         Form, through="FieldGroupFormThrough", related_name="fieldgroups"
     )

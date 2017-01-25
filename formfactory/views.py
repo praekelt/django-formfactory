@@ -147,6 +147,12 @@ class FactoryWizardView(NamedUrlSessionWizardView):
                 self.request.GET.get(redirect_name)
         return super(FactoryWizardView, self).get(*args, **kwargs)
 
+    def get_template_names(self):
+        return [
+            "formfactory/wizard_detail_%s.html" % self.wizard_object.slug,
+            "formfactory/wizard_detail.html"
+        ]
+
     def get_success_url(self):
         stored_redirect = self.storage.extra_data.get(
             SETTINGS["redirect-url-param-name"]
