@@ -11,3 +11,4 @@ pep8.txt
 .tox/
 .coverage
 *.db
+.idea/
