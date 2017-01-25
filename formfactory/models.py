@@ -227,7 +227,10 @@ class FormFieldGroup(models.Model):
     title = models.CharField(
         max_length=256, help_text=_("A short descriptive title.")
     )
-    show_title = models.BooleanField(default=False)
+    show_title = models.BooleanField(
+        default=False,
+        help_text=_("Select this is you want the Field group title to be displayed.")
+    )
     forms = models.ManyToManyField(
         Form, through="FieldGroupFormThrough", related_name="fieldgroups"
     )

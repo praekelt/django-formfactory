@@ -73,7 +73,8 @@ def load_fixtures(kls):
     kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
 
     kls.simplefieldgroup_data = {
-        "title": "Field Group 1"
+        "title": "Field Group 1",
+        "show_title": False
     }
     kls.simplefieldgroup = models.FormFieldGroup.objects.create(
         **kls.simplefieldgroup_data

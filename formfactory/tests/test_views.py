@@ -74,6 +74,16 @@ class ViewTestCase(TestCase):
             )
             self.assertEqual(field.value, str(self.form_postdata[field_key]))
 
+    def test_formfield_group_title_can_be_hidden(self):
+        response = self.client.get(
+            reverse(
+                "formfactory:form-detail",
+                kwargs={"slug": self.simpleform_data["slug"]}
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.failIf("Field Group 1" in response.content)
+
     def tearDown(self):
         pass
 
