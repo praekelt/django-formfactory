@@ -136,6 +136,10 @@ class Form(BaseFormModel):
     def get_absolute_url(self):
         return reverse("formfactory:form-detail", kwargs={"slug": self.slug})
 
+    @property
+    def absolute_url(self):
+        return self.get_absolute_url()
+
     def as_form(self, data=None, files=None):
         """
         Builds the form factory object and returns it.
