@@ -12,7 +12,10 @@ class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
     """
     uuid = forms.UUIDField(
-        initial=unicode(uuid4()), widget=forms.HiddenInput()
+        initial=unicode(uuid4()), widget=forms.HiddenInput
+    )
+    form_id = forms.CharField(
+        widget=forms.HiddenInput
     )
 
     def __init__(self, *args, **kwargs):
@@ -23,10 +26,8 @@ class FormFactory(forms.Form):
 
         super(FormFactory, self).__init__(*args, **kwargs)
 
-        # Creates a hidden form id field
-        self.fields["form_id"] = forms.CharField(
-            initial=form_id, widget=forms.HiddenInput()
-        )
+        # Set initial value
+        self.fields["form_id"].initial = form_id
 
         # Iterates over the fields defined in the Form model and sets the
         # appropriate attributes and builds up the fieldgroups.
