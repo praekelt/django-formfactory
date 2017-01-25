@@ -161,8 +161,7 @@ class FormFactory(forms.Form):
                         "field_id": "id_%s" % name
                     })
 
-            if show_title:
-                output.append("</fieldset>")
+            output.append("</fieldset>")
 
         if top_errors:
             output.insert(0, error_row % force_text(top_errors))
