@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form class="Form" method="POST" action="{{ request.get_full_path }}">
+    <form class="Form" method="POST" action=".">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="{{ view.form_object.submit_button_text }}" />
