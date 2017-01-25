@@ -1,4 +1,7 @@
-<form class="Form" method="POST" action="{{ object.post_to|default:"" }}">{% csrf_token %}
-    {{ object.as_form.as_p }}
-    <input type="submit" value="submit" />
+<form class="Form" method="POST" action=".">
+    {% with object.as_form as form %}
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="{{ object.submit_button_text }}" />
+    {% endwith %}
 </form>
