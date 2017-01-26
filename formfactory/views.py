@@ -149,6 +149,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
 
     def get_template_names(self):
         return [
+            "formfactory/wizard_%s_step.html" % self.steps.current,
             "formfactory/wizard_detail_%s.html" % self.wizard_object.slug,
             "formfactory/wizard_detail.html"
         ]
