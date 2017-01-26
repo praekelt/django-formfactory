@@ -35,7 +35,7 @@ class FormFactory(forms.Form):
         for field_group in defined_field_groups:
             fields = field_group.fields.all().order_by("fieldgroupthrough")
             self.field_group.append(
-                [field_group.title, [f.slug for f in fields]]
+                [field_group.title, field_group.show_title, [f.slug for f in fields]]
             )
             for field in fields:
                 field_type = getattr(forms, field.field_type)
@@ -109,9 +109,9 @@ class FormFactory(forms.Form):
                          for e in bf_errors])
                 hidden_fields.append(six.text_type(bf))
 
-        for fieldset_label, fieldnames in self.field_group:
+        for fieldset_label, show_title, fieldnames in self.field_group:
             snippet = """<fieldset class="Fieldset">"""
-            if fieldset_label:
+            if show_title:
                 snippet += "<legend Fieldsetlegend>%s</legend>" % fieldset_label
             output.append(snippet)
 
