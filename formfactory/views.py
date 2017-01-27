@@ -147,6 +147,12 @@ class FactoryWizardView(NamedUrlSessionWizardView):
                 self.request.GET.get(redirect_name)
         return super(FactoryWizardView, self).get(*args, **kwargs)
 
+    def get_context_data(self, form, **kwargs):
+        context = super(FactoryWizardView, self).get_context_data(
+            form, **kwargs)
+        context["form_object"] = self.form_list_map[self.steps.current]
+        return context
+
     def get_template_names(self):
         return [
             "formfactory/wizard_%s_step.html" % self.steps.current,
