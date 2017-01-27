@@ -151,7 +151,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         context = super(FactoryWizardView, self).get_context_data(
             form, **kwargs)
         context["form_object"] = self.form_list_map[self.steps.current]
-        context["wizard_slug"] = self.wizard_object.slug
+        context["wizard_object"] = self.wizard_object
         return context
 
     def get_template_names(self):
