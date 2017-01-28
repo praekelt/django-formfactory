@@ -138,10 +138,8 @@ class FormFactory(forms.Form):
                         output.append(error_row % force_text(bf_errors))
 
                     if bf.label:
-                        label = ""
-                        if field.required:
-                            label = "* "
-                        label += conditional_escape(force_text(bf.label))
+                        label = conditional_escape(force_text(bf.label))
+                        label = bf.label_tag(label) or ''
                     else:
                         label = ''
 
