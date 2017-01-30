@@ -139,16 +139,16 @@ class FormFactory(forms.Form):
 
                     if bf.label:
                         label = conditional_escape(force_text(bf.label))
-                        label = bf.label_tag(label) or ''
+                        label = bf.label_tag(label) or ""
                     else:
-                        label = ''
+                        label = ""
 
                     if field.help_text:
                         help_text = help_text_html % force_text(
                             field.help_text
                         )
                     else:
-                        help_text = ''
+                        help_text = ""
 
                     output.append(normal_row % {
                         "errors": force_text(bf_errors),
