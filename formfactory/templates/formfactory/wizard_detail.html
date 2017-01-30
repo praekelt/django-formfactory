@@ -1,5 +1,5 @@
 {% load i18n %}
-<form method="post" enctype="multipart/form-data">
+<form class="Form" method="post" enctype="multipart/form-data">
 {% csrf_token %}
 {{ wizard.form.media }}
 {{ wizard.management_form }}
