@@ -72,9 +72,12 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         wizard_slug = kwargs.get("slug")
         self.wizard_object = Wizard.objects.get(slug=wizard_slug)
         self.form_list_map = {}
+        self.form_object_list = self.wizard_object.forms.all().order_by(
+            "wizardformthrough"
+        )
 
         form_list = []
-        for obj in self.wizard_object.forms.all().order_by("wizardformthrough"):
+        for obj in self.form_object_list:
             klass = obj.as_form().__class__
             form_list.append((obj.slug, klass))
             self.form_list_map[obj.slug] = obj
@@ -151,6 +154,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         context = super(FactoryWizardView, self).get_context_data(
             form, **kwargs)
         context["form_object"] = self.form_list_map[self.steps.current]
+        context["form_object_list"] = self.form_object_list
         context["wizard_object"] = self.wizard_object
         return context
 
