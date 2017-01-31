@@ -21,10 +21,12 @@ class FactoryFormView(generic.FormView):
         self.form_object = None
 
     def get_template_names(self):
-        return [
+        template_names = super(FactoryFormView, self).get_template_names()
+        template_names += [
             "formfactory/form_detail_%s.html" % self.form_object.slug,
             "formfactory/form_detail.html"
         ]
+        return template_names
 
     def form_valid(self, form):
         form.save(request=self.request)
