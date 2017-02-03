@@ -117,11 +117,6 @@ class Form(BaseFormModel):
     when the form processed.
     """
     actions = models.ManyToManyField(Action, through=FormActionThrough)
-    post_to = models.CharField(
-        max_length=256, blank=True, null=True,
-        help_text="URL to which this form will be posted to. Leave blank to \
-                        post back to original view."
-    )
     submit_button_text = models.CharField(
         max_length=64, default="Submit",
         help_text="The text you would like on the form submit button."
