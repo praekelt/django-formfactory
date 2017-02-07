@@ -69,7 +69,9 @@ class FormFactory(forms.Form):
                     except TypeError:
                         pass
 
-                if field.model_choices and field.model_choices.items.exists():
+                if field.model_choices and \
+                        hasattr(field.model_choices, "items") and \
+                        field.model_choices.items.exists():
                     choices = tuple(
                         (c.value, c.label)
                         for c in field.model_choices.items.all()
