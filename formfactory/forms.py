@@ -96,7 +96,8 @@ class FormFieldAdminForm(forms.ModelForm):
         fields = [
             "title", "slug", "field_groups", "field_type", "widget", "label",
             "initial", "max_length", "help_text", "placeholder", "required",
-            "disabled", "choices", "additional_validators"
+            "disabled", "choices", "model_choices_content_type",
+            "model_choices_object_id", "additional_validators"
         ]
 
 
