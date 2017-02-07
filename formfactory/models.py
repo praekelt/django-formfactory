@@ -1,6 +1,8 @@
 from django import forms
-from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.db import models
 from django.utils.translation import ugettext as _
 
 from formfactory import actions, _registry, factory, SETTINGS, validators
@@ -277,6 +279,15 @@ class FormField(models.Model):
     required = models.BooleanField(default=True)
     disabled = models.BooleanField(default=False)
     choices = models.ManyToManyField(FieldChoice, blank=True, null=True)
+    model_choices_content_type = models.ForeignKey(
+        ContentType, blank=True, null=True
+    )
+    model_choices_object_id = models.PositiveIntegerField(
+        blank=True, null=True
+    )
+    model_choices = GenericForeignKey(
+        "model_choices_content_type", "model_choices_object_id"
+    )
     additional_validators = models.CharField(
         choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
     )
