@@ -1,6 +1,7 @@
 import uuid
 
 from formfactory import models
+from formfactory.tests.models import Enum, EnumItem
 
 
 def load_fixtures(kls):
@@ -15,6 +16,18 @@ def load_fixtures(kls):
         "value": "choice-1"
     }
     kls.fieldchoice = models.FieldChoice.objects.create(**kls.fieldchoice_data)
+
+    kls.enum_data = {
+        "title": "Enum 1"
+    }
+    kls.enum = Enum.objects.create(**kls.enum_data)
+
+    kls.enumitem_data = {
+        "enum": kls.enum,
+        "label": "Choice 2",
+        "value": "choice-2"
+    }
+    kls.enumitem = EnumItem.objects.create(**kls.enumitem_data)
 
     kls.fieldgroup_data = {
         "title": "Field Group 1",
@@ -51,6 +64,7 @@ def load_fixtures(kls):
 
         if field_type[0] == "ChoiceField":
             getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
+            getattr(kls, "formfield_%s" % count).model_choices = kls.enum
 
         setattr(kls, "fieldgroupthrough_data_%s" % count, {
             "field_group": kls.fieldgroup,
