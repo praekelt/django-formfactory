@@ -41,6 +41,10 @@ class ModelTestCase(TestCase):
         for key, value in self.fieldchoice_data.items():
             self.assertEqual(getattr(self.fieldchoice, key), value)
 
+    def test_modelchoices(self):
+        for key, value in self.enumitem_data.items():
+            self.assertEqual(getattr(self.enumitem, key), value)
+
     def test_formfield(self):
         for count in range(len(models.FIELD_TYPES)):
             formfield_data = getattr(self, "formfield_data_%s" % count)
