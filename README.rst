@@ -131,9 +131,23 @@ Models
         - required: boolean value to indicate if the field is required
         - disabled: boolean value to disable field (readonly)
         - choices: a set of ``FieldChoice`` objects
+        - model_choices: a generic foreign key to a model which defines the choices for the formfield
         - additional_validators: a set of custom defined field validators
 
+Model Choices
+~~~~~~~~~~~~~
 
+To define a custom model for field choices the model will need to have an items related name which points to an enum items model containing key and value fields. ::
+
+    from django.db import models
+
+    class Enum(models.Model):
+        title = models.CharField(max_length=100)
+
+    class EnumItem(models.Model):
+        enum = models.ForeignKey(Enum, related_name="items")
+        value = models.CharField(max_length=100)
+        label = models.CharField(max_length=100)
 
 Actions
 ~~~~~~~
