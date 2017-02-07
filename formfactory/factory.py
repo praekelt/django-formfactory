@@ -69,6 +69,19 @@ class FormFactory(forms.Form):
                     except TypeError:
                         pass
 
+                if field.model_choices and field.model_choices.items.exists():
+                    choices = tuple(
+                        (c.value, c.label)
+                        for c in field.model_choices.items.all()
+                    )
+                    try:
+                        if self.fields[field.slug].choices:
+                            self.fields[field.slug].choices += choices
+                        else:
+                            self.fields[field.slug].choices = choices
+                    except TypeError:
+                        pass
+
                 try:
                     if field.max_length:
                         self.fields[field.slug].max_length = field.max_length
