@@ -210,9 +210,10 @@ class FieldChoice(models.Model):
     """
     label = models.CharField(max_length=128)
     value = models.CharField(max_length=128)
+    order = models.PositiveIntegerField(default=0)
 
     class Meta(object):
-        ordering = ["label"]
+        ordering = ["order"]
 
     def __unicode__(self):
         return "%s:%s" % (self.label, self.value)
