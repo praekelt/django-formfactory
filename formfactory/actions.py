@@ -120,8 +120,6 @@ def file_upload(form_instance, **kwargs):
         f for f in cleaned_data.values() if isinstance(f, InMemoryUploadedFile)
     ]
 
-    print "file_objects", file_objects
-
     try:
         upload_path = cleaned_data.pop(kwargs["upload_path_field"])
     except KeyError:
