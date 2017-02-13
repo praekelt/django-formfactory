@@ -1,6 +1,8 @@
 from django.conf.urls import url
+from django.views.decorators.csrf import csrf_exempt
 
-from formfactory.views import FactoryFormView, FactoryWizardView
+from formfactory.views import FactoryFormView, FactoryFormNoCSRFView, \
+    FactoryWizardView
 
 
 urlpatterns = [
@@ -10,4 +12,9 @@ urlpatterns = [
         name="wizard-detail"
     ),
     url(r"^(?P<slug>[-\w]+)/$", FactoryFormView.as_view(), name="form-detail"),
+    url(
+        r"^nocsrf/(?P<slug>[-\w]+)/$",
+        csrf_exempt(FactoryFormNoCSRFView.as_view()),
+        name="form-detail-nocsrf"
+    )
 ]
