@@ -1,3 +1,5 @@
+from os import path
+
 from django.apps import apps
 from django.utils.module_loading import import_module
 
@@ -23,3 +25,17 @@ def get_label(form_instance, field_name):
 
 def get_all_model_fields(model):
     return [field.name for field in model._meta.get_fields()]
+
+
+def set_file_name(file_path, count):
+    file_name, extension = path.splitext(file_path)
+    if count:
+        return "%s_%s%s" % (file_name, count, extension)
+    return file_path
+
+
+def increment_file_name(file_path):
+    count = 0
+    while path.exists(set_file_name(file_path, count)):
+        count += 1
+    return set_file_name(file_path, count)

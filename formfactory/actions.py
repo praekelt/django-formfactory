@@ -6,7 +6,9 @@ from django.core.mail import send_mail
 from django.contrib import auth
 
 from formfactory import _registry, exceptions
-from formfactory.utils import auto_registration, clean_key, get_label
+from formfactory.utils import (
+    auto_registration, clean_key, get_label, increment_file_name
+)
 
 
 def register(func):
@@ -132,7 +134,9 @@ def file_upload(form_instance, **kwargs):
         os.makedirs(full_upload_path)
 
     for file_object in file_objects:
-        file_path = os.path.join(full_upload_path, file_object.name)
+        file_path = increment_file_name(
+            os.path.join(full_upload_path, file_object.name)
+        )
         with open(file_path, "wb+") as destination:
             for chunk in file_object.chunks():
                 destination.write(chunk)

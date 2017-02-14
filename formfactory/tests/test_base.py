@@ -1,7 +1,16 @@
+import os
+import shutil
 import uuid
+
+from django.conf import settings
 
 from formfactory import models
 from formfactory.tests.models import Enum, EnumItem
+
+
+def cleanup_files():
+    test_file_dir = os.path.join(settings.MEDIA_ROOT, "uploads/test")
+    shutil.rmtree(test_file_dir, ignore_errors=True)
 
 
 def load_fixtures(kls):

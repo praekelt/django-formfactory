@@ -1,16 +1,19 @@
 import os
+import shutil
 
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
 from formfactory import models
-from formfactory.tests.test_base import load_fixtures
+from formfactory.tests.test_base import cleanup_files, load_fixtures
 
 
 class FactoryTestCase(TestCase):
     def setUp(self):
         load_fixtures(self)
+        cleanup_files()
+
         self.form_factory = self.simpleform.as_form()
         self.form_fields = self.form_factory.fields
         self.form_data = {
@@ -27,6 +30,10 @@ class FactoryTestCase(TestCase):
         self.form_files = {
             "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test")
         }
+
+        self.upload_path = os.path.join(
+            settings.MEDIA_ROOT, self.form_data["subscribe-form-upload-to"]
+        )
 
     def test_form(self):
         for value in self.simpleformfield_data.values():
@@ -61,15 +68,32 @@ class FactoryTestCase(TestCase):
             field_key = "%s-%s" % (form_factory.prefix, field.form_field.slug)
             self.assertEqual(field.value, str(form_data[field_key]))
 
-        upload_path = os.path.join(
-            settings.MEDIA_ROOT, self.form_data["subscribe-form-upload-to"]
-        )
         for file_field in self.form_files:
             self.assertTrue(os.path.exists(os.path.join(
-                upload_path, self.form_files[file_field].name
+                self.upload_path, self.form_files[file_field].name
+            )))
+
+    def test_incremental_filenames(self):
+        form_factory = self.simpleform.as_form(
+            data=self.form_data, files=self.form_files
+        )
+        self.assertTrue(form_factory.is_valid())
+        form_factory.save()
+
+        # Create and save the form again to test the file name is incremented
+        form_factory = self.simpleform.as_form(
+            data=self.form_data, files=self.form_files
+        )
+        self.assertTrue(form_factory.is_valid())
+        form_factory.save()
+
+        for file_field in self.form_files:
+            self.assertTrue(os.path.exists(os.path.join(
+                self.upload_path, self.form_files[file_field].name
+            )))
+            self.assertTrue(os.path.exists(os.path.join(
+                self.upload_path, "test_1.txt"
             )))
 
     def tearDown(self):
-        test_file = os.path.join(settings.MEDIA_ROOT, "uploads/test/test.txt")
-        if os.path.exists(test_file):
-            os.remove(test_file)
+        cleanup_files()

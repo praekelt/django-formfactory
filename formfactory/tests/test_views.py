@@ -5,12 +5,14 @@ from django.test import TestCase
 from django.test.client import Client
 
 from formfactory import models
-from formfactory.tests.test_base import load_fixtures
+from formfactory.tests.test_base import cleanup_files, load_fixtures
 
 
 class ViewTestCase(TestCase):
     def setUp(self):
         load_fixtures(self)
+        cleanup_files()
+
         self.client = Client()
         self.form_factory = self.simpleform.as_form()
         self.form_fields = self.form_factory.fields
@@ -93,7 +95,6 @@ class ViewTestCase(TestCase):
 
 class LoginViewDetailTestCase(TestCase):
     def setUp(self):
-        super(LoginViewDetailTestCase, self).setUp()
         load_fixtures(self)
         self.form_factory = self.simpleform.as_form()
         self.form_fields = self.form_factory.fields
@@ -252,3 +253,6 @@ class WizardViewTestCase(TestCase):
             form_data=form_data, value="Tester").exists())
         self.assertTrue(models.FormDataItem.objects.filter(
             form_data=form_data, value="tester@example.com").exists())
+
+    def tearDown(self):
+        pass
