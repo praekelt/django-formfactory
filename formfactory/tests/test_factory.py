@@ -1,3 +1,7 @@
+import os
+
+from django.conf import settings
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
 from formfactory import models
@@ -17,7 +21,11 @@ class FactoryTestCase(TestCase):
             "subscribe-form-email-address": "test@test.com",
             "subscribe-form-accept-terms": True,
             "subscribe-form-to-email": "dev@praekelt.com",
-            "subscribe-form-subject": "Test Email"
+            "subscribe-form-subject": "Test Email",
+            "subscribe-form-upload-to": "uploads/test"
+        }
+        self.form_files = {
+            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test")
         }
 
     def test_form(self):
@@ -29,22 +37,39 @@ class FactoryTestCase(TestCase):
                         v, getattr(self.form_factory.fields[value["slug"]], k)
                     )
 
-        form_factory = self.simpleform.as_form(data=self.form_data)
+        form_factory = self.simpleform.as_form(
+            data=self.form_data, files=self.form_files
+        )
         self.assertTrue(form_factory.is_bound)
         self.assertFalse(bool(form_factory.errors))
         self.assertTrue(form_factory.is_valid())
 
     def test_save(self):
-        form_factory = self.simpleform.as_form(data=self.form_data)
+        form_factory = self.simpleform.as_form(
+            data=self.form_data, files=self.form_files
+        )
         self.assertTrue(form_factory.is_valid())
 
         form_factory.save()
         form_store = models.FormData.objects.get(
             uuid=form_factory.fields["uuid"].initial
         )
+
+        form_data = self.form_data.copy()
+        form_data.update(self.form_files.copy())
         for field in form_store.items.all():
             field_key = "%s-%s" % (form_factory.prefix, field.form_field.slug)
-            self.assertEqual(field.value, str(self.form_data[field_key]))
+            self.assertEqual(field.value, str(form_data[field_key]))
+
+        upload_path = os.path.join(
+            settings.MEDIA_ROOT, self.form_data["subscribe-form-upload-to"]
+        )
+        for file_field in self.form_files:
+            self.assertTrue(os.path.exists(os.path.join(
+                upload_path, self.form_files[file_field].name
+            )))
 
     def tearDown(self):
-        pass
+        test_file = os.path.join(settings.MEDIA_ROOT, "uploads/test/test.txt")
+        if os.path.exists(test_file):
+            os.remove(test_file)

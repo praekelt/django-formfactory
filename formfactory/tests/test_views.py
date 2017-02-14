@@ -1,3 +1,4 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -21,7 +22,9 @@ class ViewTestCase(TestCase):
             "subscribe-form-email-address": "test@test.com",
             "subscribe-form-accept-terms": True,
             "subscribe-form-to-email": "dev@praekelt.com",
-            "subscribe-form-subject": "Test Email"
+            "subscribe-form-subject": "Test Email",
+            "subscribe-form-upload-to": "uploads/test",
+            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test")
         }
 
         self.user = get_user_model().objects.create(username="testuser")
@@ -163,6 +166,8 @@ class WizardViewTestCase(TestCase):
             "subscribe-form-subject": "Test email",
             "subscribe-form-form_id": self.simpleform.id,
             "subscribe-form-uuid": simple_form_uuid_field,
+            "subscribe-form-upload-to": "uploads/test",
+            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test")
         }
         response = self.client.post(
             reverse("formfactory:wizard-detail", kwargs={
