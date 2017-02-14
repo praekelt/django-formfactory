@@ -161,6 +161,8 @@ FormFactory come with some predefined actions:
     - login: logs a user in. Requires the following ``ActionParam``
         - username_field: mapping to the form field where the username will be completed.
         - password_field: mapping to the form field where the username will be completed.
+    - file_upload: handles uploading files to a predefined path. Requires the following ``ActionParam``
+        - upload_path_field: mapping to the form field where the upload path has been set.
 
 Custom actions can be added by creating a function in <yourapp or project>/formfactoryapp/actions.py. For example::
 

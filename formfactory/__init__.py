@@ -4,15 +4,17 @@ from django.conf import settings
 SETTINGS = getattr(settings, "FORMFACTORY", {
     "field-types": [
         "BooleanField", "CharField", "ChoiceField", "DateField",
-        "DateTimeField", "DecimalField", "EmailField", "FloatField",
-        "GenericIPAddressField", "IntegerField", "MultipleChoiceField",
-        "SlugField", "SplitDateTimeField", "TimeField", "URLField", "UUIDField"
+        "DateTimeField", "DecimalField", "EmailField", "FileField",
+        "FloatField", "GenericIPAddressField", "IntegerField",
+        "MultipleChoiceField", "SlugField", "SplitDateTimeField", "TimeField",
+        "URLField", "UUIDField"
     ],
     "widget-types": [
-        "TextInput", "NumberInput", "EmailInput", "URLInput", "PasswordInput",
-        "HiddenInput", "DateInput", "DateTimeInput", "TimeInput",
-        "Textarea", "CheckboxInput", "Select", "NullBooleanSelect",
-        "SelectMultiple", "RadioSelect", "CheckboxSelectMultiple"
+        "CheckboxInput", "CheckboxSelectMultiple", "DateInput",
+        "DateTimeInput", "EmailInput", "FileInput", "HiddenInput",
+        "NullBooleanSelect", "NumberInput", "PasswordInput", "RadioSelect",
+        "Select", "SelectMultiple", "Textarea", "TextInput", "TimeInput",
+        "URLInput"
     ],
     "redirect-url-param-name": "next"
 })
