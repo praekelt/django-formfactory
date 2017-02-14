@@ -45,7 +45,6 @@ def store_data(form_instance, **kwargs):
         uuid=cleaned_data.pop("uuid"),
         form_id=cleaned_data.pop("form_id"),
     )
-
     for key, value in cleaned_data.items():
         FormDataItem.objects.create(
             form_data=form_data,
