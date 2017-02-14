@@ -1,5 +1,6 @@
 from django import forms
 from django.core.urlresolvers import reverse
+from django.core.files.storage import DefaultStorage
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -8,7 +9,6 @@ from django.views import generic
 from formtools.wizard.views import NamedUrlSessionWizardView
 
 from formfactory import SETTINGS
-from formfactory.forms import EmptyForm
 from formfactory.models import Form, Wizard
 
 
@@ -62,8 +62,9 @@ class FactoryFormView(generic.FormView):
 
 
 class FactoryWizardView(NamedUrlSessionWizardView):
-    form_list = [EmptyForm, ]
+    form_list = [forms.Form]
     redirect_to = None
+    file_storage = DefaultStorage()
 
     def get_prefix(self, request, *args, **kwargs):
         return "%s-%s" % (self.__class__.__name__, kwargs["slug"])
