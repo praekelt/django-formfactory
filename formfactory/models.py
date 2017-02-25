@@ -66,6 +66,19 @@ class Action(models.Model):
         return _registry["actions"][self.action]
 
 
+class Validator(models.Model):
+    """Defines a form action.
+    """
+    validator = models.CharField(choices=ADDITIONAL_VALIDATORS, max_length=128)
+
+    def __unicode__(self):
+        return self.validator
+
+    @property
+    def as_function(self):
+        return _registry["validators"][self.validator]
+
+
 class ActionParam(models.Model):
     """Defines a constant that can be passed to the action function.
     """
