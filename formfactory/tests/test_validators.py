@@ -22,8 +22,18 @@ class ValidatorTestCase(TestCase):
             self.dummy_validator, validators.get_registered_validators()
         )
 
-    def test_action(self):
+    def test_validator(self):
         validator = validators.get_registered_validators()[
             self.dummy_validator
         ]
         self.assertTrue(validator(2))
+
+
+class ValidatorUseCaseTest(TestCase):
+    """Test the validator in action.
+    """
+    def setUp(self):
+        pass
+
+    def test_validation_error_raised(self):
+        pass

@@ -304,6 +304,7 @@ class FormField(models.Model):
     additional_validators = models.CharField(
         choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
     )
+    additional_validators = models.ForeignKey(Validator, blank=True, null=True)
 
     def __unicode__(self):
         return self.title
