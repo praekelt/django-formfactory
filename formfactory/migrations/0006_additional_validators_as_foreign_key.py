@@ -20,15 +20,13 @@ class Migration(migrations.Migration):
             name='Validator',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('validator', models.CharField(choices=[
-                    (b'kevro.customer.validators.dummy_validator', b'kevro.customer.validators.dummy_validator')],
-                                               max_length=128)),
+                ('validator', models.CharField(choices=[], max_length=128)),
             ],
         ),
         migrations.AddField(
             model_name='formfield',
             name='additional_validators',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+            field=models.ForeignKey(blank=True, null=True, on_delete=models.deletion.CASCADE,
                                     to='formfactory.Validator'),
         ),
     ]

@@ -42,7 +42,7 @@ class FormFactory(forms.Form):
 
                 additional_validators = []
                 if field.additional_validators:
-                    additional_validators = [field.additional_validators.as_function()]
+                    additional_validators = [field.additional_validators.as_function]
                     print "======================================"
                     print type(field.additional_validators.as_function)
                     print "======================================"
