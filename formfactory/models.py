@@ -67,7 +67,7 @@ class Action(models.Model):
 
 
 class Validator(models.Model):
-    """Defines a form action.
+    """Defines a form field validator.
     """
     validator = models.CharField(choices=ADDITIONAL_VALIDATORS, max_length=128)
 

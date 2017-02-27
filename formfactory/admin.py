@@ -22,7 +22,6 @@ class ActionModelAdmin(admin.ModelAdmin):
 class ValidatorModelAdmin(admin.ModelAdmin):
     form = forms.ValidatorAdminForm
     model = models.Validator
-    # inlines = [FormActionParamInline]
 
 
 class FormActionThroughInline(admin.StackedInline):
