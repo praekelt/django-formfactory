@@ -9,8 +9,9 @@ Welcome to django-formfactory's documentation!
 ``django-formfactory`` is a CMS-driven form and wizard builder.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+
+    form
+    wizard
 
 Installation
 ============
@@ -18,12 +19,14 @@ Installation
 
     pip install django-formfactory
 
-#. Add ``"formfactory"`` to your ```INSTALLED_APPS``` setting::
+#. Add ``"formfactory"`` to your ``INSTALLED_APPS`` setting::
 
     INSTALLED_APPS = [
         # ...
         "formfactory",
     ]
+
+#. Add ``url(r"^formfactory/", include("formfactory.urls", namespace="formfactory"))`` to your urlpatterns.
 
 Indices and tables
 ==================
