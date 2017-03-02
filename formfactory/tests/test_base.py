@@ -400,7 +400,9 @@ def load_fixtures(kls):
         "redirect_to": "/"
     }
 
-    kls.validator = models.Validator.objects.create(validator=kls.dummy_validator)
+    kls.validator = models.Validator.objects.create(
+        validator=kls.dummy_validator
+    )
     kls.wizard = models.Wizard.objects.create(**kls.wizard_data)
     kls.wizardformthrough_simple = models.WizardFormThrough.objects.create(
         wizard=kls.wizard, form=kls.simpleform, order=1
