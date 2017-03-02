@@ -301,9 +301,6 @@ class FormField(models.Model):
     model_choices = GenericForeignKey(
         "model_choices_content_type", "model_choices_object_id"
     )
-    additional_validators = models.CharField(
-        choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
-    )
     additional_validators = models.ForeignKey(Validator, blank=True, null=True)
 
     def __unicode__(self):
