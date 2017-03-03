@@ -41,8 +41,10 @@ class FormFactory(forms.Form):
                 field_type = getattr(forms, field.field_type)
 
                 additional_validators = []
-                if field.additional_validators:
-                    additional_validators = [field.additional_validators]
+                for validator in field.additional_validators.all():
+                    additional_validators.append(
+                        validator.as_function
+                    )
 
                 self.fields[field.slug] = field_type(
                     label=field.label,
