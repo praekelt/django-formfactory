@@ -66,19 +66,6 @@ class Action(models.Model):
         return _registry["actions"][self.action]
 
 
-class Validator(models.Model):
-    """Defines a form field validator.
-    """
-    validator = models.CharField(choices=ADDITIONAL_VALIDATORS, max_length=128)
-
-    def __unicode__(self):
-        return self.validator
-
-    @property
-    def as_function(self):
-        return _registry["validators"][self.validator]
-
-
 class ActionParam(models.Model):
     """Defines a constant that can be passed to the action function.
     """
@@ -301,7 +288,9 @@ class FormField(models.Model):
     model_choices = GenericForeignKey(
         "model_choices_content_type", "model_choices_object_id"
     )
-    additional_validators = models.ForeignKey(Validator, blank=True, null=True)
+    additional_validators = models.CharField(
+        choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
+    )
 
     def __unicode__(self):
         return self.title

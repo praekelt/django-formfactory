@@ -30,12 +30,6 @@ class FormActionThroughAdminForm(forms.ModelForm):
         fields = ["action", "form", "order"]
 
 
-class ValidatorAdminForm(forms.ModelForm):
-    class Meta(object):
-        model = models.Validator
-        fields = ["validator"]
-
-
 class FormDataAdminForm(forms.ModelForm):
     class Meta(object):
         model = models.FormData
