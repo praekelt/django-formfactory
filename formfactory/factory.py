@@ -7,6 +7,8 @@ from django.utils.safestring import mark_safe
 from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
+from formfactory import _registry
+
 
 class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
@@ -42,7 +44,9 @@ class FormFactory(forms.Form):
 
                 additional_validators = []
                 if field.additional_validators:
-                    additional_validators = [field.additional_validators]
+                    validator = _registry["validators"].get(field.additional_validators)
+                    if validator:
+                        additional_validators = [validator]
 
                 self.fields[field.slug] = field_type(
                     label=field.label,
