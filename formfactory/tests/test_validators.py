@@ -9,21 +9,7 @@ class ValidatorTestCase(TestCase):
     def setUp(self):
         load_fixtures(self)
 
-    def test_registry(self):
-        self.assertIn(
-            self.dummy_validator, validators.get_registered_validators()
-        )
-
-    def test_unregistry(self):
-        validator = validators.get_registered_validators()[
-            self.dummy_validator
-        ]
-        validators.unregister(validator)
-        self.assertNotIn(
-            self.dummy_validator, validators.get_registered_validators()
-        )
-
-    def test_form_field_validator(self):
+    def test_action(self):
         validator = validators.get_registered_validators()[
             self.dummy_validator
         ]
@@ -34,8 +20,8 @@ class ValidatorTestCase(TestCase):
             title="Number",
             slug="number",
             field_type="IntegerField",
-            additional_validators=self.dummy_validator
         )
+        field.additional_validators.add(self.validator)
         group = models.FormFieldGroup.objects.create(
             title="Field Group 3",
             show_title=False
@@ -56,4 +42,18 @@ class ValidatorTestCase(TestCase):
         self.assertRaises(
             ValidationError,
             lambda: bound_form.fields["number"].run_validators(3)
+        )
+
+    def test_registry(self):
+        self.assertIn(
+            self.dummy_validator, validators.get_registered_validators()
+        )
+
+    def test_unregistry(self):
+        validator = validators.get_registered_validators()[
+            self.dummy_validator
+        ]
+        validators.unregister(validator)
+        self.assertNotIn(
+            self.dummy_validator, validators.get_registered_validators()
         )
