@@ -44,7 +44,9 @@ class FormFactory(forms.Form):
 
                 additional_validators = []
                 if field.additional_validators:
-                    validator = _registry["validators"].get(field.additional_validators)
+                    validator = _registry["validators"].get(
+                        field.additional_validators
+                    )
                     if validator:
                         additional_validators = [validator]
 
