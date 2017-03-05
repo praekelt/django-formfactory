@@ -19,6 +19,11 @@ class ActionModelAdmin(admin.ModelAdmin):
     inlines = [FormActionParamInline]
 
 
+class ValidatorModelAdmin(admin.ModelAdmin):
+    form = forms.ValidatorAdminForm
+    model = models.Validator
+
+
 class FormActionThroughInline(admin.StackedInline):
     form = forms.FormActionThroughAdminForm
     model = models.FormActionThrough
@@ -83,6 +88,7 @@ class FormFieldAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Action, ActionModelAdmin)
+admin.site.register(models.Validator, ValidatorModelAdmin)
 admin.site.register(models.FieldChoice, FieldChoiceModelAdmin)
 admin.site.register(models.Form, FormAdmin)
 admin.site.register(models.FormData, FormDataAdmin)
