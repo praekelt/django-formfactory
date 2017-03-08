@@ -304,7 +304,7 @@ class FormField(models.Model):
     model_choices = GenericForeignKey(
         "model_choices_content_type", "model_choices_object_id"
     )
-    additional_validators = models.ManyToManyField(Validator)
+    additional_validators = models.ManyToManyField(Validator, blank=True)
 
     def __unicode__(self):
         return self.title
