@@ -150,7 +150,7 @@ class Form(BaseFormModel):
     def absolute_url(self):
         return self.get_absolute_url()
 
-    def as_form(self, data=None, files=None):
+    def as_form(self, **kwargs):
         """
         Builds the form factory object and returns it.
         """
@@ -162,11 +162,14 @@ class Form(BaseFormModel):
         ordered_field_groups = self.fieldgroups.all().order_by(
             "fieldgroupformthrough"
         )
+        kwargs.update({
+            "field_groups": ordered_field_groups,
+            "form_id": self.pk,
+            "actions": self.actions.all(),
+            "prefix": kwargs.get("prefix", self.slug)
+        })
 
-        return factory.FormFactory(
-            data, files, prefix=self.slug, field_groups=ordered_field_groups,
-            form_id=self.pk, actions=self.actions.all()
-        )
+        return factory.FormFactory(**kwargs)
 
 
 class Wizard(BaseFormModel):

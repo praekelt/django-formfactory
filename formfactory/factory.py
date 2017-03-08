@@ -48,7 +48,7 @@ class FormFactory(forms.Form):
 
                 self.fields[field.slug] = field_type(
                     label=field.label,
-                    initial=field.initial,
+                    initial=field.initial or self.initial.get(field.slug),
                     required=field.required,
                     disabled=field.disabled,
                     help_text=field.help_text,

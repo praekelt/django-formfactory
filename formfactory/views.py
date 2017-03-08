@@ -47,11 +47,10 @@ class FactoryFormView(generic.FormView):
         self.form_object = get_object_or_404(
             Form, slug=self.kwargs.get("slug", self.form_slug)
         )
-        if self.request.POST or self.request.FILES:
-            return self.form_object.as_form(
-                self.request.POST, self.request.FILES
-            )
-        return self.form_object.as_form()
+        return self.form_object.as_form(**self.get_form_kwargs())
+
+    def get_prefix(self):
+        return self.kwargs.get("slug", self.form_slug)
 
     def get_success_url(self):
         redirect_url = self.form_object.redirect_to or self.request.GET.get(
