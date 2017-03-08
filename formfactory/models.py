@@ -150,7 +150,7 @@ class Form(BaseFormModel):
     def absolute_url(self):
         return self.get_absolute_url()
 
-    def as_form(self, data=None, files=None):
+    def as_form(self, data=None, files=None, **kwargs):
         """
         Builds the form factory object and returns it.
         """
@@ -164,8 +164,8 @@ class Form(BaseFormModel):
         )
 
         return factory.FormFactory(
-            data, files, prefix=self.slug, field_groups=ordered_field_groups,
-            form_id=self.pk, actions=self.actions.all()
+            data, files, field_groups=ordered_field_groups,
+            form_id=self.pk, actions=self.actions.all(), **kwargs
         )
 
 
