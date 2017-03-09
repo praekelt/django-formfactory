@@ -35,7 +35,6 @@ class FieldValidatorInline(admin.StackedInline):
     model = models.FormFieldValidatorProxy
     verbose_name = "Additional validator"
     verbose_name_plural = "Additional validators"
-    # form = forms.CustomErrorAdminForm
 
 
 class CustomErrorModelAdmin(admin.ModelAdmin):
