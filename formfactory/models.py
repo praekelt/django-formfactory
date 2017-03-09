@@ -345,6 +345,7 @@ class FieldGroupThrough(models.Model):
 
 class FormFieldErrorMessageProxy(FormField.error_messages.through):
     class Meta:
+        auto_created = True
         proxy = True
 
     def __unicode__(self):
@@ -353,6 +354,7 @@ class FormFieldErrorMessageProxy(FormField.error_messages.through):
 
 class FormFieldValidatorProxy(FormField.additional_validators.through):
     class Meta:
+        auto_created = True
         proxy = True
 
     def __unicode__(self):
