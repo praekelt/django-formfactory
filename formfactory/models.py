@@ -22,6 +22,10 @@ WIDGET_TYPES = tuple(
     if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget)
 )
 
+ERROR_MESSAGES = tuple(
+    (error_type, error_type) for error_type in SETTINGS["error-types"]
+)
+
 ADDITIONAL_VALIDATORS = tuple(
     (validator, validator)
     for validator in validators.get_registered_validators()
@@ -77,6 +81,18 @@ class Validator(models.Model):
     @property
     def as_function(self):
         return _registry["validators"][self.validator]
+
+
+class CustomErrorMessage(models.Model):
+    key = models.CharField(choices=ERROR_MESSAGES, max_length=128)
+    value = models.CharField(max_length=256)
+
+    class Meta(object):
+        verbose_name = "Field error message"
+        verbose_name_plural = "Field error messages"
+
+    def __unicode__(self):
+        return "%s: %s" % (self.key, self.value)
 
 
 class ActionParam(models.Model):
@@ -305,6 +321,7 @@ class FormField(models.Model):
         "model_choices_content_type", "model_choices_object_id"
     )
     additional_validators = models.ManyToManyField(Validator, blank=True)
+    error_messages = models.ManyToManyField(CustomErrorMessage, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -324,3 +341,21 @@ class FieldGroupThrough(models.Model):
 
     def __unicode__(self):
         return "%s (%s)" % (self.field.title, self.order)
+
+
+class FormFieldErrorMessageProxy(FormField.error_messages.through):
+    class Meta:
+        auto_created = True
+        proxy = True
+
+    def __unicode__(self):
+        return str(self.customerrormessage)
+
+
+class FormFieldValidatorProxy(FormField.additional_validators.through):
+    class Meta:
+        auto_created = True
+        proxy = True
+
+    def __unicode__(self):
+        return str(self.validator)

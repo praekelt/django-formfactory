@@ -16,6 +16,12 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "Select", "SelectMultiple", "Textarea", "TextInput", "TimeInput",
         "URLInput"
     ],
+    "error-types": [
+        "empty", "incomplete", "invalid", "invalid_choice", "invalid_image",
+        "invalid_list", "invalid_date", "invalid_time", "invalid_pk_value",
+        "list", "max_decimal_places", "max_digits", "max_length", "max_value",
+        "max_whole_digits", "min_length", "min_value", "missing", "required",
+    ],
     "redirect-url-param-name": "next"
 })
 

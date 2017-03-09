@@ -52,7 +52,10 @@ class FormFactory(forms.Form):
                     required=field.required,
                     disabled=field.disabled,
                     help_text=field.help_text,
-                    validators=additional_validators
+                    validators=additional_validators,
+                    error_messages=dict(
+                        (m.key, m.value) for m in field.error_messages.all()
+                    )
                 )
 
                 # Saves the field model pk to the form field to prevent the

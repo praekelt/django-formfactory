@@ -24,6 +24,24 @@ class ValidatorModelAdmin(admin.ModelAdmin):
     model = models.Validator
 
 
+class FieldCustomErrorInline(admin.StackedInline):
+    model = models.FormFieldErrorMessageProxy
+    verbose_name = "Error message"
+    verbose_name_plural = "Error messages"
+    form = forms.CustomErrorInlineAdminForm
+
+
+class FieldValidatorInline(admin.StackedInline):
+    model = models.FormFieldValidatorProxy
+    verbose_name = "Additional validator"
+    verbose_name_plural = "Additional validators"
+
+
+class CustomErrorModelAdmin(admin.ModelAdmin):
+    form = forms.CustomErrorAdminForm
+    model = models.CustomErrorMessage
+
+
 class FormActionThroughInline(admin.StackedInline):
     form = forms.FormActionThroughAdminForm
     model = models.FormActionThrough
@@ -85,10 +103,13 @@ class FormFieldGroupAdmin(admin.ModelAdmin):
 class FormFieldAdmin(admin.ModelAdmin):
     form = forms.FormFieldAdminForm
     model = models.FormField
+    inlines = [FieldCustomErrorInline, FieldValidatorInline]
+    exclude = ("error_messages", "additional_validators")
 
 
 admin.site.register(models.Action, ActionModelAdmin)
 admin.site.register(models.Validator, ValidatorModelAdmin)
+admin.site.register(models.CustomErrorMessage, CustomErrorModelAdmin)
 admin.site.register(models.FieldChoice, FieldChoiceModelAdmin)
 admin.site.register(models.Form, FormAdmin)
 admin.site.register(models.FormData, FormDataAdmin)
