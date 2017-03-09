@@ -87,6 +87,9 @@ class CustomErrorMessage(models.Model):
     key = models.CharField(choices=ERROR_MESSAGES, max_length=128)
     value = models.CharField(max_length=256)
 
+    def __unicode__(self):
+        return "%s: %s" % (self.key, self.value)
+
 
 class ActionParam(models.Model):
     """Defines a constant that can be passed to the action function.

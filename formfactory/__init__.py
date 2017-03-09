@@ -17,9 +17,9 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "Select", "SelectMultiple", "Textarea", "TextInput", "TimeInput",
         "URLInput"
     ],
-    "error-types": {
-        "required": _("This field is required."),
-    },
+    "error-types": [
+        "required",
+    ],
     "redirect-url-param-name": "next"
 })
 

@@ -24,6 +24,11 @@ class ValidatorModelAdmin(admin.ModelAdmin):
     model = models.Validator
 
 
+class CustomErrorModelAdmin(admin.ModelAdmin):
+    form = forms.CustomErrorAdminForm
+    model = models.CustomErrorMessage
+
+
 class FormActionThroughInline(admin.StackedInline):
     form = forms.FormActionThroughAdminForm
     model = models.FormActionThrough
@@ -89,6 +94,7 @@ class FormFieldAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Action, ActionModelAdmin)
 admin.site.register(models.Validator, ValidatorModelAdmin)
+admin.site.register(models.CustomErrorMessage, CustomErrorModelAdmin)
 admin.site.register(models.FieldChoice, FieldChoiceModelAdmin)
 admin.site.register(models.Form, FormAdmin)
 admin.site.register(models.FormData, FormDataAdmin)

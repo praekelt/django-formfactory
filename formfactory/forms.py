@@ -36,6 +36,12 @@ class ValidatorAdminForm(forms.ModelForm):
         fields = ["validator"]
 
 
+class CustomErrorAdminForm(forms.ModelForm):
+    class Meta(object):
+        model = models.CustomErrorMessage
+        fields = ["key", "value"]
+
+
 class FormDataAdminForm(forms.ModelForm):
     class Meta(object):
         model = models.FormData
@@ -103,7 +109,8 @@ class FormFieldAdminForm(forms.ModelForm):
             "title", "slug", "field_groups", "field_type", "widget", "label",
             "initial", "max_length", "help_text", "placeholder", "required",
             "disabled", "choices", "model_choices_content_type",
-            "model_choices_object_id", "additional_validators"
+            "model_choices_object_id", "additional_validators",
+            "error_messages"
         ]
 
 
