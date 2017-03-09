@@ -87,6 +87,10 @@ class CustomErrorMessage(models.Model):
     key = models.CharField(choices=ERROR_MESSAGES, max_length=128)
     value = models.CharField(max_length=256)
 
+    class Meta(object):
+        verbose_name = "Field error message"
+        verbose_name_plural = "Field error messages"
+
     def __unicode__(self):
         return "%s: %s" % (self.key, self.value)
 
@@ -337,3 +341,11 @@ class FieldGroupThrough(models.Model):
 
     def __unicode__(self):
         return "%s (%s)" % (self.field.title, self.order)
+
+
+class FormFieldErrorMessageProxy(FormField.error_messages.through):
+    class Meta:
+        proxy = True
+
+    def __unicode__(self):
+        return "For %s" % self.customerrormessage.key
