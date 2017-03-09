@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
 
 
 SETTINGS = getattr(settings, "FORMFACTORY", {
