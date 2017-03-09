@@ -22,6 +22,10 @@ WIDGET_TYPES = tuple(
     if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget)
 )
 
+ERROR_MESSAGES = tuple(
+    (error_type, error_type) for error_type in SETTINGS["error-types"]
+)
+
 ADDITIONAL_VALIDATORS = tuple(
     (validator, validator)
     for validator in validators.get_registered_validators()
@@ -77,6 +81,11 @@ class Validator(models.Model):
     @property
     def as_function(self):
         return _registry["validators"][self.validator]
+
+
+class CustomErrorMessage(models.Model):
+    key = models.CharField(choices=ERROR_MESSAGES, max_length=128)
+    value = models.CharField(max_length=256)
 
 
 class ActionParam(models.Model):

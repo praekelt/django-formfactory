@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 
 SETTINGS = getattr(settings, "FORMFACTORY", {
@@ -16,6 +17,9 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "Select", "SelectMultiple", "Textarea", "TextInput", "TimeInput",
         "URLInput"
     ],
+    "error-types": {
+        "required": _("This field is required."),
+    },
     "redirect-url-param-name": "next"
 })
 
