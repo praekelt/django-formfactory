@@ -348,4 +348,12 @@ class FormFieldErrorMessageProxy(FormField.error_messages.through):
         proxy = True
 
     def __unicode__(self):
-        return "For %s" % self.customerrormessage.key
+        return str(self.customerrormessage)
+
+
+class FormFieldValidatorProxy(FormField.additional_validators.through):
+    class Meta:
+        proxy = True
+
+    def __unicode__(self):
+        return str(self.validator)

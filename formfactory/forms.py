@@ -39,7 +39,13 @@ class ValidatorAdminForm(forms.ModelForm):
 
 class CustomErrorAdminForm(forms.ModelForm):
     class Meta(object):
-        model = models.FormField.error_messages.through
+        model = models.CustomErrorMessage
+        fields = ["key", "value"]
+
+
+class CustomErrorInlineAdminForm(forms.ModelForm):
+    class Meta(object):
+        model = models.FormFieldErrorMessageProxy
         fields = ["formfield", "customerrormessage"]
         labels = {
             "customerrormessage": _("Error message"),
