@@ -314,6 +314,7 @@ class FormField(models.Model):
         "model_choices_content_type", "model_choices_object_id"
     )
     additional_validators = models.ManyToManyField(Validator, blank=True)
+    error_messages = models.ManyToManyField(CustomErrorMessage, blank=True)
 
     def __unicode__(self):
         return self.title
