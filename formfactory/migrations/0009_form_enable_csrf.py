@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('formfactory', '0005_added_enum_generic_relation'),
+        ('formfactory', '0008_custom_field_error_messages'),
     ]
 
     operations = [
