@@ -1,3 +1,8 @@
+import os
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
 DEBUG = True
 
 DATABASES = {
@@ -51,5 +56,6 @@ TEMPLATES = [
 
 SITE_ID = 1
 STATIC_URL = "/static/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 SECRET_KEY = "SECRET_KEY"
 EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"

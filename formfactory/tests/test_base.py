@@ -1,7 +1,16 @@
+import os
+import shutil
 import uuid
+
+from django.conf import settings
 
 from formfactory import models
 from formfactory.tests.models import Enum, EnumItem
+
+
+def cleanup_files():
+    test_file_dir = os.path.join(settings.MEDIA_ROOT, "uploads/test")
+    shutil.rmtree(test_file_dir, ignore_errors=True)
 
 
 def load_fixtures(kls):
@@ -152,6 +161,35 @@ def load_fixtures(kls):
         **kls.emailformactionthrough_data
     )
 
+    kls.fileuploadaction_data = {
+        "action": "formfactory.actions.file_upload"
+    }
+    kls.fileuploadaction = models.Action.objects.create(
+        **kls.fileuploadaction_data
+    )
+
+    kls.fileuploadactionparam_data = [
+        {
+            "key": "upload_path_field",
+            "value": "upload-to",
+            "action": kls.fileuploadaction
+        }
+    ]
+    for param in kls.fileuploadactionparam_data:
+        setattr(
+            kls, "fileuploadactionparam_%s" % param["key"],
+            models.ActionParam.objects.create(**param)
+        )
+
+    kls.fileuploadformactionthrough_data = {
+        "action": kls.fileuploadaction,
+        "form": kls.simpleform,
+        "order": 2
+    }
+    kls.fileuploadformactionthrough = models.FormActionThrough.objects.create(
+        **kls.fileuploadformactionthrough_data
+    )
+
     kls.simpleformfield_data = {
         "salutation": {
             "title": "Salutation",
@@ -187,6 +225,20 @@ def load_fixtures(kls):
             "field_type": "CharField",
             "widget": "HiddenInput",
             "initial": "dev@praekelt.com",
+            "required": True
+        },
+        "id_copy": {
+            "title": "ID Copy",
+            "slug": "id-copy",
+            "field_type": "FileField",
+            "required": True
+        },
+        "upload_to": {
+            "title": "Upload To",
+            "slug": "upload-to",
+            "field_type": "CharField",
+            "widget": "HiddenInput",
+            "initial": "uploads/test",
             "required": True
         },
         "subject": {
@@ -348,6 +400,9 @@ def load_fixtures(kls):
         "redirect_to": "/"
     }
 
+    kls.validator = models.Validator.objects.create(
+        validator=kls.dummy_validator
+    )
     kls.wizard = models.Wizard.objects.create(**kls.wizard_data)
     kls.wizardformthrough_simple = models.WizardFormThrough.objects.create(
         wizard=kls.wizard, form=kls.simpleform, order=1

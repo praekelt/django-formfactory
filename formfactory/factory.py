@@ -41,16 +41,21 @@ class FormFactory(forms.Form):
                 field_type = getattr(forms, field.field_type)
 
                 additional_validators = []
-                if field.additional_validators:
-                    additional_validators = [field.additional_validators]
+                for validator in field.additional_validators.all():
+                    additional_validators.append(
+                        validator.as_function
+                    )
 
                 self.fields[field.slug] = field_type(
                     label=field.label,
-                    initial=field.initial,
+                    initial=field.initial or self.initial.get(field.slug),
                     required=field.required,
                     disabled=field.disabled,
                     help_text=field.help_text,
-                    validators=additional_validators
+                    validators=additional_validators,
+                    error_messages=dict(
+                        (m.key, m.value) for m in field.error_messages.all()
+                    )
                 )
 
                 # Saves the field model pk to the form field to prevent the
@@ -109,18 +114,17 @@ class FormFactory(forms.Form):
         """
         # Errors that should be displayed above all fields.
         top_errors = self.non_field_errors()
-
         output, hidden_fields = [], []
 
         for name, field in self.fields.items():
-            html_class_attr = ''
+            html_class_attr = ""
             bf = self[name]
             # Escape and cache in local variable.
             bf_errors = self.error_class([conditional_escape(error) for error in bf.errors])
             if bf.is_hidden:
                 if bf_errors:
                     top_errors.extend(
-                        [_('(Hidden field %(name)s) %(error)s') % {'name': name, 'error': force_text(e)}
+                        [_("(Hidden field %(name)s) %(error)s") % {"name": name, "error": force_text(e)}
                          for e in bf_errors])
                 hidden_fields.append(six.text_type(bf))
 
@@ -181,29 +185,9 @@ class FormFactory(forms.Form):
 
         # Insert any hidden fields in the last row.
         if hidden_fields:
+            # Add the hidden fields outside of the fieldset grouping.
             str_hidden = "".join(hidden_fields)
-            if output:
-                last_row = output[-1]
-                # Chop off the trailing row_ender (e.g. '</td></tr>') and
-                # insert the hidden fields.
-                if not last_row.endswith(row_ender):
-                    # This can happen in the as_p() case (and possibly others
-                    # that users write): if there are only top errors, we may
-                    # not be able to conscript the last row for our purposes,
-                    # so insert a new, empty row.
-                    last_row = (normal_row % {
-                        "errors": "", "label": "",
-                        "field": "", "help_text": "",
-                        "html_class_attr": html_class_attr,
-                        "field_id": ""
-                    })
-                    output.append(last_row)
-                output[-1] = last_row[:-len(row_ender)] + str_hidden + \
-                    row_ender
-            else:
-                # If there aren't any rows in the output, just append the
-                # hidden fields.
-                output.append(str_hidden)
+            output.append(str_hidden)
         return mark_safe("\n".join(output))
 
     def save(self, *args, **kwargs):

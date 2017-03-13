@@ -22,6 +22,10 @@ WIDGET_TYPES = tuple(
     if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget)
 )
 
+ERROR_MESSAGES = tuple(
+    (error_type, error_type) for error_type in SETTINGS["error-types"]
+)
+
 ADDITIONAL_VALIDATORS = tuple(
     (validator, validator)
     for validator in validators.get_registered_validators()
@@ -64,6 +68,31 @@ class Action(models.Model):
     @property
     def as_function(self):
         return _registry["actions"][self.action]
+
+
+class Validator(models.Model):
+    """Defines a form field validator.
+    """
+    validator = models.CharField(choices=ADDITIONAL_VALIDATORS, max_length=128)
+
+    def __unicode__(self):
+        return self.validator
+
+    @property
+    def as_function(self):
+        return _registry["validators"][self.validator]
+
+
+class CustomErrorMessage(models.Model):
+    key = models.CharField(choices=ERROR_MESSAGES, max_length=128)
+    value = models.CharField(max_length=256)
+
+    class Meta(object):
+        verbose_name = "Field error message"
+        verbose_name_plural = "Field error messages"
+
+    def __unicode__(self):
+        return "%s: %s" % (self.key, self.value)
 
 
 class ActionParam(models.Model):
@@ -151,7 +180,7 @@ it.""")
     def absolute_url(self):
         return self.get_absolute_url()
 
-    def as_form(self, data=None, files=None):
+    def as_form(self, **kwargs):
         """
         Builds the form factory object and returns it.
         """
@@ -163,11 +192,14 @@ it.""")
         ordered_field_groups = self.fieldgroups.all().order_by(
             "fieldgroupformthrough"
         )
+        kwargs.update({
+            "field_groups": ordered_field_groups,
+            "form_id": self.pk,
+            "actions": self.actions.all(),
+            "prefix": kwargs.get("prefix", self.slug)
+        })
 
-        return factory.FormFactory(
-            data, files, prefix=self.slug, field_groups=ordered_field_groups,
-            form_id=self.pk, actions=self.actions.all()
-        )
+        return factory.FormFactory(**kwargs)
 
 
 class Wizard(BaseFormModel):
@@ -302,9 +334,8 @@ class FormField(models.Model):
     model_choices = GenericForeignKey(
         "model_choices_content_type", "model_choices_object_id"
     )
-    additional_validators = models.CharField(
-        choices=ADDITIONAL_VALIDATORS, max_length=128, blank=True, null=True
-    )
+    additional_validators = models.ManyToManyField(Validator, blank=True)
+    error_messages = models.ManyToManyField(CustomErrorMessage, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -324,3 +355,21 @@ class FieldGroupThrough(models.Model):
 
     def __unicode__(self):
         return "%s (%s)" % (self.field.title, self.order)
+
+
+class FormFieldErrorMessageProxy(FormField.error_messages.through):
+    class Meta:
+        auto_created = True
+        proxy = True
+
+    def __unicode__(self):
+        return str(self.customerrormessage)
+
+
+class FormFieldValidatorProxy(FormField.additional_validators.through):
+    class Meta:
+        auto_created = True
+        proxy = True
+
+    def __unicode__(self):
+        return str(self.validator)

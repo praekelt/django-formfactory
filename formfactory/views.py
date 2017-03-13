@@ -1,5 +1,6 @@
 from django import forms
 from django.core.urlresolvers import reverse
+from django.core.files.storage import DefaultStorage
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -8,7 +9,6 @@ from django.views import generic
 from formtools.wizard.views import NamedUrlSessionWizardView
 
 from formfactory import SETTINGS
-from formfactory.forms import EmptyForm
 from formfactory.models import Form, Wizard
 
 
@@ -47,11 +47,10 @@ class FactoryFormView(generic.FormView):
         self.form_object = get_object_or_404(
             Form, slug=self.kwargs.get("slug", self.form_slug)
         )
-        if self.request.POST or self.request.FILES:
-            return self.form_object.as_form(
-                self.request.POST, self.request.FILES
-            )
-        return self.form_object.as_form()
+        return self.form_object.as_form(**self.get_form_kwargs())
+
+    def get_prefix(self):
+        return self.kwargs.get("slug", self.form_slug)
 
     def get_success_url(self):
         redirect_url = self.form_object.redirect_to or self.request.GET.get(
@@ -69,8 +68,9 @@ class FactoryFormNoCSRFView(FactoryFormView):
 
 
 class FactoryWizardView(NamedUrlSessionWizardView):
-    form_list = [EmptyForm, ]
+    form_list = [forms.Form]
     redirect_to = None
+    file_storage = DefaultStorage()
 
     def get_prefix(self, request, *args, **kwargs):
         return "%s-%s" % (self.__class__.__name__, kwargs["slug"])

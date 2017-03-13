@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from formfactory import models
 
@@ -28,6 +29,27 @@ class FormActionThroughAdminForm(forms.ModelForm):
     class Meta(object):
         model = models.FormActionThrough
         fields = ["action", "form", "order"]
+
+
+class ValidatorAdminForm(forms.ModelForm):
+    class Meta(object):
+        model = models.Validator
+        fields = ["validator"]
+
+
+class CustomErrorAdminForm(forms.ModelForm):
+    class Meta(object):
+        model = models.CustomErrorMessage
+        fields = ["key", "value"]
+
+
+class CustomErrorInlineAdminForm(forms.ModelForm):
+    class Meta(object):
+        model = models.FormFieldErrorMessageProxy
+        fields = ["formfield", "customerrormessage"]
+        labels = {
+            "customerrormessage": _("Error message"),
+        }
 
 
 class FormDataAdminForm(forms.ModelForm):
@@ -97,7 +119,8 @@ class FormFieldAdminForm(forms.ModelForm):
             "title", "slug", "field_groups", "field_type", "widget", "label",
             "initial", "max_length", "help_text", "placeholder", "required",
             "disabled", "choices", "model_choices_content_type",
-            "model_choices_object_id", "additional_validators"
+            "model_choices_object_id", "additional_validators",
+            "error_messages"
         ]
 
 

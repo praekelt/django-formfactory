@@ -1,8 +1,14 @@
+import os
+
+from django.conf import settings
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.mail import send_mail
 from django.contrib import auth
 
 from formfactory import _registry, exceptions
-from formfactory.utils import auto_registration, clean_key, get_label
+from formfactory.utils import (
+    auto_registration, clean_key, get_label, increment_file_name
+)
 
 
 def register(func):
@@ -104,3 +110,33 @@ def login(form_instance, **kwargs):
     )
     if user is not None:
         auth.login(request, user)
+
+
+@register
+def file_upload(form_instance, **kwargs):
+    """An action which uploads all files to a specific location.
+    """
+    cleaned_data = form_instance.cleaned_data
+
+    file_objects = [
+        f for f in cleaned_data.values() if isinstance(f, InMemoryUploadedFile)
+    ]
+
+    try:
+        upload_path = cleaned_data.pop(kwargs["upload_path_field"])
+    except KeyError:
+        raise exceptions.MissingActionParam("file_upload", "upload_path_field")
+
+    full_upload_path = os.path.join(settings.MEDIA_ROOT, upload_path)
+
+    # Creates the dir path if it does not already exist
+    if not os.path.exists(full_upload_path):
+        os.makedirs(full_upload_path)
+
+    for file_object in file_objects:
+        file_path = increment_file_name(
+            os.path.join(full_upload_path, file_object.name)
+        )
+        with open(file_path, "wb+") as destination:
+            for chunk in file_object.chunks():
+                destination.write(chunk)
