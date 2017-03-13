@@ -60,6 +60,13 @@ class FactoryFormView(generic.FormView):
         return self.request.path_info
 
 
+class FactoryFormNoCSRFView(FactoryFormView):
+    """csrf_exempt is applied at class level independent of request so a full
+    class is required for forms that are not subject to CSRF protection."""
+
+    pass
+
+
 class FactoryWizardView(NamedUrlSessionWizardView):
     form_list = [forms.Form]
     redirect_to = None

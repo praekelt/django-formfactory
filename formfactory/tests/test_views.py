@@ -43,12 +43,7 @@ class ViewTestCase(TestCase):
         }
 
     def test_detail(self):
-        response = self.client.get(
-            reverse(
-                "formfactory:form-detail",
-                kwargs={"slug": self.simpleform_data["slug"]}
-            )
-        )
+        response = self.client.get(self.simpleform.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         for field_group in self.simpleform.fieldgroups.all():
             for field in field_group.fields.all():
@@ -58,10 +53,7 @@ class ViewTestCase(TestCase):
                     self.assertContains(response, choice.value)
 
         response = self.client.post(
-            reverse(
-                "formfactory:form-detail",
-                kwargs={"slug": self.simpleform_data["slug"]}
-            ),
+            self.simpleform.get_absolute_url(),
             data=self.form_postdata, follow=True
         )
         original_form_field = response.context["form"].fields
@@ -81,16 +73,27 @@ class ViewTestCase(TestCase):
 
     def test_formfield_group_title_can_be_hidden(self):
         response = self.client.get(
-            reverse(
-                "formfactory:form-detail",
-                kwargs={"slug": self.simpleform_data["slug"]}
-            )
+            self.simpleform.get_absolute_url()
         )
         self.assertEqual(response.status_code, 200)
         self.failIf("Field Group 1" in response.content)
 
     def tearDown(self):
         pass
+
+
+class ViewNoCSRFTestCase(ViewTestCase):
+    """Re-use the super class. It tests all the required code paths."""
+
+    def setUp(self):
+        super(ViewNoCSRFTestCase, self).setUp()
+
+        # Explicitly enable CSRF checks to confirm the bypass works
+        self.client = Client(enforce_csrf_checks=True)
+
+        # Modify the form
+        self.simpleform.enable_csrf = False
+        self.simpleform.save()
 
 
 class LoginViewDetailTestCase(TestCase):
@@ -106,12 +109,7 @@ class LoginViewDetailTestCase(TestCase):
         }
 
     def test_detail(self):
-        response = self.client.get(
-            reverse(
-                "formfactory:form-detail",
-                kwargs={"slug": self.loginform_data["slug"]}
-            )
-        )
+        response = self.client.get(self.loginform.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         for field_group in self.loginform.fieldgroups.all():
             self.assertContains(response, field_group.title)
@@ -119,10 +117,7 @@ class LoginViewDetailTestCase(TestCase):
                 self.assertContains(response, field.label)
 
         response = self.client.post(
-            reverse(
-                "formfactory:form-detail",
-                kwargs={"slug": self.loginform_data["slug"]}
-            ),
+            self.loginform.get_absolute_url(),
             data=self.loginform_postdata, follow=True
         )
         self.assertEqual(response.status_code, 200)

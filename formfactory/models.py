@@ -152,6 +152,13 @@ class Form(BaseFormModel):
         max_length=64, default="Submit",
         help_text="The text you would like on the form submit button."
     )
+    enable_csrf = models.BooleanField(
+        _("Enable CSRF protection"),
+        default=True,
+        help_text=_("""Cross site request forgery protection may not be needed \
+in all cases. Since it incurs a performance penalty you may wish to disable \
+it.""")
+    )
 
     class Meta(object):
         ordering = ["title"]
@@ -160,7 +167,14 @@ class Form(BaseFormModel):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("formfactory:form-detail", kwargs={"slug": self.slug})
+        if self.enable_csrf:
+            return reverse(
+                "formfactory:form-detail", kwargs={"slug": self.slug}
+            )
+        else:
+            return reverse(
+                "formfactory:form-detail-nocsrf", kwargs={"slug": self.slug}
+            )
 
     @property
     def absolute_url(self):
