@@ -5,11 +5,12 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from formfactory import actions, _registry, factory, SETTINGS, validators
+from formfactory import actions, _registry, factory, SETTINGS, validators, fields
 
 
 actions.auto_discover()
 validators.auto_discover()
+fields.auto_discover()
 
 
 FIELD_TYPES = tuple(
@@ -29,6 +30,10 @@ ERROR_MESSAGES = tuple(
 ADDITIONAL_VALIDATORS = tuple(
     (validator, validator)
     for validator in validators.get_registered_validators()
+)
+
+FORM_FIELDS = tuple(
+    (field, field) for field in fields.get_registered_fields()
 )
 
 FORM_ACTIONS = tuple(
@@ -310,7 +315,7 @@ class FormField(models.Model):
     field_groups = models.ManyToManyField(
         FormFieldGroup, through="FieldGroupThrough", related_name="fields"
     )
-    field_type = models.CharField(choices=FIELD_TYPES, max_length=128)
+    field_type = models.CharField(choices=FORM_FIELDS, max_length=128)
     widget = models.CharField(
         choices=WIDGET_TYPES, max_length=128, blank=True, null=True,
         help_text=_("Leave blank if you prefer to use the default widget.")

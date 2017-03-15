@@ -28,5 +28,6 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
 
 _registry = {
     "actions": {},
-    "validators": {}
+    "validators": {},
+    "fields": {}
 }
