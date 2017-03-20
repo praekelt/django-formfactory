@@ -1,4 +1,4 @@
-from django.forms.fields import Field, CharField, BooleanField
+from django.forms.fields import Field
 from django.apps import apps
 from django.utils.module_loading import import_module
 
@@ -11,7 +11,6 @@ def auto_discover():
     for app in apps.get_app_configs():
         try:
             module = import_module("%s.formfactoryapp.%s" % (app.name, "fields"))
-            # print "================== ", module
             get_form_fields(module)
         except ImportError:
             pass
