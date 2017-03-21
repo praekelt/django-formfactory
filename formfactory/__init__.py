@@ -22,6 +22,7 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "list", "max_decimal_places", "max_digits", "max_length", "max_value",
         "max_whole_digits", "min_length", "min_value", "missing", "required",
     ],
+    "excluded_fields": [],
     "redirect-url-param-name": "next"
 })
 
