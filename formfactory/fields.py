@@ -39,8 +39,6 @@ def get_form_fields(module):
     """Get all form fields defined in this module.
      Form fields should be a subclass of django.forms.fields.Field
     """
-    # TODO: provide a way to limit which django form fields are available in the admin.
-
     for name in dir(module):
         try:
             if issubclass(getattr(module, name), Field):
