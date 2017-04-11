@@ -59,6 +59,13 @@ class FactoryFormView(generic.FormView):
             return redirect_url
         return self.request.path_info
 
+    def get_context_data(self, **kwargs):
+        context = super(FactoryFormView, self).get_context_data(**kwargs)
+        context.update({
+            "form_object": self.form_object
+        })
+        return context
+
 
 class FactoryFormNoCSRFView(FactoryFormView):
     """csrf_exempt is applied at class level independent of request so a full
