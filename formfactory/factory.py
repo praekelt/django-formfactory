@@ -138,8 +138,6 @@ class FormFactory(forms.Form):
                 field = self.fields[name]
 
                 html_class_attr = ""
-                field.widget.attrs["placeholder"] = field.initial or \
-                    field.label
                 bf = self[name]
 
                 # Escape and cache in local variable.
