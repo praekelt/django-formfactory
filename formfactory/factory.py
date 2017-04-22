@@ -140,10 +140,6 @@ class FormFactory(forms.Form):
                 html_class_attr = ""
                 bf = self[name]
 
-                # Escape and cache in local variable.
-                bf_errors = self.error_class(
-                    [conditional_escape(error) for error in bf.errors]
-                )
                 if not bf.is_hidden:
                     # Create a 'class="..."' atribute if the row should have
                     # any CSS classes applied.
@@ -175,6 +171,11 @@ class FormFactory(forms.Form):
                         "html_class_attr": html_class_attr,
                         "field_id": "id_%s" % name
                     })
+
+                # Escape and cache in local variable.
+                bf_errors = self.error_class(
+                    [conditional_escape(error) for error in bf.errors]
+                )
 
             output.append("</fieldset>")
 
