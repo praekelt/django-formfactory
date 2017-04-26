@@ -9,7 +9,8 @@ class FormAdminForm(forms.ModelForm):
         model = models.Form
         fields = [
             "title", "slug", "success_message", "failure_message",
-            "redirect_to", "submit_button_text", "enable_csrf"
+            "redirect_to", "submit_button_text", "enable_csrf",
+            "clean_method"
         ]
 
 
@@ -35,6 +36,12 @@ class ValidatorAdminForm(forms.ModelForm):
     class Meta(object):
         model = models.Validator
         fields = ["validator"]
+
+
+class CleanMethodAdminForm(forms.ModelForm):
+    class Meta(object):
+        model = models.CleanMethod
+        fields = ["clean_method"]
 
 
 class CustomErrorAdminForm(forms.ModelForm):

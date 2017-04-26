@@ -20,6 +20,7 @@ class FormFactory(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.actions = kwargs.pop("actions")
+        self.clean_method = kwargs.pop("clean_method")
 
         form_id = kwargs.pop("form_id")
         defined_field_groups = kwargs.pop("field_groups")
@@ -187,6 +188,14 @@ class FormFactory(forms.Form):
             str_hidden = "".join(hidden_fields)
             output.append(str_hidden)
         return mark_safe("\n".join(output))
+
+    def clean(self, **kwargs):
+        """Performs form level cleaning of field data.
+        """
+        clean_method = self.clean_method
+        if clean_method:
+            clean_method.as_function(form_instance=self, **kwargs)
+        return self.cleaned_data
 
     def save(self, *args, **kwargs):
         """Performs the required actions in the defined sequence.
