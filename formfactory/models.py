@@ -5,11 +5,14 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from formfactory import actions, _registry, factory, SETTINGS, validators
+from formfactory import (
+    _registry, actions, clean_methods, factory, SETTINGS, validators
+)
 
 
 actions.auto_discover()
 validators.auto_discover()
+clean_methods.auto_discover()
 
 
 FIELD_TYPES = tuple(
@@ -33,6 +36,10 @@ ADDITIONAL_VALIDATORS = tuple(
 
 FORM_ACTIONS = tuple(
     (action, action) for action in actions.get_registered_actions()
+)
+
+CLEAN_METHODS = tuple(
+    (clean, clean) for clean in clean_methods.get_registered_clean_methods()
 )
 
 
@@ -81,6 +88,19 @@ class Validator(models.Model):
     @property
     def as_function(self):
         return _registry["validators"][self.validator]
+
+
+class CleanMethod(models.Model):
+    """Defines a form's clean method.
+    """
+    clean_method = models.CharField(choices=CLEAN_METHODS, max_length=128)
+
+    def __unicode__(self):
+        return self.clean_method
+
+    @property
+    def as_function(self):
+        return _registry["clean_methods"][self.clean_method]
 
 
 class CustomErrorMessage(models.Model):
@@ -148,6 +168,7 @@ class Form(BaseFormModel):
     when the form processed.
     """
     actions = models.ManyToManyField(Action, through=FormActionThrough)
+    clean_method = models.ForeignKey(CleanMethod, blank=True, null=True)
     submit_button_text = models.CharField(
         max_length=64, default="Submit",
         help_text="The text you would like on the form submit button."
@@ -196,7 +217,8 @@ it.""")
             "field_groups": ordered_field_groups,
             "form_id": self.pk,
             "actions": self.actions.all(),
-            "prefix": kwargs.get("prefix", self.slug)
+            "prefix": kwargs.get("prefix", self.slug),
+            "clean_method": self.clean_method
         })
 
         return factory.FormFactory(**kwargs)

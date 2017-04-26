@@ -24,6 +24,11 @@ class ValidatorModelAdmin(admin.ModelAdmin):
     model = models.Validator
 
 
+class CleanMethodModelAdmin(admin.ModelAdmin):
+    form = forms.CleanMethodAdminForm
+    model = models.CleanMethod
+
+
 class FieldCustomErrorInline(admin.StackedInline):
     model = models.FormFieldErrorMessageProxy
     verbose_name = "Error message"
@@ -108,6 +113,7 @@ class FormFieldAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Action, ActionModelAdmin)
+admin.site.register(models.CleanMethod, CleanMethodModelAdmin)
 admin.site.register(models.Validator, ValidatorModelAdmin)
 admin.site.register(models.CustomErrorMessage, CustomErrorModelAdmin)
 admin.site.register(models.FieldChoice, FieldChoiceModelAdmin)
