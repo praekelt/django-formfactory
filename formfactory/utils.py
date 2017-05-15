@@ -20,7 +20,7 @@ def get_label(form_instance, field_name):
 
 
 def get_all_model_fields(model):
-    return [field.name for field in model._meta.get_fields()]
+    return model._meta.get_all_field_names()
 
 
 def set_file_name(file_path, count):
