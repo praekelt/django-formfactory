@@ -53,7 +53,6 @@ class FormFactory(forms.Form):
                     label=field.label,
                     initial=field.initial or self.initial.get(field.slug),
                     required=field.required,
-                    disabled=field.disabled,
                     help_text=field.help_text,
                     validators=additional_validators,
                     error_messages=dict(
