@@ -1,6 +1,5 @@
 from os import path
 
-from django.apps import apps
 from django.utils.module_loading import import_module
 
 
@@ -12,11 +11,8 @@ def clean_key(func):
 
 
 def auto_registration(func_type):
-    for app in apps.get_app_configs():
-        try:
-            import_module("%s.formfactoryapp.%s" % (app.name, func_type))
-        except ImportError:
-            pass
+    """Not needed for the current implementation"""
+    pass
 
 
 def get_label(form_instance, field_name):
