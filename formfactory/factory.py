@@ -11,8 +11,10 @@ from django.utils.translation import ugettext_lazy as _
 class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
     """
-    uuid = forms.UUIDField(
-        initial=unicode(uuid4()), widget=forms.HiddenInput
+    uuid = forms.CharField(
+        max_length=32,
+        initial=uuid4().hex,
+        widget=forms.HiddenInput
     )
     form_id = forms.CharField(
         widget=forms.HiddenInput

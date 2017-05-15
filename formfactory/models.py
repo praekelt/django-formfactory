@@ -47,7 +47,7 @@ CLEAN_METHODS = tuple(
 class FormData(models.Model):
     """A basic store for form data.
     """
-    uuid = models.UUIDField(db_index=True)
+    uuid = models.CharField(max_length=32, db_index=True)
     form = models.ForeignKey("Form")
 
     class Meta(object):
