@@ -71,7 +71,14 @@ class Action(models.Model):
     action = models.CharField(choices=FORM_ACTIONS, max_length=128)
 
     def __unicode__(self):
-        return self.action
+        action = unicode(self.action)
+        params = []
+        for param in self.params.all():
+            params.append(unicode(param))
+        if params:
+            action = action + ' ' + ' '.join(sorted(params))
+
+        return action
 
     @property
     def as_function(self):
