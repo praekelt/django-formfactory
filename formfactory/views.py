@@ -22,6 +22,19 @@ class FactoryFormView(generic.FormView):
 
     def get_template_names(self):
         template_names = []
+        template = self.kwargs.get("template", None)
+
+        # We need to include the inclusion tags the formfactory templatetags
+        # use to render the forms as well, otherwise we will never include the
+        # inclusion tags templates. TODO we might need some way to exclude
+        # them, the current implementation assumes we only ajax the template
+        # tag forms.
+        ajax = self.request.GET.get("ajax")
+        if ajax == "true":
+            template_names += [
+                "formfactory/inclusion_tags/form_detail_%s.html" % self.form_object.slug,
+                "formfactory/inclusion_tags/form_detail.html"
+            ]
         if self.template_name is not None:
             template_names = [self.template_name]
         template_names += [
@@ -53,16 +66,20 @@ class FactoryFormView(generic.FormView):
         return self.kwargs.get("slug", self.form_slug)
 
     def get_success_url(self):
+        ajax = self.request.GET.get("ajax")
+        url = "%s"
+        if ajax == "true":
+            url = "%s?ajax=true"
         redirect_url = self.form_object.redirect_to or self.request.GET.get(
             SETTINGS["redirect-url-param-name"]) or self.redirect_to
         if redirect_url:
-            return redirect_url
-        return self.request.path_info
+            return url % redirect_url
+        return url % self.request.path_info
 
     def get_context_data(self, **kwargs):
         context = super(FactoryFormView, self).get_context_data(**kwargs)
         context.update({
-            "form_object": self.form_object
+            "object": self.form_object
         })
         return context
 
