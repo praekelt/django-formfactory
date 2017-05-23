@@ -21,6 +21,9 @@
 
     <script type="text/javascript">
         // We namespace the js to assign as an onclick on the element itself.
+        // TODO Keep single submit button, remove replace via js, strip
+        // incoming js tag and retain original? Rerun click binders each time,
+        // these will atleast alway be bound to only one form.
         FORMFACTORY = {
             submitHandler: function(type) {
                 event.preventDefault();
