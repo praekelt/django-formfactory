@@ -1,27 +1,6 @@
-<div id="{{ object.id }}-container">
-    <script id="{{ object.id }}-js" type="text/javascript">
-        // We namespace the js to assign as an onclick on the element itself.
-        FORMFACTORY = {
-            submitHandler: function() {
-                event.preventDefault();
-                var form = document.getElementById('{{ object.id }}-form');
-                var formData = new FormData(form);
-                var xhr = new XMLHttpRequest();
+<div id="{{ object.id }}-include-container">
 
-                xhr.open('POST', '{{ object.absolute_url }}?ajax=true');
-                xhr.onload = function() {
-                    if (xhr.status == 200) {
-                        document.getElementById('{{ object.id }}-container').outerHTML = xhr.responseText;
-                    } else if (xhr.status != 200) {
-                        alert('Request failed with status: ' + xhr.status);
-                    }
-                };
-                xhr.send(formData);
-            }
-        }
-    </script>
-
-    <form id="{{ object.id }}-form" class="Form" method="POST" action=".">
+    <form id="{{ object.id }}-include-form" class="Form" method="POST" action=".">
         {% if object.enable_csrf %}
             {% csrf_token %}
         {% endif %}
@@ -37,6 +16,28 @@
                 {{ form.as_p }}
             {% endwith %}
         {% endif %}
-        <input id="{{ object.id }}-submit" type="submit" onclick='FORMFACTORY.submitHandler();' value="{{ object.submit_button_text }}" />
+        <input type="submit" onclick='FORMFACTORY.submitHandler();' value="{{ object.submit_button_text }}" />
     </form>
+
+    <script type="text/javascript">
+        // We namespace the js to assign as an onclick on the element itself.
+        FORMFACTORY = {
+            submitHandler: function(type) {
+                event.preventDefault();
+                var form = document.getElementById('{{ object.id }}-include-form');
+                var formData = new FormData(event.target.form);
+                var xhr = new XMLHttpRequest();
+
+                xhr.open('POST', '{{ object.absolute_url }}?ajax=true');
+                xhr.onload = function() {
+                    if (xhr.status == 200) {
+                        document.getElementById('{{ object.id }}-include-container').outerHTML = xhr.responseText;
+                    } else if (xhr.status != 200) {
+                        alert('Request failed with status: ' + xhr.status);
+                    }
+                };
+                xhr.send(formData);
+            }
+        }
+    </script>
 </div>

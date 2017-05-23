@@ -30,7 +30,10 @@ class FactoryFormView(generic.FormView):
         # them, the current implementation assumes we only ajax the template
         # tag forms.
         ajax = self.request.GET.get("ajax")
-        if ajax == "true":
+        inclusion_tag = self.kwargs.get("inclusion_tag", False)
+
+        # Inclusion tags can have detail per object if wanted.
+        if inclusion_tag:
             template_names += [
                 "formfactory/inclusion_tags/form_detail_%s.html" % self.form_object.slug,
                 "formfactory/inclusion_tags/form_detail.html"
