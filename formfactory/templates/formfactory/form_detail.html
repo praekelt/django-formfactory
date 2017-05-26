@@ -1,13 +1,12 @@
 {% extends "base.html" %}
+{% load formfactory_tags %}
 
 {% block content %}
-    <div id="{{ object.id }}-container">
-        <form id="{{ object.id }}-form" class="Form" method="POST" action="." enctype="multipart/form-data">
-            {% if object.enable_csrf %}
-                {% csrf_token %}
-            {% endif %}
-            {{ form.as_p }}
-            <input type="submit" value="{{ object.submit_button_text }}" />
-        </form>
-    </div>
+    {% comment %}
+        We by default use the render form tag here. This means we don't need
+        more duplicate js for ajax posting on base forms. Also inclusion detail
+        templates can be used within the base form meaning there is no need for
+        a specific base detail per object as well.
+    {% endcomment %}
+    {% render_form object %}
 {% endblock %}

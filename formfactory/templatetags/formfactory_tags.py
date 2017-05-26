@@ -13,32 +13,35 @@ def render_form(parser, token):
     tokens = token.split_contents()
     if len(tokens) != 2:
         raise template.TemplateSyntaxError(
-            "{% render_form <form_slug> %}"
+            "{% render_form <form_slug>/<object> %}"
         )
 
-    # We do allow for the full object to be passed on context.
-    if isinstance(tokens[1], basestring):
-        return RenderFormNode(slug=tokens[1])
-
-    # TODO Stil lrequires testing.
-    elif isinstance(token[1], models.Form):
-        return RenderFormNode(form=tokens[1])
+    return RenderFormNode(variable=tokens[1])
 
 
 class RenderFormNode(template.Node):
 
-    def __init__(self, slug=None, form=None):
-        self.slug = slug
-        self.form = form
+    def __init__(self, variable):
+        self.variable = template.Variable(variable)
 
     def render(self, context):
-        if self.slug:
+        # If the variable is not in context we pass it along in its default
+        # string form.
+        try:
+            variable = self.variable.resolve(context)
+        except template.VariableDoesNotExist:
+            variable = self.variable.var
+        default_msg = "No FormFactory Form matches the given query. %s" % self.variable
+        if isinstance(variable, basestring):
             try:
-                form = models.Form.objects.get(slug=self.slug)
+                form = models.Form.objects.get(slug=variable)
             except models.Form.DoesNotExist:
-                raise Http404("No FormFactory Form matches the given query.")
-        elif self.form:
-            form = self.form
+                raise Http404(default_msg)
+        elif isinstance(variable, models.Form):
+            form = variable
+        else:
+            raise Http404(default_msg)
+
         url = form.absolute_url
         view, args, kwargs = resolve(url)
         request = context["request"]

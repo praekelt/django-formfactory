@@ -1,3 +1,5 @@
+import uuid
+
 from django import forms
 from django.core.urlresolvers import reverse
 from django.core.files.storage import DefaultStorage
@@ -24,13 +26,11 @@ class FactoryFormView(generic.FormView):
         template_names = []
         template = self.kwargs.get("template", None)
 
-        # We need to include the inclusion tags the formfactory templatetags
-        # use to render the forms as well, otherwise we will never include the
-        # inclusion tags templates. TODO we might need some way to exclude
-        # them, the current implementation assumes we only ajax the template
-        # tag forms.
+        # Load inclusion tag when ajax is called as well. We do not know what
+        # might be around the main form and have opted to not do a lot of html
+        # manipulation using the js.
         ajax = self.request.GET.get("ajax")
-        inclusion_tag = self.kwargs.get("inclusion_tag", False)
+        inclusion_tag = self.kwargs.get("inclusion_tag", True if ajax == "true" else False)
 
         # Inclusion tags can have detail per object if wanted.
         if inclusion_tag:
@@ -84,6 +84,7 @@ class FactoryFormView(generic.FormView):
         context.update({
             "object": self.form_object
         })
+        context["uuid"] = uuid.uuid4().get_hex()
         return context
 
 

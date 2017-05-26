@@ -1,46 +1,35 @@
-<div id="{{ object.id }}-include-container">
+<div id="{{ object.id }}-form-container-{{ uuid }}">
 
-    <form id="{{ object.id }}-include-form" class="Form" method="POST" action=".">
+    <form id="{{ object.id }}-form-{{ uuid }}" class="Form" method="POST" action=".">
         {% if object.enable_csrf %}
             {% csrf_token %}
         {% endif %}
-
-        {% comment %}
-            We need to check if there is a form available in context, otherwise we
-            will never see backend errors come back.
-        {% endcomment %}
-        {% if form %}
-            {{ form.as_p }}
-        {% else %}
-            {% with object.as_form as form %}
-                {{ form.as_p }}
-            {% endwith %}
-        {% endif %}
-        <input type="submit" onclick='FORMFACTORY.submitHandler();' value="{{ object.submit_button_text }}" />
+        {{ form.as_p }}
+        <input type="submit" onclick='FORMFACTORY.submitHandler{{ uuid }}();' value="{{ object.submit_button_text }}" />
     </form>
 
     <script type="text/javascript">
         // We namespace the js to assign as an onclick on the element itself.
-        // TODO Keep single submit button, remove replace via js, strip
-        // incoming js tag and retain original? Rerun click binders each time,
-        // these will atleast alway be bound to only one form.
-        FORMFACTORY = {
-            submitHandler: function(type) {
-                event.preventDefault();
-                var form = document.getElementById('{{ object.id }}-include-form');
-                var formData = new FormData(event.target.form);
-                var xhr = new XMLHttpRequest();
+        document.addEventListener('DOMContentLoaded', function(event) {
+            FORMFACTORY = {
+                submitHandler{{ uuid }}: function() {
+                    console.log('{{ uuid }}');
+                    event.preventDefault();
+                    var form = event.target.form;//document.getElementById('{{ object.id }}-form-{{ uuid }}');
+                    var formData = new FormData(event.target.form);
+                    var xhr = new XMLHttpRequest();
 
-                xhr.open('POST', '{{ object.absolute_url }}?ajax=true');
-                xhr.onload = function() {
-                    if (xhr.status == 200) {
-                        document.getElementById('{{ object.id }}-include-container').outerHTML = xhr.responseText;
-                    } else if (xhr.status != 200) {
-                        alert('Request failed with status: ' + xhr.status);
-                    }
-                };
-                xhr.send(formData);
+                    xhr.open('POST', '{{ object.absolute_url }}?ajax=true');
+                    xhr.onload = function() {
+                        if (xhr.status == 200) {
+                            document.getElementById('{{ object.id }}-form-container-{{ uuid }}').outerHTML = xhr.responseText;
+                        } else if (xhr.status != 200) {
+                            alert('Request failed with status: ' + xhr.status);
+                        }
+                    };
+                    xhr.send(formData);
+                }
             }
-        }
+        });
     </script>
 </div>
