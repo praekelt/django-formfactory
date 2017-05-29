@@ -26,11 +26,15 @@ class FactoryFormView(generic.FormView):
         template_names = []
         template = self.kwargs.get("template", None)
 
-        # Load inclusion tag when ajax is called as well. We do not know what
-        # might be around the main form and have opted to not do a lot of html
-        # manipulation using the js.
+        # Always load inclusion tag when ajax is called as well. This default
+        # behavior means we need to do less js work on the front end.
         ajax = self.request.GET.get("ajax")
-        inclusion_tag = self.kwargs.get("inclusion_tag", True if ajax == "true" else False)
+
+        # Toggle whether to include inclusion tag templates in template list.
+        inclusion_tag = self.kwargs.get(
+            "inclusion_tag",
+            True if ajax == "true" else False
+        )
 
         # Inclusion tags can have detail per object if wanted.
         if inclusion_tag:
@@ -69,6 +73,10 @@ class FactoryFormView(generic.FormView):
         return self.kwargs.get("slug", self.form_slug)
 
     def get_success_url(self):
+
+        # If the intial post was an AJAX call we append the ajax query to the
+        # url. Primarily for when we return another formfactory view that
+        # already has some logic for AJAX.
         ajax = self.request.GET.get("ajax")
         url = "%s"
         if ajax == "true":

@@ -1,35 +1,56 @@
-<div id="{{ object.id }}-form-container-{{ uuid }}">
+<form data-uuid="{{ uuid }}" class="Form" method="POST" action=".">
+    {% if object.enable_csrf %}
+        {% csrf_token %}
+    {% endif %}
+    {{ form.as_p }}
+    <input type="submit" value="{{ object.submit_button_text }}" />
+</form>
 
-    <form id="{{ object.id }}-form-{{ uuid }}" class="Form" method="POST" action=".">
-        {% if object.enable_csrf %}
-            {% csrf_token %}
-        {% endif %}
-        {{ form.as_p }}
-        <input type="submit" onclick='FORMFACTORY.submitHandler{{ uuid }}();' value="{{ object.submit_button_text }}" />
-    </form>
+<script type="text/javascript">
+    // IE 10 and higher required.
+    // Method namespaced with initial load to prevent more than one handler to
+    // fire per form instance. It is still suggested that your own ajax code
+    // rather be used if possible.
+    FORMFACTORY = {
+        submitHandler{{ uuid }}: function(event, uuid) {
 
-    <script type="text/javascript">
-        // We namespace the js to assign as an onclick on the element itself.
-        document.addEventListener('DOMContentLoaded', function(event) {
-            FORMFACTORY = {
-                submitHandler{{ uuid }}: function() {
-                    console.log('{{ uuid }}');
-                    event.preventDefault();
-                    var form = event.target.form;//document.getElementById('{{ object.id }}-form-{{ uuid }}');
-                    var formData = new FormData(event.target.form);
-                    var xhr = new XMLHttpRequest();
+            // Prevent default page reload on submit.
+            event.preventDefault();
 
-                    xhr.open('POST', '{{ object.absolute_url }}?ajax=true');
-                    xhr.onload = function() {
-                        if (xhr.status == 200) {
-                            document.getElementById('{{ object.id }}-form-container-{{ uuid }}').outerHTML = xhr.responseText;
-                        } else if (xhr.status != 200) {
-                            alert('Request failed with status: ' + xhr.status);
-                        }
-                    };
-                    xhr.send(formData);
+            // Method rebound when new form loaded in, so we grab teh new form
+            // via the provided UUID.
+            var uuid = uuid;
+            var form = document.querySelector('[data-uuid="'+uuid+'"]');
+            var formData = new FormData(form);
+            var xhr = new XMLHttpRequest();
+
+            // Do our AJAX post. ajax=true, will trigger a specific code path
+            // that always returns a template in `inclusion_tags`.
+            xhr.open('POST', '{{ object.absolute_url }}?ajax=true');
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+
+                    // We parse the html string into a usable DOM element. This
+                    // is what also meant we can't support lower than IE 10 out
+                    // of the box.
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(xhr.responseText, "text/html");
+                    var newForm = doc.querySelector('form');
+
+                    // Replace the existing form's contents with the new one,
+                    // thus leaving all event handlers in place.
+                    form.innerHTML = newForm.innerHTML;
+                } else if (xhr.status != 200) {
+                    alert('Request failed with status: ' + xhr.status);
                 }
-            }
-        });
-    </script>
-</div>
+            };
+            xhr.send(formData);
+        }
+    }
+
+    // Bind initial submit handler.
+    document.querySelector('[data-uuid="{{ uuid }}"]').addEventListener(
+        'submit',
+        function(){FORMFACTORY.submitHandler{{ uuid }}(event, "{{ uuid }}")}
+    );
+</script>
