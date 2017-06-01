@@ -47,7 +47,9 @@ class FactoryFormView(generic.FormView):
         self.form_object = get_object_or_404(
             Form, slug=self.kwargs.get("slug", self.form_slug)
         )
-        return self.form_object.as_form(**self.get_form_kwargs())
+        return self.form_object.as_form(
+            request=self.request, **self.get_form_kwargs()
+        )
 
     def get_prefix(self):
         return self.kwargs.get("slug", self.form_slug)

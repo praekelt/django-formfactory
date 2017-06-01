@@ -21,6 +21,7 @@ class FormFactory(forms.Form):
     def __init__(self, *args, **kwargs):
         self.actions = kwargs.pop("actions")
         self.clean_method = kwargs.pop("clean_method")
+        self.request = kwargs.pop("request")
 
         form_id = kwargs.pop("form_id")
         defined_field_groups = kwargs.pop("field_groups")
@@ -192,6 +193,7 @@ class FormFactory(forms.Form):
     def clean(self, **kwargs):
         """Performs form level cleaning of field data.
         """
+        kwargs.update({"request": self.request})
         clean_method = self.clean_method
         if clean_method:
             clean_method.as_function(form_instance=self, **kwargs)
