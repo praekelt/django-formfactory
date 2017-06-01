@@ -346,7 +346,7 @@ class FormField(models.Model):
     placeholder = models.CharField(max_length=128, blank=True, null=True)
     required = models.BooleanField(default=True)
     disabled = models.BooleanField(default=False)
-    choices = models.ManyToManyField(FieldChoice, blank=True, null=True)
+    choices = models.ManyToManyField(FieldChoice, blank=True)
     model_choices_content_type = models.ForeignKey(
         ContentType, blank=True, null=True
     )
