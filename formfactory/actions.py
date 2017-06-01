@@ -1,9 +1,11 @@
 import os
 
+from django import forms
 from django.conf import settings
+from django.contrib import auth
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.mail import send_mail
-from django.contrib import auth
+from django.utils.translation import ugettext_lazy as _
 
 from formfactory import _registry, exceptions
 from formfactory.utils import (
@@ -110,6 +112,7 @@ def login(form_instance, **kwargs):
     )
     if user is not None:
         auth.login(request, user)
+
 
 
 @register

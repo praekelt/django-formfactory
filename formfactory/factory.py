@@ -21,7 +21,7 @@ class FormFactory(forms.Form):
     def __init__(self, *args, **kwargs):
         self.actions = kwargs.pop("actions")
         self.clean_method = kwargs.pop("clean_method")
-        self.request = kwargs.pop("request")
+        self.request = kwargs.pop("request", None)
 
         form_id = kwargs.pop("form_id")
         defined_field_groups = kwargs.pop("field_groups")
