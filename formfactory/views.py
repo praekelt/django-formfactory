@@ -49,6 +49,11 @@ class FactoryFormView(generic.FormView):
         )
         return self.form_object.as_form(**self.get_form_kwargs())
 
+    def get_form_kwargs(self):
+        kwargs = super(FactoryFormView, self).get_form_kwargs()
+        kwargs.update({"request": self.request})
+        return kwargs
+
     def get_prefix(self):
         return self.kwargs.get("slug", self.form_slug)
 
@@ -123,6 +128,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         kwargs.update({
             "data": data,
             "files": files,
+            "request": self.request
         })
         if issubclass(form_class, (forms.ModelForm,
                                    forms.models.BaseInlineFormSet)):

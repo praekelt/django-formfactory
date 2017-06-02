@@ -1,9 +1,9 @@
 import os
 
 from django.conf import settings
+from django.contrib import auth
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.mail import send_mail
-from django.contrib import auth
 
 from formfactory import _registry, exceptions
 from formfactory.utils import (
