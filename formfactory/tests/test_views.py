@@ -1,6 +1,7 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
+from django.http.request import HttpRequest
 from django.test import TestCase
 from django.test.client import Client
 
@@ -265,4 +266,4 @@ class FormHasRequestObjectTestCase(TestCase):
         response = self.client.get(
             reverse("formfactory:form-detail", args=[self.simpleform.slug]),
         )
-        self.assertTrue(hasattr(response.context["form"], "request"))
+        self.assertTrue(isinstance(response.context["form"].request, HttpRequest))
