@@ -251,3 +251,18 @@ class WizardViewTestCase(TestCase):
 
     def tearDown(self):
         pass
+
+
+class FormHasRequestObjectTestCase(TestCase):
+    """Formfactory views should pass request to forms
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        load_fixtures(cls)
+
+    def test_request_is_passed_to_forms(self):
+        response = self.client.get(
+            reverse("formfactory:form-detail", args=[self.simpleform.slug]),
+        )
+        self.assertTrue(hasattr(response.context["form"], "request"))
