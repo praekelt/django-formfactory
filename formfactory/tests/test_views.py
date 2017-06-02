@@ -266,4 +266,6 @@ class FormHasRequestObjectTestCase(TestCase):
         response = self.client.get(
             reverse("formfactory:form-detail", args=[self.simpleform.slug]),
         )
-        self.assertTrue(isinstance(response.context["form"].request, HttpRequest))
+        self.assertTrue(
+            isinstance(response.context["form"].request, HttpRequest)
+        )
