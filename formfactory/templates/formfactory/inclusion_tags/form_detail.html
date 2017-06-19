@@ -18,8 +18,7 @@
                 // Prevent default page reload on submit.
                 event.preventDefault();
 
-                // Method rebound when new form loaded in, so we grab teh new form
-                // via the provided UUID.
+                // We grab the form explicitly via the provided UUID.
                 var uuid = uuid;
                 var form = document.querySelector('[data-uuid="'+uuid+'"]');
                 var formData = new FormData(form);
@@ -31,11 +30,13 @@
                 xhr.onload = function() {
                     if (xhr.status == 200) {
 
-                        // We parse the html string into a usable DOM element. This
-                        // is what also meant we can't support lower than IE 10 out
-                        // of the box.
+                        // We parse the html string into a usable DOM element.
+                        // This is also the cause of us not being able to
+                        // support lower than IE 10 out of the box.
                         var parser = new DOMParser();
-                        var doc = parser.parseFromString(xhr.responseText, "text/html");
+                        var doc = parser.parseFromString(
+                            xhr.responseText, "text/html"
+                        );
                         var newForm = doc.querySelector('form');
 
                         // Replace the existing form's contents with the new one,
