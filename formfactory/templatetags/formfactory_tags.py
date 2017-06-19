@@ -25,14 +25,14 @@ class RenderFormNode(template.Node):
         self.variable = template.Variable(variable)
 
     def render(self, context):
-        # If the variable is not in context we pass it along in its default
-        # string form.
         try:
             variable = self.variable.resolve(context)
         except template.VariableDoesNotExist:
             variable = self.variable.var
         default_msg = "No FormFactory Form matches the given query. %s" % self.variable
 
+        # If the variable is a string type we attempt to find object based on
+        # slug field, otherwise we pass the object along directly.
         if isinstance(variable, basestring):
             try:
                 form = models.Form.objects.get(slug=variable)
@@ -69,9 +69,9 @@ class RenderFormNode(template.Node):
         # We don't expect anything other than a TemplateResponse here.
 
         # Explicitely set the form context to be the incoming context, current
-        # request context shopuld always override clean context data from
+        # request context should always override clean context data from
         # instantiating the view. Only to be replaced if the context object
-        # matches the one the view provides as well.
+        # matches the one the view provides.
         if result.context_data["object"] == context.get("object", None):
             for key, value in result.context_data.items():
                 if context.get(key, None):
