@@ -4,9 +4,9 @@
 {% block content %}
     {% comment %}
         We by default use the render form tag here. This means we don't need
-        more duplicate js for ajax posting on base forms. Also inclusion detail
-        templates can be used within the base form meaning there is no need for
-        a specific base detail per object as well.
+        duplicate js for ajax posting on base forms. Also allowing users to use
+        the existing detail form and only needing to override the inner
+        inclusion detail template.
     {% endcomment %}
     {% render_form object %}
 {% endblock %}
