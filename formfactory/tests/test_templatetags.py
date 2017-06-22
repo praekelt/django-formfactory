@@ -11,7 +11,6 @@ class TemplateTagsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         load_fixtures(cls)
-        cls.client = Client()
         super(TemplateTagsTestCase, cls).setUpTestData()
 
     def test_get_form_by_slug(self):

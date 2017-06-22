@@ -68,7 +68,7 @@ class RenderFormNode(template.Node):
 
         # We don't expect anything other than a TemplateResponse here.
 
-        # Explicitely set the form context to be the incoming context, current
+        # Explicitly set the form context to be the incoming context, current
         # request context should always override clean context data from
         # instantiating the view. Only to be replaced if the context object
         # matches the one the view provides.

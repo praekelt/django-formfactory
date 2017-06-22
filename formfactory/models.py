@@ -181,9 +181,9 @@ in all cases. Since it incurs a performance penalty you may wish to disable \
 it.""")
     )
     ajax_post = models.BooleanField(
-        _("Toggle ajax posting"),
+        _("Enable AJAX posting."),
         default=False,
-        help_text=_("Hook for default submit handler to be overriden by js")
+        help_text=_("Hook for default submit handler to be overriden by JS.")
     )
 
     class Meta(object):
