@@ -337,7 +337,7 @@ class FormField(models.Model):
         choices=WIDGET_TYPES, max_length=128, blank=True, null=True,
         help_text=_("Leave blank if you prefer to use the default widget.")
     )
-    label = models.CharField(max_length=64, blank=True, null=True)
+    label = models.CharField(max_length=256, blank=True, null=True)
     initial = models.TextField(blank=True, null=True)
     max_length = models.PositiveIntegerField(
         default=256, blank=True, null=True
