@@ -33,7 +33,7 @@ class ModelTestCase(TestCase):
         self.assertEqual(self.form.fieldgroups.count(), 1)
         self.assertIsInstance(self.form.as_form(), forms.Form)
         self.assertEqual(
-            self.form.get_absolute_url(), "/formfactory/%s/" % self.form.slug
+            self.form.get_absolute_url(), "/formfactory/form/%s/" % self.form.slug
         )
         self.assertEqual(unicode(self.form), u"Form 1")
 

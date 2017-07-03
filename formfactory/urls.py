@@ -12,7 +12,7 @@ urlpatterns = [
         name="wizard-detail"
     ),
     url(
-        r"^(?P<slug>[-\w]+)(?:/(?P<template_suffix>[\w-]+))?/$",
+        r"^form/(?P<slug>[-\w]+)(?:/(?P<template_suffix>[\w-]+))?/$",
         FactoryFormView.as_view(),
         name="form-detail"
     ),
