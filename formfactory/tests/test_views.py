@@ -1,6 +1,7 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
+from django.http.request import HttpRequest
 from django.test import TestCase
 from django.test.client import Client
 
@@ -251,3 +252,20 @@ class WizardViewTestCase(TestCase):
 
     def tearDown(self):
         pass
+
+
+class FormHasRequestObjectTestCase(TestCase):
+    """Formfactory views should pass request to forms
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        load_fixtures(cls)
+
+    def test_request_is_passed_to_forms(self):
+        response = self.client.get(
+            reverse("formfactory:form-detail", args=[self.simpleform.slug]),
+        )
+        self.assertTrue(
+            isinstance(response.context["form"].request, HttpRequest)
+        )
