@@ -24,15 +24,6 @@ class FactoryFormView(generic.FormView):
 
     def get_template_names(self):
         template_names = []
-        template_suffix = self.kwargs.get("template_suffix", None)
-
-        # Explicitily passed suffix should take priority.
-        if template_suffix:
-            template_names += [
-                "formfactory/inclusion_tags/form_detail_%s.html" \
-                    % template_suffix,
-                "formfactory/form_detail_%s.html" % template_suffix
-            ]
 
         # Always load inclusion tag when ajax is called as well. This default
         # behavior means less js work on the front end.

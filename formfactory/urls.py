@@ -12,12 +12,12 @@ urlpatterns = [
         name="wizard-detail"
     ),
     url(
-        r"^form/(?P<slug>[-\w]+)(?:/(?P<template_suffix>[\w-]+))?/$",
+        r"^(?P<slug>[-\w]+)/$",
         FactoryFormView.as_view(),
         name="form-detail"
     ),
     url(
-        r"^nocsrf/(?P<slug>[-\w]+)(?:/(?P<template_suffix>[\w-]+))?/$",
+        r"^nocsrf/(?P<slug>[-\w]+)/$",
         csrf_exempt(FactoryFormNoCSRFView.as_view()),
         name="form-detail-nocsrf"
     )
