@@ -51,8 +51,10 @@ class FactoryFormView(generic.FormView):
                     % self.form_object.slug,
                 "formfactory/inclusion_tags/form_detail.html"
             ]
+
         if self.template_name is not None:
             template_names = [self.template_name]
+
         template_names += [
             "formfactory/form_detail_%s.html" % self.form_object.slug,
             "formfactory/form_detail.html"
