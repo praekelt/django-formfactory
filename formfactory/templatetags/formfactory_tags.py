@@ -67,15 +67,6 @@ class RenderFormNode(template.Node):
         request.path_info = original_path
 
         # This does not expect anything other than a TemplateResponse here.
-
-        # Explicitly set the form context to be the incoming context, current
-        # request context should always override clean context data from
-        # instantiating the view. Only to be replaced if the context object
-        # matches the one the view provides.
-        if result.context_data["object"] == context.get("object", None):
-            for key, value in result.context_data.items():
-                if context.get(key, None):
-                    result.context_data[key] = context[key]
         result.render()
         html = result.rendered_content
         return html

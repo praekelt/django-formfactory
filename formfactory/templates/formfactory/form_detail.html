@@ -17,7 +17,7 @@
             // Method namespaced with initial load to prevent more than one handler to
             // fire per form instance. It is still suggested that customised ajax code
             // rather be used if possible.
-            FORMFACTORY = {
+            FORMFACTORY{{ uuid }} = {
                 submitHandler{{ uuid }}: function(event, uuid) {
 
                     // Prevent default page reload on submit.
@@ -58,7 +58,7 @@
             // Bind initial submit handler.
             document.querySelector('[data-uuid="{{ uuid }}"]').addEventListener(
                 'submit',
-                function(){FORMFACTORY.submitHandler{{ uuid }}(event, "{{ uuid }}")}
+                function(event){FORMFACTORY{{ uuid }}.submitHandler{{ uuid }}(event, "{{ uuid }}")}
             );
         </script>
     {% endif %}
