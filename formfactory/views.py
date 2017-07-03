@@ -24,10 +24,18 @@ class FactoryFormView(generic.FormView):
 
     def get_template_names(self):
         template_names = []
-        template = self.kwargs.get("template", None)
+        template_suffix = self.kwargs.get("template_suffix", None)
+
+        # Explicitily passed suffix should take priority.
+        if template_suffix:
+            template_names += [
+                "formfactory/inclusion_tags/form_detail_%s.html" \
+                    % template_suffix,
+                "formfactory/form_detail_%s.html" % template_suffix
+            ]
 
         # Always load inclusion tag when ajax is called as well. This default
-        # behavior means we need to do less js work on the front end.
+        # behavior means less js work on the front end.
         ajax = self.request.GET.get("ajax")
 
         # Toggle whether to include inclusion tag templates in template list.
@@ -36,10 +44,11 @@ class FactoryFormView(generic.FormView):
             True if ajax == "true" else False
         )
 
-        # Inclusion tags can have detail per object if wanted.
+        # Inclusion tags can have detail per object if required.
         if inclusion_tag:
             template_names += [
-                "formfactory/inclusion_tags/form_detail_%s.html" % self.form_object.slug,
+                "formfactory/inclusion_tags/form_detail_%s.html" \
+                    % self.form_object.slug,
                 "formfactory/inclusion_tags/form_detail.html"
             ]
         if self.template_name is not None:

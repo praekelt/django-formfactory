@@ -2,11 +2,13 @@
 {% load formfactory_tags %}
 
 {% block content %}
-    {% comment %}
-        We by default use the render form tag here. This means we don't need
-        duplicate js for ajax posting on base forms. Also allowing users to use
-        the existing detail form and only needing to override the inner
-        inclusion detail template.
-    {% endcomment %}
-    {% render_form object %}
+
+    <form data-uuid="{{ uuid }}" class="Form" method="POST" action=".">
+        {% if object.enable_csrf %}
+            {% csrf_token %}
+        {% endif %}
+        {{ form.as_p }}
+        <input type="submit" value="{{ object.submit_button_text }}" />
+    </form>
+
 {% endblock %}

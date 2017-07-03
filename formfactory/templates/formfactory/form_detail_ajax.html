@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load formfactory_tags %}
+
+{% block content %}
+
+    <form data-uuid="{{ uuid }}" class="Form" method="POST" action=".">
+        {% if object.enable_csrf %}
+            {% csrf_token %}
+        {% endif %}
+        {{ form.as_p }}
+        <input type="submit" value="{{ object.submit_button_text }}" />
+    </form>
+
+    {% if object.ajax_post %}
+        <script type="text/javascript">
+            // IE 10 and higher required.
+            // Method namespaced with initial load to prevent more than one handler to
+            // fire per form instance. It is still suggested that your own ajax code
+            // rather be used if possible.
+            FORMFACTORY = {
+                submitHandler{{ uuid }}: function(event, uuid) {
+
+                    // Prevent default page reload on submit.
+                    event.preventDefault();
+
+                    // We grab the form explicitly via the provided UUID.
+                    var uuid = uuid;
+                    var form = document.querySelector('[data-uuid="'+uuid+'"]');
+                    var formData = new FormData(form);
+                    var xhr = new XMLHttpRequest();
+
+                    // Do our AJAX post. ajax=true, will trigger a specific code path
+                    // that always returns a template in `inclusion_tags`.
+                    xhr.open('POST', '{{ object.absolute_url }}?ajax=true');
+                    xhr.onload = function() {
+                        if (xhr.status == 200) {
+
+                            // We parse the html string into a usable DOM element.
+                            // This is also the cause of us not being able to
+                            // support lower than IE 10 out of the box.
+                            var parser = new DOMParser();
+                            var doc = parser.parseFromString(
+                                xhr.responseText, "text/html"
+                            );
+                            var newForm = doc.querySelector('form');
+
+                            // Replace the existing form's contents with the new one,
+                            // thus leaving all event handlers in place.
+                            form.innerHTML = newForm.innerHTML;
+                        } else if (xhr.status != 200) {
+                            alert('Request failed with status: ' + xhr.status);
+                        }
+                    };
+                    xhr.send(formData);
+                }
+            }
+
+            // Bind initial submit handler.
+            document.querySelector('[data-uuid="{{ uuid }}"]').addEventListener(
+                'submit',
+                function(){FORMFACTORY.submitHandler{{ uuid }}(event, "{{ uuid }}")}
+            );
+        </script>
+    {% endif %}
+
+{% endblock %}
