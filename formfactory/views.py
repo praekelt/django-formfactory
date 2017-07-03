@@ -85,9 +85,8 @@ class FactoryFormView(generic.FormView):
 
     def get_success_url(self):
 
-        # If the intial post was an AJAX call we append the ajax query to the
-        # url. Primarily for when we return another formfactory view that
-        # already has some logic for AJAX.
+        # If the intial post was an AJAX call, append the ajax query to the
+        # url.
         ajax = self.request.GET.get("ajax")
         url = "%s"
         if ajax == "true":

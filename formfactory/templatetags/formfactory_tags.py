@@ -31,8 +31,8 @@ class RenderFormNode(template.Node):
             variable = self.variable.var
         default_msg = "No FormFactory Form matches the given query. %s" % self.variable
 
-        # If the variable is a string type we attempt to find object based on
-        # slug field, otherwise we pass the object along directly.
+        # If the variable is a string type, attempt to find object based on
+        # slug field, otherwise pass the object along directly.
         if isinstance(variable, basestring):
             try:
                 form = models.Form.objects.get(slug=variable)
@@ -66,7 +66,7 @@ class RenderFormNode(template.Node):
         request.path = original_path
         request.path_info = original_path
 
-        # We don't expect anything other than a TemplateResponse here.
+        # This does not expect anything other than a TemplateResponse here.
 
         # Explicitly set the form context to be the incoming context, current
         # request context should always override clean context data from

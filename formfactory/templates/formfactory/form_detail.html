@@ -15,7 +15,7 @@
         <script type="text/javascript">
             // IE 10 and higher required.
             // Method namespaced with initial load to prevent more than one handler to
-            // fire per form instance. It is still suggested that your own ajax code
+            // fire per form instance. It is still suggested that customised ajax code
             // rather be used if possible.
             FORMFACTORY = {
                 submitHandler{{ uuid }}: function(event, uuid) {
@@ -23,7 +23,7 @@
                     // Prevent default page reload on submit.
                     event.preventDefault();
 
-                    // We grab the form explicitly via the provided UUID.
+                    // Grab the form explicitly via the provided UUID.
                     var uuid = uuid;
                     var form = document.querySelector('[data-uuid="'+uuid+'"]');
                     var formData = new FormData(form);
@@ -35,7 +35,7 @@
                     xhr.onload = function() {
                         if (xhr.status == 200) {
 
-                            // We parse the html string into a usable DOM element.
+                            // Parse the html string into a usable DOM element.
                             // This is also the cause of us not being able to
                             // support lower than IE 10 out of the box.
                             var parser = new DOMParser();
