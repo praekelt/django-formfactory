@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
-from django.template import Context, Template
+from django.http import HttpResponseNotFound
+from django.template import Context, Template, TemplateSyntaxError
 from django.test import LiveServerTestCase, Client
 from django.test import TestCase
 
@@ -31,3 +32,21 @@ class TemplateTagsTestCase(TestCase):
             )
         )
         self.failUnless("login-form-form_id" in response.content)
+
+    def test_tag_syntax_error(self):
+        with self.assertRaisesMessage(
+            TemplateSyntaxError, "{% render_form <form_slug>/<object> %}"
+        ):
+            response = self.client.get(
+                reverse(
+                    "render_tag_syntax_error"
+                )
+            )
+
+    def test_tag_raise_404(self):
+        response = self.client.get(
+            reverse(
+                "render_tag_404"
+            )
+        )
+        self.failUnless(response.status_code, 404)
