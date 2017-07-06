@@ -1,9 +1,16 @@
-from django import forms
-from django.contrib.auth import get_user_model
-from django.test import TestCase
-from django.test.client import Client
+import os
+import shutil
+import uuid
 
-from formfactory import actions, models, validators
+from django.conf import settings
+
+from formfactory import models
+from formfactory.tests.models import Enum, EnumItem
+
+
+def cleanup_files():
+    test_file_dir = os.path.join(settings.MEDIA_ROOT, "uploads/test")
+    shutil.rmtree(test_file_dir, ignore_errors=True)
 
 
 def load_fixtures(kls):
@@ -13,27 +20,100 @@ def load_fixtures(kls):
     }
     kls.form = models.Form.objects.create(**kls.form_data)
 
+    kls.fieldchoice_data = {
+        "label": "Choice 1",
+        "value": "choice-1"
+    }
+    kls.fieldchoice = models.FieldChoice.objects.create(**kls.fieldchoice_data)
+
+    kls.enum_data = {
+        "title": "Enum 1"
+    }
+    kls.enum = Enum.objects.create(**kls.enum_data)
+
+    kls.enumitem_data = {
+        "enum": kls.enum,
+        "label": "Choice 2",
+        "value": "choice-2"
+    }
+    kls.enumitem = EnumItem.objects.create(**kls.enumitem_data)
+
+    kls.fieldgroup_data = {
+        "title": "Field Group 1",
+        "show_title": True
+    }
+    kls.fieldgroup = models.FormFieldGroup.objects.create(
+        **kls.fieldgroup_data
+    )
+
+    kls.fieldgroupformthrough_data = {
+        "form": kls.form,
+        "field_group": kls.fieldgroup,
+        "order": 0
+    }
+    kls.fieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.fieldgroupformthrough_data
+    )
+
     for count, field_type in enumerate(models.FIELD_TYPES):
         setattr(kls, "formfield_data_%s" % count, {
             "title": "Form Field %s" % count,
             "slug": "form-field-%s" % count,
-            "position": count,
-            "form": kls.form,
             "field_type": field_type[0],
             "label": "Form Field %s" % count,
+            "placeholder": "Field Placeholder %s" % count
         })
+
+        if field_type[0] == "CharField":
+            getattr(kls, "formfield_data_%s" % count)["max_length"] = 100
+
         setattr(kls, "formfield_%s" % count, models.FormField.objects.create(
             **getattr(kls, "formfield_data_%s" % count)
         ))
 
+        if field_type[0] == "ChoiceField":
+            getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
+            getattr(kls, "formfield_%s" % count).model_choices = kls.enum
+
+        setattr(kls, "fieldgroupthrough_data_%s" % count, {
+            "field_group": kls.fieldgroup,
+            "field": getattr(kls, "formfield_%s" % count),
+            "order": count
+        })
+        setattr(
+            kls, "fieldgroupthrough_%s" % count,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "fieldgroupthrough_data_%s" % count)
+            )
+        )
+
     kls.simpleform_data = {
         "title": "Subscribe Form",
-        "slug": "contact"
+        "slug": "subscribe-form",
+        "success_message": "Success",
+        "failure_message": "Failure"
     }
     kls.simpleform = models.Form.objects.create(**kls.simpleform_data)
 
+    kls.simplefieldgroup_data = {
+        "title": "Field Group 1",
+        "show_title": False
+    }
+    kls.simplefieldgroup = models.FormFieldGroup.objects.create(
+        **kls.simplefieldgroup_data
+    )
+
+    kls.simplefieldgroupformthrough_data = {
+        "form": kls.simpleform,
+        "field_group": kls.simplefieldgroup,
+        "order": 0
+    }
+    kls.simplefieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.simplefieldgroupformthrough_data
+    )
+
     kls.action_data = {
-        "action": "StoreAction"
+        "action": "formfactory.actions.store_data"
     }
     kls.action = models.Action.objects.create(**kls.action_data)
 
@@ -46,21 +126,88 @@ def load_fixtures(kls):
         **kls.formactionthrough_data
     )
 
+    kls.emailaction_data = {
+        "action": "formfactory.actions.send_email"
+    }
+    kls.emailaction = models.Action.objects.create(**kls.emailaction_data)
+
+    kls.emailactionparam_data = [
+        {
+            "key": "from_email_field",
+            "value": "email-address",
+            "action": kls.emailaction
+        }, {
+            "key": "to_email_field",
+            "value": "to-email",
+            "action": kls.emailaction
+        }, {
+            "key": "subject_field",
+            "value": "subject",
+            "action": kls.emailaction
+        }
+    ]
+    for param in kls.emailactionparam_data:
+        setattr(
+            kls, "emailactionparam_%s" % param["key"],
+            models.ActionParam.objects.create(**param)
+        )
+
+    kls.emailformactionthrough_data = {
+        "action": kls.emailaction,
+        "form": kls.simpleform,
+        "order": 1
+    }
+    kls.emailformactionthrough = models.FormActionThrough.objects.create(
+        **kls.emailformactionthrough_data
+    )
+
+    kls.fileuploadaction_data = {
+        "action": "formfactory.actions.file_upload"
+    }
+    kls.fileuploadaction = models.Action.objects.create(
+        **kls.fileuploadaction_data
+    )
+
+    kls.fileuploadactionparam_data = [
+        {
+            "key": "upload_path_field",
+            "value": "upload-to",
+            "action": kls.fileuploadaction
+        }
+    ]
+    for param in kls.fileuploadactionparam_data:
+        setattr(
+            kls, "fileuploadactionparam_%s" % param["key"],
+            models.ActionParam.objects.create(**param)
+        )
+
+    kls.fileuploadformactionthrough_data = {
+        "action": kls.fileuploadaction,
+        "form": kls.simpleform,
+        "order": 2
+    }
+    kls.fileuploadformactionthrough = models.FormActionThrough.objects.create(
+        **kls.fileuploadformactionthrough_data
+    )
+
     kls.simpleformfield_data = {
+        "salutation": {
+            "title": "Salutation",
+            "slug": "salutation",
+            "field_type": "ChoiceField",
+            "label": "Salutation",
+            "required": False
+        },
         "name": {
             "title": "Name",
             "slug": "name",
-            "position": 0,
-            "form": kls.simpleform,
             "field_type": "CharField",
             "label": "Full Name",
-            "required": False
+            "required": True
         },
         "email_address": {
             "title": "Email Address",
             "slug": "email-address",
-            "position": 1,
-            "form": kls.simpleform,
             "field_type": "EmailField",
             "label": "Email",
             "help_text": "The email you would like info to be sent to"
@@ -68,189 +215,198 @@ def load_fixtures(kls):
         "accept_terms": {
             "title": "Accept Terms",
             "slug": "accept-terms",
-            "position": 2,
-            "form": kls.simpleform,
             "field_type": "BooleanField",
             "label": "Do you accept the terms and conditions",
             "required": False
+        },
+        "to_email": {
+            "title": "To Email",
+            "slug": "to-email",
+            "field_type": "CharField",
+            "widget": "HiddenInput",
+            "initial": "dev@praekelt.com",
+            "required": True
+        },
+        "id_copy": {
+            "title": "ID Copy",
+            "slug": "id-copy",
+            "field_type": "FileField",
+            "required": True
+        },
+        "upload_to": {
+            "title": "Upload To",
+            "slug": "upload-to",
+            "field_type": "CharField",
+            "widget": "HiddenInput",
+            "initial": "uploads/test",
+            "required": True
+        },
+        "subject": {
+            "title": "Subject",
+            "slug": "subject",
+            "field_type": "CharField",
+            "widget": "HiddenInput",
+            "initial": "Test Email",
+            "required": True
         }
     }
+
+    count = 0
     for key, value in kls.simpleformfield_data.items():
         setattr(
             kls, "simpleformfield_%s" % key,
             models.FormField.objects.create(**value)
         )
 
-
-class TestValidator(validators.BaseValidator):
-    validation_message = "%(value) is not divible by 2"
-
-    def condition(self, value):
-        return not value % 2
-
-
-class TestAction(actions.BaseAction):
-    def run(self, form_data):
-        return True
-
-
-class ValidatorTestCase(TestCase):
-    def setUp(self):
-        self.validator = TestValidator
-
-    def test_registry(self):
-        validators.register(self.validator)
-        self.assertIn(
-            self.validator, validators.get_registered_validators().values()
-        )
-
-    def test_unregistry(self):
-        validators.unregister(self.validator)
-        self.assertNotIn(
-            self.validator, validators.get_registered_validators().values()
-        )
-
-    def test_validation(self):
-        validator_instance = self.validator()
-        self.assertTrue(validator_instance.validate(4))
-
-
-class ActionTestCase(TestCase):
-    def setUp(self):
-        self.action = TestAction
-
-    def test_registry(self):
-        actions.register(self.action)
-        self.assertIn(self.action, actions.get_registered_actions().values())
-
-    def test_unregistry(self):
-        actions.unregister(self.action)
-        self.assertNotIn(
-            self.action, actions.get_registered_actions().values()
-        )
-
-    def test_action(self):
-        action_instance = self.action()
-        self.assertTrue(action_instance.run({}))
-
-
-class ModelTestCase(TestCase):
-    def setUp(self):
-        load_fixtures(self)
-
-    def test_field_constant(self):
-        self.assertIn(("DateTimeField", "DateTimeField"), models.FIELD_TYPES)
-        self.assertIn(("BooleanField", "BooleanField"), models.FIELD_TYPES)
-        self.assertIn(("CharField", "CharField"), models.FIELD_TYPES)
-
-    def test_form(self):
-        for key, value in self.form_data.items():
-            self.assertEqual(getattr(self.form, key), value)
-        self.assertEqual(self.form.fields.count(), len(models.FIELD_TYPES))
-        self.assertIsInstance(self.form.as_form(), forms.Form)
-
-    def test_formfield(self):
-        for count in range(len(models.FIELD_TYPES)):
-            formfield_data = getattr(self, "formfield_data_%s" % count)
-            for key, value in formfield_data.items():
-                formfield = getattr(self, "formfield_%s" % count)
-                self.assertEqual(getattr(formfield, key), value)
-
-
-class AdminTestCase(TestCase):
-    def setUp(self):
-        load_fixtures(self)
-        self.client = Client()
-        self.editor = get_user_model().objects.create(
-            username="editor",
-            email="editor@test.com",
-            is_superuser=True,
-            is_staff=True
-        )
-        self.editor.set_password("password")
-        self.editor.save()
-        self.client.login(username="editor", password="password")
-
-    def test_admin(self):
-        response = self.client.get("/admin/")
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get("/admin/formfactory/")
-        self.assertEqual(response.status_code, 200)
-
-    def test_admin_form(self):
-        response = self.client.get("/admin/formfactory/form/add/")
-        self.assertEqual(response.status_code, 200)
-
-    def test_admin_fieldoption(self):
-        response = self.client.get("/admin/formfactory/fieldchoice/add/")
-        self.assertEqual(response.status_code, 200)
-
-    def tearDown(self):
-        pass
-
-
-class FactoryTestCase(TestCase):
-    def setUp(self):
-        load_fixtures(self)
-
-    def test_form(self):
-        form_factory = self.simpleform.as_form()
-        for value in self.simpleformfield_data.values():
-            self.assertIn(value["slug"], [f for f in form_factory.fields])
-            for k, v in value.items():
-                if k in ["label", "help_text", "required"]:
-                    self.assertEqual(
-                        v, getattr(form_factory.fields[value["slug"]], k)
-                    )
-
-        form_data = {
-            "uuid": form_factory.fields["uuid"].initial,
-            "form_id": form_factory.fields["form_id"].initial,
-            "name": "Name Surname",
-            "email-address": "test@test.com",
-            "accept-terms": True
-        }
-        form_factory = self.simpleform.as_form(data=form_data)
-
-        self.assertTrue(form_factory.is_bound)
-        self.assertFalse(bool(form_factory.errors))
-        self.assertTrue(form_factory.is_valid())
-
-    def test_save(self):
-        form_factory = self.simpleform.as_form()
-        form_data = {
-            "uuid": form_factory.fields["uuid"].initial,
-            "form_id": form_factory.fields["form_id"].initial,
-            "name": "Name Surname",
-            "email-address": "test@test.com",
-            "accept-terms": True
-        }
-        form_factory = self.simpleform.as_form(data=form_data)
-        self.assertTrue(form_factory.is_valid())
-
-        form_factory.save()
-        uuid = form_factory.fields["uuid"].initial
-        form_store = models.FormData.objects.get(uuid=uuid)
-        for field in form_store.items.all():
-            self.assertEqual(
-                field.value, str(form_data[field.form_field.slug])
+        setattr(kls, "simplefieldgroupthrough_data_%s" % key, {
+            "field_group": kls.simplefieldgroup,
+            "field": getattr(kls, "simpleformfield_%s" % key),
+            "order": count
+        })
+        setattr(
+            kls, "simplefieldgroupthrough_%s" % key,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "simplefieldgroupthrough_data_%s" % key)
             )
+        )
 
-    def tearDown(self):
-        pass
+        count += 1
 
+    for salutation in ["Mr", "Mrs", "Dr", "Prof"]:
+        choice = models.FieldChoice.objects.create(
+            label=salutation, value=salutation
+        )
+        kls.simpleformfield_salutation.choices.add(choice)
 
-class ViewTestCase(TestCase):
-    def setUp(self):
-        self.client = Client()
-        load_fixtures(self)
+    kls.loginform_data = {
+        "title": "Login Form",
+        "slug": "login-form",
+        "success_message": "Success",
+        "failure_message": "Failure",
+        "submit_button_text": "Login"
+    }
+    kls.loginform = models.Form.objects.create(**kls.loginform_data)
 
-    def test_detail(self):
-        pass
+    kls.loginfieldgroup_data = {
+        "title": "Field Group 1",
+        "show_title": True
+    }
+    kls.loginfieldgroup = models.FormFieldGroup.objects.create(
+        **kls.loginfieldgroup_data
+    )
 
-    def test_list(self):
-        pass
+    kls.loginfieldgroupformthrough_data = {
+        "form": kls.loginform,
+        "field_group": kls.loginfieldgroup,
+        "order": 0
+    }
+    kls.loginfieldgroupformthrough = models.FieldGroupFormThrough.objects.create(
+        **kls.loginfieldgroupformthrough_data
+    )
 
-    def tearDown(self):
-        pass
+    kls.loginaction_data = {
+        "action": "formfactory.actions.login"
+    }
+    kls.loginaction = models.Action.objects.create(**kls.loginaction_data)
+
+    kls.loginactionparam_data = [
+        {
+            "key": "username_field",
+            "value": "username",
+            "action": kls.loginaction
+        }, {
+            "key": "password_field",
+            "value": "password",
+            "action": kls.loginaction
+        }
+    ]
+
+    for param in kls.loginactionparam_data:
+        setattr(
+            kls, "loginactionparam_%s" % param["key"],
+            models.ActionParam.objects.create(**param)
+        )
+
+    kls.loginformactionthrough_data = {
+        "action": kls.loginaction,
+        "form": kls.loginform,
+        "order": 0
+    }
+    kls.loginformactionthrough = models.FormActionThrough.objects.create(
+        **kls.loginformactionthrough_data
+    )
+
+    kls.loginformfield_data = {
+        "username": {
+            "title": "Username",
+            "slug": "username",
+            "field_type": "CharField",
+            "label": "Username",
+            "required": True
+        },
+        "password": {
+            "title": "Password",
+            "slug": "password",
+            "field_type": "CharField",
+            "widget": "PasswordInput",
+            "label": "Password",
+            "required": True
+        }
+    }
+
+    count = 0
+    for key, value in kls.loginformfield_data.items():
+        setattr(
+            kls, "loginformfield_%s" % key,
+            models.FormField.objects.create(**value)
+        )
+
+        setattr(kls, "loginfieldgroupthrough_data_%s" % key, {
+            "field_group": kls.loginfieldgroup,
+            "field": getattr(kls, "loginformfield_%s" % key),
+            "order": count
+        })
+        setattr(
+            kls, "loginfieldgroupthrough_%s" % key,
+            models.FieldGroupThrough.objects.create(
+                **getattr(kls, "loginfieldgroupthrough_data_%s" % key)
+            )
+        )
+
+        count += 1
+
+    kls.formdata_data = {
+        "uuid": unicode(uuid.uuid4()),
+        "form": kls.form
+    }
+    kls.formdata = models.FormData.objects.create(**kls.formdata_data)
+
+    kls.formdataitem_data = {
+        "form_data": kls.formdata,
+        "form_field": kls.formfield_1,
+        "value": "Form Data Item Value 1"
+    }
+    kls.formdataitem = models.FormDataItem.objects.create(
+        **kls.formdataitem_data
+    )
+    kls.dummy_validator = "formfactory.tests.validators.dummy_validator"
+    kls.dummy_action = "formfactory.tests.actions.dummy_action"
+
+    kls.wizard_data = {
+        "title": "Test wizard",
+        "slug": "test-wizard",
+        "success_message": "Success",
+        "failure_message": "Failure",
+        "redirect_to": "/"
+    }
+
+    kls.validator = models.Validator.objects.create(
+        validator=kls.dummy_validator
+    )
+    kls.wizard = models.Wizard.objects.create(**kls.wizard_data)
+    kls.wizardformthrough_simple = models.WizardFormThrough.objects.create(
+        wizard=kls.wizard, form=kls.simpleform, order=1
+    )
+    kls.wizardformthrough_login = models.WizardFormThrough.objects.create(
+        wizard=kls.wizard, form=kls.loginform, order=2
+    )

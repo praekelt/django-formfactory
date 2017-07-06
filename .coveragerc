@@ -1,0 +1,11 @@
+[run]
+branch = True
+source =
+    formfactory
+omit =
+    *migrations*
+    *tests*
+    *api*
+
+[report]
+show_missing = True

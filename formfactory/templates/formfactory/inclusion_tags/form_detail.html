@@ -1,0 +1,9 @@
+<form class="Form" method="POST" action=".">
+    {% with object.as_form as form %}
+        {% if object.enable_csrf %}
+            {% csrf_token %}
+        {% endif %}
+        {{ form.as_p }}
+        <input type="submit" value="{{ object.submit_button_text }}" />
+    {% endwith %}
+</form>

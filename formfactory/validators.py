@@ -1,31 +1,27 @@
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
-
-from formfactory import _registery
+from formfactory import _registry
+from formfactory.utils import auto_registration, clean_key
 
 
-def register(kls):
-    _registery["validators"][kls.__name__] = kls
+def register(func):
+    key = clean_key(func)
+    _registry["validators"][key] = func
+
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
 
 
-def unregister(kls):
-    if kls in _registery["validators"].values():
-        del _registery["validators"][kls.__name__]
+def unregister(func):
+    key = clean_key(func)
+    if key in _registry["validators"]:
+        del _registry["validators"][key]
 
 
 def get_registered_validators():
-    return _registery["validators"]
+    return _registry["validators"]
 
 
-class BaseValidator(object):
-    validation_message = "%(value)s did not validate"
-
-    def condition(self, value):
-        raise NotImplementedError()
-
-    def validate(self, value):
-        if not self.condition(value):
-            raise ValidationError(
-                _(self.validation_message), params={"value": value},
-            )
-        return True
+def auto_discover():
+    """Perform discovery of validator functions over all other installed apps.
+    """
+    auto_registration("validators")

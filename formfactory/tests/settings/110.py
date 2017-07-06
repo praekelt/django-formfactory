@@ -1,8 +1,14 @@
+import os
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
 DEBUG = True
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3"
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "test110.db"
     }
 }
 
@@ -12,6 +18,7 @@ INSTALLED_APPS = [
     "test_without_migrations",
     "formfactory",
     "formfactory.tests",
+    "formtools",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -49,4 +56,6 @@ TEMPLATES = [
 
 SITE_ID = 1
 STATIC_URL = "/static/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 SECRET_KEY = "SECRET_KEY"
+EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"

@@ -9,3 +9,7 @@ dist/
 coverage.xml
 pep8.txt
 .tox/
+.coverage
+*.db
+.idea/
+*media/

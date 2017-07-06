@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form class="Form" method="POST" action="." enctype="multipart/form-data">
+        {% if view.form_object.enable_csrf %}
+            {% csrf_token %}
+        {% endif %}
+        {{ form.as_p }}
+        <input type="submit" value="{{ view.form_object.submit_button_text }}" />
+    </form>
+{% endblock %}
