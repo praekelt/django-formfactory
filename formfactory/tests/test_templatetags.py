@@ -1,4 +1,7 @@
-from django.template import Context, Template
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseNotFound
+from django.template import Context, Template, TemplateSyntaxError
+from django.test import LiveServerTestCase, Client
 from django.test import TestCase
 
 from formfactory.tests.test_base import load_fixtures
@@ -9,18 +12,41 @@ class TemplateTagsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         load_fixtures(cls)
-
-    def test_get_form_from_context(self):
-        template = Template(
-            "{% load formfactory_tags %}{% render_form form_object %}"
-        )
-        context = Context({"form_object": self.loginform})
-        result = template.render(context)
-        self.failUnless("login-form-form_id" in result)
+        super(TemplateTagsTestCase, cls).setUpTestData()
 
     def test_get_form_by_slug(self):
-        template = Template(
-            "{% load formfactory_tags %}{% render_form 'login-form' %}"
+        response = self.client.get(
+            reverse(
+                "render_tag"
+            )
         )
-        result = template.render(Context())
-        self.failUnless("login-form-form_id" in result)
+        self.failUnless("login-form-form_id" in response.content)
+
+    def test_default_detail_template(self):
+        # Detail view already makes use of the render_form tag and passes an
+        # object.
+        response = self.client.get(
+            reverse(
+                "formfactory:form-detail",
+                kwargs={"slug": "login-form"}
+            )
+        )
+        self.failUnless("login-form-form_id" in response.content)
+
+    def test_tag_syntax_error(self):
+        with self.assertRaisesMessage(
+            TemplateSyntaxError, "{% render_form <form_slug>/<object> %}"
+        ):
+            response = self.client.get(
+                reverse(
+                    "render_tag_syntax_error"
+                )
+            )
+
+    def test_tag_raise_404(self):
+        response = self.client.get(
+            reverse(
+                "render_tag_404"
+            )
+        )
+        self.failUnless(response.status_code, 404)

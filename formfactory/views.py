@@ -1,3 +1,5 @@
+import uuid
+
 from django import forms
 from django.core.urlresolvers import reverse
 from django.core.files.storage import DefaultStorage
@@ -22,8 +24,28 @@ class FactoryFormView(generic.FormView):
 
     def get_template_names(self):
         template_names = []
+
+        # Always load inclusion tag when ajax is called as well. This default
+        # behavior means less js work on the front end.
+        ajax = self.request.GET.get("ajax")
+
+        # Toggle whether to include inclusion tag templates in template list.
+        inclusion_tag = self.kwargs.get(
+            "inclusion_tag",
+            True if ajax == "true" else False
+        )
+
+        # Inclusion tags can have detail per object if required.
+        if inclusion_tag:
+            template_names += [
+                "formfactory/inclusion_tags/form_detail_%s.html" \
+                    % self.form_object.slug,
+                "formfactory/inclusion_tags/form_detail.html"
+            ]
+
         if self.template_name is not None:
             template_names = [self.template_name]
+
         template_names += [
             "formfactory/form_detail_%s.html" % self.form_object.slug,
             "formfactory/form_detail.html"
@@ -58,17 +80,25 @@ class FactoryFormView(generic.FormView):
         return self.kwargs.get("slug", self.form_slug)
 
     def get_success_url(self):
+
+        # If the intial post was an AJAX call, append the ajax query to the
+        # url.
+        ajax = self.request.GET.get("ajax")
+        url = "%s"
+        if ajax == "true":
+            url = "%s?ajax=true"
         redirect_url = self.form_object.redirect_to or self.request.GET.get(
             SETTINGS["redirect-url-param-name"]) or self.redirect_to
         if redirect_url:
-            return redirect_url
-        return self.request.path_info
+            return url % redirect_url
+        return url % self.request.path_info
 
     def get_context_data(self, **kwargs):
         context = super(FactoryFormView, self).get_context_data(**kwargs)
         context.update({
             "form_object": self.form_object
         })
+        context["uuid"] = uuid.uuid4().get_hex()
         return context
 
 

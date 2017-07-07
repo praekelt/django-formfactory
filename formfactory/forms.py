@@ -10,7 +10,7 @@ class FormAdminForm(forms.ModelForm):
         fields = [
             "title", "slug", "success_message", "failure_message",
             "redirect_to", "submit_button_text", "enable_csrf",
-            "clean_method"
+            "ajax_post", "clean_method"
         ]
 
 
