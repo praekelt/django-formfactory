@@ -113,14 +113,14 @@ Models
 **FormFieldGroup:**
     A model which encapsulates a set of form fields.
         - title: the title to be used in the formset legend when rendered
-        - forms: the ``Form``s this grouping is associated to
+        - forms: the ``Forms`` this grouping is associated to
 
 **FormField:**
     Defines a form field with all options and required attributes. Encapsulated by the ``Form`` object.
         - title: a descriptive title
         - slug: url friendly identifier
         - position: the position at which the field should be rendered in the form
-        - form_groups: the ``FormFieldGroup``s this field is associated to
+        - form_groups: the ``FormFieldGroups`` this field is associated to
         - field_type: a set of field type, defined in the app settings
         - widget: a set of widgets, defined in app settings
         - label: the field label text
@@ -184,3 +184,4 @@ Custom validators can be added by creating a function in <yourapp or project>/fo
         if not condition:
             raise ValidationError("Failed")
         return True
+
