@@ -96,7 +96,7 @@ class FactoryFormView(generic.FormView):
     def get_context_data(self, **kwargs):
         context = super(FactoryFormView, self).get_context_data(**kwargs)
         context.update({
-            "object": self.form_object
+            "form_object": self.form_object
         })
         context["uuid"] = uuid.uuid4().get_hex()
         return context

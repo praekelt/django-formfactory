@@ -4,14 +4,14 @@
 {% block content %}
 
     <form data-uuid="{{ uuid }}" class="Form" method="POST" action=".">
-        {% if object.enable_csrf %}
+        {% if form_object.enable_csrf %}
             {% csrf_token %}
         {% endif %}
         {{ form.as_p }}
-        <input type="submit" value="{{ object.submit_button_text }}" />
+        <input type="submit" value="{{ form_object.submit_button_text }}" />
     </form>
 
-    {% if object.ajax_post %}
+    {% if form_object.ajax_post %}
         <script type="text/javascript">
             // IE 10 and higher required.
             // Method namespaced with initial load to prevent more than one handler to
@@ -31,7 +31,7 @@
 
                     // Do our AJAX post. ajax=true, will trigger a specific code path
                     // that always returns a template in `inclusion_tags`.
-                    xhr.open('POST', '{{ object.absolute_url }}?ajax=true');
+                    xhr.open('POST', '{{ form_object.absolute_url }}?ajax=true');
                     xhr.onload = function() {
                         if (xhr.status == 200) {
 
