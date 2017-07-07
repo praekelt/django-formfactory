@@ -15,9 +15,9 @@ DATABASES = {
 ROOT_URLCONF = "formfactory.tests.urls"
 
 INSTALLED_APPS = [
-    "formfactory.tests",
     "test_without_migrations",
     "formfactory",
+    "formfactory.tests",
     "formtools",
     "django.contrib.admin",
     "django.contrib.auth",
