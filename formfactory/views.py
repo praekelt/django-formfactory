@@ -12,6 +12,7 @@ from formtools.wizard.views import NamedUrlSessionWizardView
 
 from formfactory import SETTINGS
 from formfactory.models import Form, Wizard
+from formfactory.deprecation import generic_deprecation
 
 
 class FactoryFormView(generic.FormView):
@@ -22,6 +23,10 @@ class FactoryFormView(generic.FormView):
         super(FactoryFormView, self).__init__(*args, **kwargs)
         self.form_object = None
 
+    @generic_deprecation(
+        "The form_detail_<slug>.html pattern will be depricated in the"\
+        " upcoming version 0.2, use of paragraph fields on forms"
+    )
     def get_template_names(self):
         template_names = []
 

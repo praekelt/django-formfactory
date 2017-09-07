@@ -5,6 +5,8 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext as _
 
+from simplemde.fields import SimpleMDEField
+
 from formfactory import (
     _registry, actions, clean_methods, factory, SETTINGS, validators
 )
@@ -179,6 +181,11 @@ class Form(BaseFormModel):
         help_text=_("""Cross site request forgery protection may not be needed \
 in all cases. Since it incurs a performance penalty you may wish to disable \
 it.""")
+    )
+    paragraph = SimpleMDEField(
+        null=True,
+        blank=True,
+        help_text="To add form specific content."
     )
     ajax_post = models.BooleanField(
         _("Enable AJAX posting."),
