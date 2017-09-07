@@ -25,7 +25,7 @@ class FactoryFormView(generic.FormView):
 
     @generic_deprecation(
         "The form_detail_<slug>.html pattern will be depricated in the"\
-        " upcoming version 0.2, use of paragraph fields on forms"
+        " upcoming version 1.0, use of paragraph fields on forms"
     )
     def get_template_names(self):
         template_names = []
