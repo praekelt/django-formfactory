@@ -2,7 +2,7 @@ import warnings
 
 from django.test import TestCase
 
-from formfactory.deprecation import generic_deprecation
+from formfactory.decorators import generic_deprecation
 
 
 class DeprecationTestCase(TestCase):
