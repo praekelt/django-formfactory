@@ -22,7 +22,10 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "list", "max_decimal_places", "max_digits", "max_length", "max_value",
         "max_whole_digits", "min_length", "min_value", "missing", "required",
     ],
-    "redirect-url-param-name": "next"
+    "redirect-url-param-name": "next",
+    "allowed-extra-widget-attrs": [
+        "safe_paragraph",
+    ]
 })
 
 

@@ -1,11 +1,14 @@
 from uuid import uuid4
 
 from django import forms
+from django.conf import settings
+from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-from django.utils import six
 from django.utils.translation import ugettext_lazy as _
+
+from formfactory import SETTINGS
 
 
 class FormFactory(forms.Form):
@@ -53,6 +56,7 @@ class FormFactory(forms.Form):
                         validator.as_function
                     )
 
+                # TODO nuke label if needed.
                 self.fields[field.slug] = field_type(
                     label=field.label,
                     initial=field.initial or self.initial.get(field.slug),
@@ -108,10 +112,18 @@ class FormFactory(forms.Form):
                     self.fields[field.slug].widget = widget()
 
                 # Adds widget-specific options to the form field
+                # TODO add pluggable attrs, can be assigned for now other
+                # fields on the form model. probably use widget class and settings.
+                # TODO move iwdget setting up to happen along with the field stuff.
+                # TODO Allowed attrs (widget_attrs["paragraph"] = field.paragraph)
                 widget_attrs = self.fields[field.slug].widget.attrs
                 widget_attrs["placeholder"] = field.placeholder
                 if choices:
                     self.fields[field.slug].widget.choices = choices
+
+                # Grab values from other fields on the FormField model.
+                for attr in SETTINGS["allowed-extra-widget-attrs"]:
+                    widget_attrs[attr] = getattr(field, attr)
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html,
                      errors_on_separate_row):

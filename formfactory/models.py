@@ -1,8 +1,11 @@
+import markdown
+
 from django import forms
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.text import mark_safe
 from django.utils.translation import ugettext as _
 
 from simplemde.fields import SimpleMDEField
@@ -394,6 +397,10 @@ class FormField(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def safe_paragraph(self):
+        return mark_safe(markdown.markdown(self.paragraph))
 
 
 class FieldGroupThrough(models.Model):
