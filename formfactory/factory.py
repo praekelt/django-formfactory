@@ -56,7 +56,9 @@ class FormFactory(forms.Form):
                         validator.as_function
                     )
 
-                # TODO nuke label if needed.
+                # TODO nuke label if needed. Make None == "", custom migration
+                # to make all existing field objects' title be copied to the
+                # label field.
                 self.fields[field.slug] = field_type(
                     label=field.label,
                     initial=field.initial or self.initial.get(field.slug),
