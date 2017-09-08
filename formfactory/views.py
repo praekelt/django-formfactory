@@ -24,7 +24,7 @@ class FactoryFormView(generic.FormView):
         self.form_object = None
 
     @generic_deprecation(
-        "The form_detail_<slug>.html pattern will be depricated in the"\
+        "The form_detail_<slug>.html pattern will be deprecated in the"\
         " upcoming version 1.0, use of paragraph fields on forms"
     )
     def get_template_names(self):
@@ -218,7 +218,7 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         return context
 
     @generic_deprecation(
-        "The wizard_detail_<slug>.html pattern will be depricated in the"\
+        "The wizard_detail_<slug>.html pattern will be deprecated in the"\
         " upcoming version 1.0, use of paragraph fields on forms"
     )
     def get_template_names(self):
