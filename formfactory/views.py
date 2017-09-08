@@ -12,7 +12,7 @@ from formtools.wizard.views import NamedUrlSessionWizardView
 
 from formfactory import SETTINGS
 from formfactory.models import Form, Wizard
-from formfactory.deprecation import generic_deprecation
+from formfactory.decorators import generic_deprecation
 
 
 class FactoryFormView(generic.FormView):
