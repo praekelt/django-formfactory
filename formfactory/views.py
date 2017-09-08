@@ -217,6 +217,10 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         context["wizard_object"] = self.wizard_object
         return context
 
+    @generic_deprecation(
+        "The wizard_detail_<slug>.html pattern will be depricated in the"\
+        " upcoming version 1.0, use of paragraph fields on forms"
+    )
     def get_template_names(self):
         return [
             "formfactory/wizard_%s_step.html" % self.steps.current,
