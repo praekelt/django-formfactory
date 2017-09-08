@@ -40,7 +40,12 @@ class FormFactory(forms.Form):
                 [field_group.title, field_group.show_title, [f.slug for f in fields]]
             )
             for field in fields:
-                field_type = getattr(forms, field.field_type)
+                # TODO list of field backends, make settings driven, pull n formfactory's by default.
+                import formfactory.fields
+                if hasattr(forms, field.field_type):
+                    field_type = getattr(forms, field.field_type)
+                elif (formfactory.fields, field.field_type):
+                    field_type = getattr(formfactory.fields, field.field_type)
 
                 additional_validators = []
                 for validator in field.additional_validators.all():

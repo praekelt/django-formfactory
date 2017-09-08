@@ -8,8 +8,10 @@ from django.utils.translation import ugettext as _
 from simplemde.fields import SimpleMDEField
 
 from formfactory import (
-    _registry, actions, clean_methods, factory, SETTINGS, validators
+    _registry, actions, clean_methods, factory, SETTINGS, validators,
 )
+from formfactory import widgets as formfactory_widgets
+from formfactory import fields as formfactory_fields
 
 
 actions.auto_discover()
@@ -17,15 +19,33 @@ validators.auto_discover()
 clean_methods.auto_discover()
 
 
-FIELD_TYPES = tuple(
-    (field, field) for field in SETTINGS["field-types"]
-    if issubclass(getattr(forms.fields, field), forms.fields.Field)
-)
+# TODO should probably add the option for extra widget and fields to be added.
+# TODO if this is acceptable, also add proper comments.
+def FIELD_TYPES():
+    fields = ()
+    for field in SETTINGS["field-types"]:
+        if hasattr(forms.fields, field):
+            if issubclass(getattr(forms.fields, field), forms.fields.Field):
+                fields = fields + ((field, field),)
+        elif hasattr(formfactory_fields, field):
+            if issubclass(getattr(formfactory_fields, field), forms.fields.Field):
+                fields = fields + ((field, "formfactory.fields.%s" % field),)
+    return fields
 
-WIDGET_TYPES = tuple(
-    (widget, widget) for widget in SETTINGS["widget-types"]
-    if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget)
-)
+FIELD_TYPES = FIELD_TYPES()
+
+def WIDGET_TYPES():
+    widgets = ()
+    for widget in SETTINGS["widget-types"]:
+        if hasattr(forms.widgets, widget):
+            if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget):
+                widgets = widgets + ((widget, widget),)
+        elif hasattr(formfactory_widgets, widget):
+            if issubclass(getattr(formfactory_widgets, widget), forms.widgets.Widget):
+                widgets = widgets + ((widget, "formfactory.widgets.%s" % widget),)
+    return widgets
+
+WIDGET_TYPES = WIDGET_TYPES()
 
 ERROR_MESSAGES = tuple(
     (error_type, error_type) for error_type in SETTINGS["error-types"]
@@ -181,11 +201,6 @@ class Form(BaseFormModel):
         help_text=_("""Cross site request forgery protection may not be needed \
 in all cases. Since it incurs a performance penalty you may wish to disable \
 it.""")
-    )
-    paragraph = SimpleMDEField(
-        null=True,
-        blank=True,
-        help_text="To add form specific content."
     )
     ajax_post = models.BooleanField(
         _("Enable AJAX posting."),
@@ -370,6 +385,12 @@ class FormField(models.Model):
     )
     additional_validators = models.ManyToManyField(Validator, blank=True)
     error_messages = models.ManyToManyField(CustomErrorMessage, blank=True)
+    paragraph = SimpleMDEField(
+        null=True,
+        blank=True,
+        help_text="Markdown for the formfactory ParagraphField and"\
+        " ParagraphWidget combination."
+    )
 
     def __unicode__(self):
         return self.title

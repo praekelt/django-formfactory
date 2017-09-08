@@ -7,14 +7,14 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         "DateTimeField", "DecimalField", "EmailField", "FileField",
         "FloatField", "GenericIPAddressField", "IntegerField",
         "MultipleChoiceField", "SlugField", "SplitDateTimeField", "TimeField",
-        "URLField", "UUIDField"
+        "URLField", "UUIDField", "ParagraphField"
     ],
     "widget-types": [
         "CheckboxInput", "CheckboxSelectMultiple", "DateInput",
         "DateTimeInput", "EmailInput", "FileInput", "HiddenInput",
         "NullBooleanSelect", "NumberInput", "PasswordInput", "RadioSelect",
         "Select", "SelectMultiple", "Textarea", "TextInput", "TimeInput",
-        "URLInput"
+        "URLInput", "ParagraphWidget"
     ],
     "error-types": [
         "empty", "incomplete", "invalid", "invalid_choice", "invalid_image",
