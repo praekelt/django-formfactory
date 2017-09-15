@@ -47,6 +47,7 @@ class FormFactory(forms.Form):
                 import formfactory.fields
                 if hasattr(forms, field.field_type):
                     field_type = getattr(forms, field.field_type)
+                # TODO Make use of the django contenttype framework.
                 elif (formfactory.fields, field.field_type):
                     field_type = getattr(formfactory.fields, field.field_type)
 
@@ -109,6 +110,7 @@ class FormFactory(forms.Form):
                     pass
 
                 # Sets the user defined widget if setup
+                # TODO Make use of the django contenttype framework.
                 if field.widget:
                     widget = getattr(forms.widgets, field.widget)
                     self.fields[field.slug].widget = widget()

@@ -1,6 +1,7 @@
 from django.conf import settings
 
 
+# TODO add contenttype settings in
 SETTINGS = getattr(settings, "FORMFACTORY", {
     "field-types": [
         "BooleanField", "CharField", "ChoiceField", "DateField",

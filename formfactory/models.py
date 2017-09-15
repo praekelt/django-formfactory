@@ -26,10 +26,13 @@ clean_methods.auto_discover()
 # TODO if this is acceptable, also add proper comments.
 def FIELD_TYPES():
     fields = ()
+
+    # Try to add fields from other apps as well.
     for field in SETTINGS["field-types"]:
         if hasattr(forms.fields, field):
             if issubclass(getattr(forms.fields, field), forms.fields.Field):
                 fields = fields + ((field, field),)
+        # TODO Make use of the django contenttype framework.
         elif hasattr(formfactory_fields, field):
             if issubclass(getattr(formfactory_fields, field), forms.fields.Field):
                 fields = fields + ((field, "formfactory.fields.%s" % field),)
@@ -39,10 +42,13 @@ FIELD_TYPES = FIELD_TYPES()
 
 def WIDGET_TYPES():
     widgets = ()
+
+    # Try to add widgets from other apps as well.
     for widget in SETTINGS["widget-types"]:
         if hasattr(forms.widgets, widget):
             if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget):
                 widgets = widgets + ((widget, widget),)
+        # TODO Make use of the django contenttype framework.
         elif hasattr(formfactory_widgets, widget):
             if issubclass(getattr(formfactory_widgets, widget), forms.widgets.Widget):
                 widgets = widgets + ((widget, "formfactory.widgets.%s" % widget),)
