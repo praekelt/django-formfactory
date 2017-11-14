@@ -180,6 +180,11 @@ class Form(BaseFormModel):
 in all cases. Since it incurs a performance penalty you may wish to disable \
 it.""")
     )
+    ajax_post = models.BooleanField(
+        _("Enable AJAX posting."),
+        default=False,
+        help_text=_("Hook for default submit handler to be overriden by JS.")
+    )
 
     class Meta(object):
         ordering = ["title"]

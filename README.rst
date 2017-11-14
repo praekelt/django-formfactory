@@ -44,7 +44,9 @@ Templates
 ``django-formfactory`` allows you to either override the template for all forms
 by adding a template ``formfactory/form_detail.html`` or an individual form by
 adding a template ``formfactory/form_detail_<form-slug>.html`` to your project's
-template dir.
+template dir. As well as ``formfactory/inclusion_tags/form_detail.html`` and
+``formfactory/inclusion_tags/form_detail_<form-slug>.html`` for the inclusion
+tags.
 
 Inclusiontag
 ~~~~~~~~~~~~
@@ -85,6 +87,7 @@ Models
         - actions: a set of ``Action`` objects to be performed in order on save
         - success_message: The message string that will be displayed by the django messages framework on successful submission of the form
         - failure_message: The message string that will be displayed by the django messages framework if a form submission fails
+        - ajax_post: Flag that enables JS ajax posting on the default formfactory templates, or to be used as a hook when overriding templates.
 
 
 **Wizard:**
@@ -113,14 +116,14 @@ Models
 **FormFieldGroup:**
     A model which encapsulates a set of form fields.
         - title: the title to be used in the formset legend when rendered
-        - forms: the ``Form``s this grouping is associated to
+        - forms: the ``Forms`` this grouping is associated to
 
 **FormField:**
     Defines a form field with all options and required attributes. Encapsulated by the ``Form`` object.
         - title: a descriptive title
         - slug: url friendly identifier
         - position: the position at which the field should be rendered in the form
-        - form_groups: the ``FormFieldGroup``s this field is associated to
+        - form_groups: the ``FormFieldGroups`` this field is associated to
         - field_type: a set of field type, defined in the app settings
         - widget: a set of widgets, defined in app settings
         - label: the field label text
@@ -184,3 +187,4 @@ Custom validators can be added by creating a function in <yourapp or project>/fo
         if not condition:
             raise ValidationError("Failed")
         return True
+
