@@ -79,6 +79,13 @@ class FormFactory(forms.Form):
                         (m.key, m.value) for m in field.error_messages.all()
                     )
                 })
+
+                # Sets the user defined widget if setup
+                if field.widget:
+                    widget_meta = field.get_widget_meta
+                    widget = getattr(widget_meta[0], widget_meta[1])
+                    field_args["widget"] = widget()
+
                 self.fields[field.slug] = field_type(**field_args)
 
                 # Saves the field model pk to the form field to prevent the
@@ -117,12 +124,6 @@ class FormFactory(forms.Form):
                         self.fields[field.slug].max_length = field.max_length
                 except TypeError:
                     pass
-
-                # Sets the user defined widget if setup
-                if field.widget:
-                    widget_meta = field.get_widget_meta
-                    widget = getattr(widget_meta[0], widget_meta[1])
-                    self.fields[field.slug].widget = widget()
 
                 # Adds widget-specific options to the form field
                 # TODO add pluggable attrs, can be assigned for now other

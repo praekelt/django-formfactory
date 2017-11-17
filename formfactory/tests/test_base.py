@@ -196,8 +196,6 @@ def load_fixtures(kls):
         **kls.fileuploadformactionthrough_data
     )
 
-    # NOTE: This is not ideal, field type and widget does not validate against
-    # model choices.
     kls.simpleformfield_data = {
         "salutation": {
             "title": "Salutation",
