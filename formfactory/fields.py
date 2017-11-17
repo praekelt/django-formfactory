@@ -1,4 +1,5 @@
 import markdown
+import django
 
 from django.forms.fields import Field
 from django.utils.text import mark_safe
@@ -21,7 +22,9 @@ class ParagraphField(Field):
         # Pass the paragraph text to the widget without needing to override
         # widget __init__. Process markdown here, its up to custom fields to
         # worry about what they are trying to do, not factory.py
-        attrs = self.widget.build_attrs(self.widget.attrs,
-            {"paragraph": markdown.markdown(paragraph)}
-        )
+        data = {
+            "base_attrs": self.widget.attrs,
+            "extra_attrs": {"paragraph": markdown.markdown(paragraph)}
+        }
+        attrs = self.widget.build_attrs(**data)
         self.widget.attrs = attrs
