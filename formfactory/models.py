@@ -406,7 +406,10 @@ class FormField(models.Model):
 
     @property
     def safe_paragraph(self):
-        return mark_safe(markdown.markdown(self.paragraph))
+        if self.paragraph:
+            return mark_safe(markdown.markdown(self.paragraph))
+        else:
+            return self.paragraph
 
 
 class FieldGroupThrough(models.Model):

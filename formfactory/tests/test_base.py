@@ -56,13 +56,19 @@ def load_fixtures(kls):
     )
 
     for count, field_type in enumerate(models.FIELD_TYPES):
-        setattr(kls, "formfield_data_%s" % count, {
+        data = {
             "title": "Form Field %s" % count,
             "slug": "form-field-%s" % count,
             "field_type": field_type[0],
             "label": "Form Field %s" % count,
             "placeholder": "Field Placeholder %s" % count
-        })
+        }
+
+        # Specialised fields with none default fields will need to have extra
+        # data added.
+        if field_type[1] == "formfactory.fields.ParagraphField":
+            data["paragraph"] = "**formfactory.fields.ParagraphField**"
+        setattr(kls, "formfield_data_%s" % count, data)
 
         if field_type[0] == "CharField":
             getattr(kls, "formfield_data_%s" % count)["max_length"] = 100
