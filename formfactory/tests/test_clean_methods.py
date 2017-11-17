@@ -12,12 +12,12 @@ class CleanMethodsTestCase(TestCase):
         cls.first_field = models.FormField.objects.create(
             title="First field",
             slug="first_field",
-            field_type="CharField",
+            field_type="django.forms.fields.CharField",
         )
         cls.second_field = models.FormField.objects.create(
             title="Second field",
             slug="second_field",
-            field_type="CharField",
+            field_type="django.forms.fields.CharField",
         )
 
         cls.clean_method_key = "formfactory.tests.clean_methods.check_if_values_match"

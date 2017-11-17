@@ -1,3 +1,4 @@
+import importlib
 import markdown
 
 from django import forms
@@ -13,8 +14,6 @@ from simplemde.fields import SimpleMDEField
 from formfactory import (
     _registry, actions, clean_methods, factory, SETTINGS, validators,
 )
-from formfactory import widgets as formfactory_widgets
-from formfactory import fields as formfactory_fields
 
 
 actions.auto_discover()
@@ -28,30 +27,20 @@ def FIELD_TYPES():
     fields = ()
 
     # Try to add fields from other apps as well.
-    for field in SETTINGS["field-types"]:
-        if hasattr(forms.fields, field):
-            if issubclass(getattr(forms.fields, field), forms.fields.Field):
-                fields = fields + ((field, field),)
-        # TODO Make use of the django contenttype framework.
-        elif hasattr(formfactory_fields, field):
-            if issubclass(getattr(formfactory_fields, field), forms.fields.Field):
-                fields = fields + ((field, "formfactory.fields.%s" % field),)
+    for content_type, field in SETTINGS["field-types"]:
+        module = importlib.import_module(content_type.replace(".%s" % field, ""))
+        if issubclass(getattr(module, field), forms.fields.Field):
+            fields = fields + ((content_type, field),)
     return fields
 
 FIELD_TYPES = FIELD_TYPES()
 
 def WIDGET_TYPES():
     widgets = ()
-
-    # Try to add widgets from other apps as well.
-    for widget in SETTINGS["widget-types"]:
-        if hasattr(forms.widgets, widget):
-            if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget):
-                widgets = widgets + ((widget, widget),)
-        # TODO Make use of the django contenttype framework.
-        elif hasattr(formfactory_widgets, widget):
-            if issubclass(getattr(formfactory_widgets, widget), forms.widgets.Widget):
-                widgets = widgets + ((widget, "formfactory.widgets.%s" % widget),)
+    for content_type, widget in SETTINGS["widget-types"]:
+        module = importlib.import_module(content_type.replace(".%s" % widget, ""))
+        if issubclass(getattr(module, widget), forms.widgets.Widget):
+            widgets = widgets + ((content_type, widget),)
     return widgets
 
 WIDGET_TYPES = WIDGET_TYPES()
@@ -403,6 +392,36 @@ class FormField(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def get_field_meta(self):
+        """
+        Return field meta info
+        :return: tuple(module, field_class_name)
+        """
+        for content_type, field in FIELD_TYPES:
+            if self.field_type == content_type:
+                module = importlib.import_module(
+                    content_type.replace(".%s" % field, "")
+                )
+                return (module, field)
+        raise Exception("Field; %s on Field model %s: Does not have a" \
+            "properly defined content_type value" % (self.field_type, self.id))
+
+    @property
+    def get_widget_meta(self):
+        """
+        Return field meta info
+        :return: tuple(module, widget_class_name)
+        """
+        for content_type, widget in WIDGET_TYPES:
+            if self.widget == content_type:
+                module = importlib.import_module(
+                    content_type.replace(".%s" % widget, "")
+                )
+                return (module, widget)
+        raise Exception("Widget; %s on Field model %s: Does not have a " \
+            "properly defined content_type value" % (self.widget, self.id))
 
     @property
     def safe_paragraph(self):

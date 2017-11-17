@@ -1,4 +1,6 @@
 from uuid import uuid4
+import importlib
+import inspect
 
 from django import forms
 from django.conf import settings
@@ -43,13 +45,8 @@ class FormFactory(forms.Form):
                 [field_group.title, field_group.show_title, [f.slug for f in fields]]
             )
             for field in fields:
-                # TODO list of field backends, make settings driven, pull n formfactory's by default.
-                import formfactory.fields
-                if hasattr(forms, field.field_type):
-                    field_type = getattr(forms, field.field_type)
-                # TODO Make use of the django contenttype framework.
-                elif (formfactory.fields, field.field_type):
-                    field_type = getattr(formfactory.fields, field.field_type)
+                field_meta = field.get_field_meta
+                field_type = getattr(field_meta[0], field_meta[1])
 
                 additional_validators = []
                 for validator in field.additional_validators.all():
@@ -57,20 +54,28 @@ class FormFactory(forms.Form):
                         validator.as_function
                     )
 
-                # TODO nuke label if needed. Make None == "", custom migration
-                # to make all existing field objects' title be copied to the
-                # label field.
-                self.fields[field.slug] = field_type(
-                    label=field.label,
-                    initial=field.initial or self.initial.get(field.slug),
-                    required=field.required,
-                    disabled=field.disabled,
-                    help_text=field.help_text,
-                    validators=additional_validators,
-                    error_messages=dict(
+                # TODO Label always defaults to title if label field is empty,
+                # this is not expected behaviour. Label needs to be optional.
+                args = {
+                    "label": field.label,
+                    "initial": field.initial or field.slug,
+                    "required": field.required,
+                    "disabled": field.disabled,
+                    "help_text": field.help_text,
+                    "validators": additional_validators,
+                    "error_messages": dict(
                         (m.key, m.value) for m in field.error_messages.all()
                     )
-                )
+                }
+
+                # Some custom fields might need extra info passed to the actual
+                # field instance. Only cater for leaf args.
+                extra_args = inspect.getargspec(field_type.__init__).args
+                for arg in extra_args:
+                    field_value = getattr(field, arg, None)
+                    if field_value:
+                        args[arg] = field_value
+                self.fields[field.slug] = field_type(**args)
 
                 # Saves the field model pk to the form field to prevent the
                 # need for another query in the save method.
@@ -110,24 +115,19 @@ class FormFactory(forms.Form):
                     pass
 
                 # Sets the user defined widget if setup
-                # TODO Make use of the django contenttype framework.
                 if field.widget:
-                    widget = getattr(forms.widgets, field.widget)
+                    widget_meta = field.get_widget_meta
+                    widget = getattr(widget_meta[0], widget_meta[1])
                     self.fields[field.slug].widget = widget()
 
                 # Adds widget-specific options to the form field
                 # TODO add pluggable attrs, can be assigned for now other
                 # fields on the form model. probably use widget class and settings.
-                # TODO move iwdget setting up to happen along with the field stuff.
                 # TODO Allowed attrs (widget_attrs["paragraph"] = field.paragraph)
                 widget_attrs = self.fields[field.slug].widget.attrs
                 widget_attrs["placeholder"] = field.placeholder
                 if choices:
                     self.fields[field.slug].widget.choices = choices
-
-                # Grab values from other fields on the FormField model.
-                for attr in SETTINGS["allowed-extra-widget-attrs"]:
-                    widget_attrs[attr] = getattr(field, attr)
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html,
                      errors_on_separate_row):
