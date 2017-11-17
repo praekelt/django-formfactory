@@ -21,12 +21,9 @@ validators.auto_discover()
 clean_methods.auto_discover()
 
 
-# TODO should probably add the option for extra widget and fields to be added.
-# TODO if this is acceptable, also add proper comments.
 def FIELD_TYPES():
     fields = ()
 
-    # Try to add fields from other apps as well.
     for content_type, field in SETTINGS["field-types"]:
         module = importlib.import_module(content_type.replace(".%s" % field, ""))
         if issubclass(getattr(module, field), forms.fields.Field):
