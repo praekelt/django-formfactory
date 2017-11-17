@@ -66,7 +66,7 @@ def load_fixtures(kls):
 
         # Specialised fields with none default fields will need to have extra
         # data added.
-        if field_type[1] == "formfactory.fields.ParagraphField":
+        if field_type[0] == "formfactory.fields.ParagraphField":
             data["paragraph"] = "**formfactory.fields.ParagraphField**"
         setattr(kls, "formfield_data_%s" % count, data)
 

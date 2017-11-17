@@ -22,4 +22,3 @@ class ParagraphField(Field):
             {"paragraph": paragraph}
         )
         self.widget.attrs = attrs
-        import pdb; pdb.set_trace()

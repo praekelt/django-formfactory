@@ -54,11 +54,23 @@ class FormFactory(forms.Form):
                         validator.as_function
                     )
 
-                # TODO Label always defaults to title if label field is empty,
+                # NOTE: Label always defaults to title if label field is empty,
                 # this is not expected behaviour. Label needs to be optional.
-                args = {
+                field_args = {}
+
+                # Some custom fields might need extra info passed to the actual
+                # field instance. Only cater for leaf args.
+                init_args = inspect.getargspec(field_type.__init__).args
+                for arg in init_args:
+                    field_value = getattr(field, arg, None)
+                    if field_value:
+                        field_args[arg] = field_value
+
+                # Ensure the expected values are always present on a specific
+                # default subset.
+                field_args.update({
                     "label": field.label,
-                    "initial": field.initial or field.slug,
+                    "initial": field.initial or self.initial.get(field.slug),
                     "required": field.required,
                     "disabled": field.disabled,
                     "help_text": field.help_text,
@@ -66,16 +78,8 @@ class FormFactory(forms.Form):
                     "error_messages": dict(
                         (m.key, m.value) for m in field.error_messages.all()
                     )
-                }
-
-                # Some custom fields might need extra info passed to the actual
-                # field instance. Only cater for leaf args.
-                extra_args = inspect.getargspec(field_type.__init__).args
-                for arg in extra_args:
-                    field_value = getattr(field, arg, None)
-                    if field_value:
-                        args[arg] = field_value
-                self.fields[field.slug] = field_type(**args)
+                })
+                self.fields[field.slug] = field_type(**field_args)
 
                 # Saves the field model pk to the form field to prevent the
                 # need for another query in the save method.
