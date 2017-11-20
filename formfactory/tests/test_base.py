@@ -77,7 +77,7 @@ def load_fixtures(kls):
             **getattr(kls, "formfield_data_%s" % count)
         ))
 
-        if field_type[0] == "djaogn.forms.fields.ChoiceField":
+        if field_type[0] == "django.forms.fields.ChoiceField":
             getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
             getattr(kls, "formfield_%s" % count).model_choices = kls.enum
 
@@ -254,6 +254,12 @@ def load_fixtures(kls):
             "widget": "django.forms.widgets.HiddenInput",
             "initial": "Test Email",
             "required": True
+        },
+        "paragraph": {
+            "title": "Paragraph",
+            "slug": "paragraph",
+            "field_type": "formfactory.fields.ParagraphField",
+            "paragraph": "**aaaa**"
         }
     }
 
