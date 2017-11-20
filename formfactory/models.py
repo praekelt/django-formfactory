@@ -232,9 +232,21 @@ it.""")
                 "The model needs to be saved before a form can be generated."
             )
 
-        ordered_field_groups = self.fieldgroups.all().order_by(
-            "fieldgroupformthrough"
-        )
+        # Issue with order by and through, see:
+        # https://code.djangoproject.com/ticket/26092.
+        try:
+            ordered_field_groups = self.fieldgroups.all().order_by(
+                "fieldgroupformthrough"
+            )
+
+            # Make an arb call on the list to trigger the potential error.
+            len(ordered_field_groups)
+        except AttributeError as e:
+            ordered_field_groups = [instance.field_group
+                for instance
+                in FieldGroupFormThrough.objects.filter(
+                    form=self).order_by("order")
+            ]
         kwargs.update({
             "field_groups": ordered_field_groups,
             "form_id": self.pk,

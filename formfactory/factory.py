@@ -39,8 +39,25 @@ class FormFactory(forms.Form):
         # Iterates over the fields defined in the Form model and sets the
         # appropriate attributes and builds up the fieldgroups.
         self.field_group = []
+
+        # Models aren't ready when the file is initially processed.
+        from formfactory import models
+        field_through = models.FieldGroupThrough
         for field_group in defined_field_groups:
-            fields = field_group.fields.all().order_by("fieldgroupthrough")
+
+            # Issue with order by and through, see:
+            # https://code.djangoproject.com/ticket/26092.
+            try:
+                fields = field_group.fields.all().order_by("fieldgroupthrough")
+
+                # Make an arb call on the list to trigger the potential error.
+                len(fields)
+            except AttributeError as e:
+                fields = [instance.field for
+                    instance in
+                    field_through.objects.filter(
+                        field_group=field_group).order_by("order")
+                ]
             self.field_group.append(
                 [field_group.title, field_group.show_title, [f.slug for f in fields]]
             )
@@ -228,7 +245,25 @@ class FormFactory(forms.Form):
     def save(self, *args, **kwargs):
         """Performs the required actions in the defined sequence.
         """
-        for action in self.actions.order_by("formactionthrough"):
+
+        # Models aren't ready when the file is initially processed.
+        from formfactory import models
+
+        # Issue with order by and through, see:
+        # https://code.djangoproject.com/ticket/26092.
+        try:
+            actions = self.actions.order_by("formactionthrough")
+
+            # Make an arb call on the list to trigger the potential error.
+            len(actions)
+        except AttributeError as e:
+            form = models.Form.objects.get(id=self.cleaned_data["form_id"])
+            actions = [instance.action for
+                instance in
+                models.FormActionThrough.objects.filter(
+                    form=form).order_by("order")
+            ]
+        for action in actions:
             action_params = kwargs.copy()
             action_params.update(dict(
                 (obj.key, obj.value) for obj in action.params.all()

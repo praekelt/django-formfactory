@@ -11,7 +11,7 @@ from django.views import generic
 from formtools.wizard.views import NamedUrlSessionWizardView
 
 from formfactory import SETTINGS
-from formfactory.models import Form, Wizard
+from formfactory.models import Form, Wizard, WizardFormThrough
 from formfactory.decorators import generic_deprecation
 
 
@@ -130,9 +130,21 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         wizard_slug = kwargs.get("slug")
         self.wizard_object = Wizard.objects.get(slug=wizard_slug)
         self.form_list_map = {}
-        self.form_object_list = self.wizard_object.forms.all().order_by(
-            "wizardformthrough"
-        )
+
+        # Issue with order by and through, see:
+        # https://code.djangoproject.com/ticket/26092.
+        try:
+            self.form_object_list = self.wizard_object.forms.all().order_by(
+                "wizardformthrough"
+            )
+
+            # Make an arb call on the list to trigger the potential error.
+            len(self.form_object_list)
+        except AttributeError as e:
+            self.form_object_list = [instance.form for
+                instance in WizardFormThrough.objects.filter(
+                    wizard=self.wizard_object).order_by("order")
+            ]
 
         form_list = []
         for obj in self.form_object_list:
