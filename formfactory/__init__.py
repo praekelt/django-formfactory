@@ -1,57 +1,52 @@
 from django.conf import settings
 
 
-class AppFields(object):
-    DJANGO = "django.forms.fields"
-    FORMFACTORY = "formfactory.fields"
-
-class AppWidgets(object):
-    DJANGO = "django.forms.widgets"
-    FORMFACTORY = "formfactory.widgets"
-
 SETTINGS = getattr(settings, "FORMFACTORY", {
     "field-types": [
-            ("%s.BooleanField" % AppFields.DJANGO, "BooleanField"),
-            ("%s.CharField" % AppFields.DJANGO, "CharField"),
-            ("%s.ChoiceField" % AppFields.DJANGO, "ChoiceField"),
-            ("%s.DateField" % AppFields.DJANGO, "DateField"),
-            ("%s.DateTimeField" % AppFields.DJANGO, "DateTimeField"),
-            ("%s.DecimalField" % AppFields.DJANGO, "DecimalField"),
-            ("%s.EmailField" % AppFields.DJANGO, "EmailField"),
-            ("%s.FileField" % AppFields.DJANGO, "FileField"),
-            ("%s.FloatField" % AppFields.DJANGO, "FloatField"),
-            ("%s.GenericIPAddressField" % AppFields.DJANGO, "GenericIPAddressField"),
-            ("%s.IntegerField" % AppFields.DJANGO, "IntegerField"),
-            ("%s.MultipleChoiceField" % AppFields.DJANGO, "MultipleChoiceField"),
-            ("%s.SlugField" % AppFields.DJANGO, "SlugField"),
-            ("%s.SplitDateTimeField" % AppFields.DJANGO, "SplitDateTimeField"),
-            ("%s.TimeField" % AppFields.DJANGO, "TimeField"),
-            ("%s.URLField" % AppFields.DJANGO, "URLField"),
-            ("%s.UUIDField" % AppFields.DJANGO, "UUIDField"),
-            ("%s.ParagraphField" % AppFields.FORMFACTORY, "ParagraphField"),
+            ("django.forms.fields.BooleanField", "BooleanField"),
+            ("django.forms.fields.CharField", "CharField"),
+            ("django.forms.fields.ChoiceField", "ChoiceField"),
+            ("django.forms.fields.DateField", "DateField"),
+            ("django.forms.fields.DateTimeField", "DateTimeField"),
+            ("django.forms.fields.DecimalField", "DecimalField"),
+            ("django.forms.fields.EmailField", "EmailField"),
+            ("django.forms.fields.FileField", "FileField"),
+            ("django.forms.fields.FloatField", "FloatField"),
+            (
+                "django.forms.fields.GenericIPAddressField",
+                "GenericIPAddressField"
+            ),
+            ("django.forms.fields.IntegerField", "IntegerField"),
+            ("django.forms.fields.MultipleChoiceField", "MultipleChoiceField"),
+            ("django.forms.fields.SlugField", "SlugField"),
+            ("django.forms.fields.SplitDateTimeField", "SplitDateTimeField"),
+            ("django.forms.fields.TimeField", "TimeField"),
+            ("django.forms.fields.URLField", "URLField"),
+            ("django.forms.fields.UUIDField", "UUIDField"),
+            ("formfactory.fields.ParagraphField", "ParagraphField"),
     ],
     "widget-types": [
-        ("%s.CheckboxInput" % AppWidgets.DJANGO, "CheckboxInput"),
+        ("django.forms.widgets.CheckboxInput", "CheckboxInput"),
         (
-            "%s.CheckboxSelectMultiple" % AppWidgets.DJANGO,
+            "django.forms.widgets.CheckboxSelectMultiple",
             "CheckboxSelectMultiple"
         ),
-        ("%s.DateInput" % AppWidgets.DJANGO, "DateInput"),
-        ("%s.DateTimeInput" % AppWidgets.DJANGO, "DateTimeInput"),
-        ("%s.EmailInput" % AppWidgets.DJANGO, "EmailInput"),
-        ("%s.FileInput" % AppWidgets.DJANGO, "FileInput"),
-        ("%s.HiddenInput" % AppWidgets.DJANGO, "HiddenInput"),
-        ("%s.NullBooleanSelect" % AppWidgets.DJANGO, "NullBooleanSelect"),
-        ("%s.NumberInput" % AppWidgets.DJANGO, "NumberInput"),
-        ("%s.PasswordInput" % AppWidgets.DJANGO, "PasswordInput"),
-        ("%s.RadioSelect" % AppWidgets.DJANGO, "RadioSelect"),
-        ("%s.Select" % AppWidgets.DJANGO, "Select"),
-        ("%s.SelectMultiple" % AppWidgets.DJANGO, "SelectMultiple"),
-        ("%s.Textarea" % AppWidgets.DJANGO, "Textarea"),
-        ("%s.TextInput" % AppWidgets.DJANGO, "TextInput"),
-        ("%s.TimeInput" % AppWidgets.DJANGO, "TimeInput"),
-        ("%s.URLInput" % AppWidgets.DJANGO, "URLInput"),
-        ("%s.ParagraphWidget" % AppWidgets.FORMFACTORY, "ParagraphWidget")
+        ("django.forms.widgets.DateInput", "DateInput"),
+        ("django.forms.widgets.DateTimeInput", "DateTimeInput"),
+        ("django.forms.widgets.EmailInput", "EmailInput"),
+        ("django.forms.widgets.FileInput", "FileInput"),
+        ("django.forms.widgets.HiddenInput", "HiddenInput"),
+        ("django.forms.widgets.NullBooleanSelect", "NullBooleanSelect"),
+        ("django.forms.widgets.NumberInput", "NumberInput"),
+        ("django.forms.widgets.PasswordInput", "PasswordInput"),
+        ("django.forms.widgets.RadioSelect", "RadioSelect"),
+        ("django.forms.widgets.Select", "Select"),
+        ("django.forms.widgets.SelectMultiple", "SelectMultiple"),
+        ("django.forms.widgets.Textarea", "Textarea"),
+        ("django.forms.widgets.TextInput", "TextInput"),
+        ("django.forms.widgets.TimeInput", "TimeInput"),
+        ("django.forms.widgets.URLInput", "URLInput"),
+        ("formfactory.widgets.ParagraphWidget", "ParagraphWidget")
     ],
     "error-types": [
         "empty", "incomplete", "invalid", "invalid_choice", "invalid_image",
