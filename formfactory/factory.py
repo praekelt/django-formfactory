@@ -28,7 +28,7 @@ class FormFactory(forms.Form):
         self.clean_method = kwargs.pop("clean_method")
         self.request = kwargs.pop("request", None)
 
-        form_id = kwargs.pop("form_id")
+        self.form_id = form_id = kwargs.pop("form_id")
         defined_field_groups = kwargs.pop("field_groups")
 
         super(FormFactory, self).__init__(*args, **kwargs)
@@ -257,7 +257,7 @@ class FormFactory(forms.Form):
             # Make an arb call on the list to trigger the potential error.
             len(actions)
         except AttributeError as e:
-            form = models.Form.objects.get(id=self.cleaned_data["form_id"])
+            form = models.Form.objects.get(id=self.form_id)
             actions = [instance.action for
                 instance in
                 models.FormActionThrough.objects.filter(

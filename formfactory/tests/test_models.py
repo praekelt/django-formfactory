@@ -67,10 +67,21 @@ class ModelTestCase(TestCase):
             self.assertEqual(getattr(self.fieldgroup, key), value)
 
     def test_wizard(self):
-        self.assertQuerysetEqual(
-            self.wizard.forms.all().order_by("wizardformthrough"),
-            [repr(self.simpleform), repr(self.loginform)]
-        )
+        import django
+        if django.get_version() == "1.9":
+            forms = [instance.form for
+                instance in models.WizardFormThrough.objects.filter(
+                    wizard=self.wizard).order_by("order")
+            ]
+            self.assertQuerysetEqual(
+                forms,
+                [repr(self.simpleform), repr(self.loginform)]
+            )
+        else:
+            self.assertQuerysetEqual(
+                self.wizard.forms.all().order_by("wizardformthrough"),
+                [repr(self.simpleform), repr(self.loginform)]
+            )
         self.assertEqual(
             self.wizard.get_absolute_url(),
             "/formfactory/wizard/%s/" % self.wizard.slug

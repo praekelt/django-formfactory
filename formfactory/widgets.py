@@ -8,7 +8,8 @@ class ParagraphWidget(Widget):
 
     def render(self, *args, **kwargs):
 
-        # Add a basic check for Django 2. No tests yet.
+        # Add a basic check for Django 2. No tests yet, just ensures it will
+        # fire for it too.
         if django.VERSION[1] >= 11 or django.VERSION[0] > 1:
             return super(ParagraphWidget, self).render(*args, **kwargs)
         else:
