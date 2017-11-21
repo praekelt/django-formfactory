@@ -1,5 +1,4 @@
 import markdown
-import django
 
 from django.forms.fields import Field
 from django.utils.text import mark_safe
@@ -9,6 +8,7 @@ from formfactory import widgets
 
 class ParagraphField(Field):
     widget = widgets.ParagraphWidget
+
     def __init__(self, paragraph, *args, **kwargs):
         super(ParagraphField, self).__init__(*args, **kwargs)
 

@@ -2,7 +2,6 @@ import django
 from django.forms.widgets import Widget
 from django.utils.html import format_html
 
-# TODO Add django 19 and 110 render support
 class ParagraphWidget(Widget):
     template_name = "formfactory/forms/widgets/paragraph.html"
 
