@@ -23,7 +23,6 @@ clean_methods.auto_discover()
 
 def FIELD_TYPES():
     fields = ()
-
     for content_type, field in SETTINGS["field-types"]:
         module = importlib.import_module(content_type.replace(".%s" % field, ""))
         if issubclass(getattr(module, field), forms.fields.Field):

@@ -1,7 +1,6 @@
 from django.conf import settings
 
 
-# TODO add contenttype settings in
 class AppFields(object):
     DJANGO = "django.forms.fields"
     FORMFACTORY = "formfactory.fields"
