@@ -68,7 +68,10 @@ class ModelTestCase(TestCase):
 
     def test_wizard(self):
         import django
-        if django.get_version() == "1.9":
+
+        # This regression to django.db.sql.compiler.find_ordering_name() is
+        # only present in these two django version.
+        if django.get_version() in ["1.9", "1.9.1"]:
             forms = [instance.form for
                 instance in models.WizardFormThrough.objects.filter(
                     wizard=self.wizard).order_by("order")
