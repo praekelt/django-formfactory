@@ -12,7 +12,7 @@ from django.utils.translation import ugettext as _
 from simplemde.fields import SimpleMDEField
 
 from formfactory import (
-    _registry, actions, clean_methods, factory, SETTINGS, validators,
+    _registry, actions, clean_methods, factory, SETTINGS, validators, utils
 )
 
 
@@ -231,21 +231,13 @@ it.""")
                 "The model needs to be saved before a form can be generated."
             )
 
-        # Issue with order by and through, see:
-        # https://code.djangoproject.com/ticket/26092.
-        try:
-            ordered_field_groups = self.fieldgroups.all().order_by(
-                "fieldgroupformthrough"
-            )
-
-            # Make an arb call on the list to trigger the potential error.
-            len(ordered_field_groups)
-        except AttributeError as e:
-            ordered_field_groups = [instance.field_group
-                for instance
-                in FieldGroupFormThrough.objects.filter(
-                    form=self).order_by("order")
-            ]
+        ordered_field_groups = utils.order_by_through(
+            self.fieldgroups.all(),
+            "FieldGroupFormThrough",
+            "form",
+            self,
+            "field_group"
+        )
         kwargs.update({
             "field_groups": ordered_field_groups,
             "form_id": self.pk,

@@ -10,7 +10,7 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from formfactory import SETTINGS
+from formfactory import SETTINGS, utils
 
 
 class FormFactory(forms.Form):
@@ -45,19 +45,13 @@ class FormFactory(forms.Form):
         field_through = models.FieldGroupThrough
         for field_group in defined_field_groups:
 
-            # Issue with order by and through, see:
-            # https://code.djangoproject.com/ticket/26092.
-            try:
-                fields = field_group.fields.all().order_by("fieldgroupthrough")
-
-                # Make an arb call on the list to trigger the potential error.
-                len(fields)
-            except AttributeError as e:
-                fields = [instance.field for
-                    instance in
-                    field_through.objects.filter(
-                        field_group=field_group).order_by("order")
-                ]
+            fields = utils.order_by_through(
+                field_group.fields.all(),
+                "FieldGroupThrough",
+                "field_group",
+                field_group,
+                "field"
+            )
             self.field_group.append(
                 [field_group.title, field_group.show_title, [f.slug for f in fields]]
             )
@@ -248,21 +242,14 @@ class FormFactory(forms.Form):
 
         # Models aren't ready when the file is initially processed.
         from formfactory import models
-
-        # Issue with order by and through, see:
-        # https://code.djangoproject.com/ticket/26092.
-        try:
-            actions = self.actions.order_by("formactionthrough")
-
-            # Make an arb call on the list to trigger the potential error.
-            len(actions)
-        except AttributeError as e:
-            form = models.Form.objects.get(id=self.form_id)
-            actions = [instance.action for
-                instance in
-                models.FormActionThrough.objects.filter(
-                    form=form).order_by("order")
-            ]
+        form = models.Form.objects.get(id=self.form_id)
+        actions = utils.order_by_through(
+            self.actions,
+            "FormActionThrough",
+            "form",
+            form,
+            "action"
+        )
         for action in actions:
             action_params = kwargs.copy()
             action_params.update(dict(
