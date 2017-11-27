@@ -8,6 +8,7 @@ next
 #. Added support for Fields and Widgets outside just base Django's.
 #. Cater for order_by issue in Django 1.9 and 1.9.1.
 #. Data migration for field_type and widget fields on FormField.
+#. Add missing migrations.
 
 0.1
 ---
