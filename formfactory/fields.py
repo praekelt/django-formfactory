@@ -9,7 +9,7 @@ from formfactory import widgets
 class ParagraphField(Field):
     widget = widgets.ParagraphWidget
 
-    def __init__(self, paragraph, *args, **kwargs):
+    def __init__(self, paragraph="", *args, **kwargs):
         super(ParagraphField, self).__init__(*args, **kwargs)
 
         # Always empty out label for a paragraph field.
@@ -18,6 +18,10 @@ class ParagraphField(Field):
         # No matter what is set, this field should never be required.
         self.required = False
         self.widget.is_required = False
+
+        # Fields should also handle their own args not being set.
+        if paragraph == "":
+            paragraph = "Please set a value for this field."
 
         # Pass the paragraph text to the widget without needing to override
         # widget __init__. Process markdown here, its up to custom fields to
