@@ -2,6 +2,7 @@ import markdown
 
 from django.forms.fields import Field
 from django.utils.text import mark_safe
+from django.utils.translation import ugettext as _
 
 from formfactory import widgets
 
@@ -21,7 +22,7 @@ class ParagraphField(Field):
 
         # Fields should handle their own args not being set.
         if paragraph == "":
-            paragraph = "Please set a value for this field."
+            paragraph = _("Please set a value for this field.")
 
         # Pass the paragraph text to the widget without needing to override
         # widget __init__. Process markdown here, its up to custom fields to
