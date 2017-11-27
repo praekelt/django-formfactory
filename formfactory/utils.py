@@ -41,7 +41,8 @@ def increment_file_name(file_path):
     return set_file_name(file_path, count)
 
 
-def order_by_through(queryset, through_model_name, filter_on, filter_instance, ordered_object_type, order_by="order"):
+def order_by_through(queryset, through_model_name, filter_on,
+        filter_instance, ordered_object_type, order_by="order"):
     """
     Helps with an issue in django 1.9 and 1.9.1 that can be found here:
     https://code.djangoproject.com/ticket/26092

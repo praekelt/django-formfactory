@@ -21,7 +21,7 @@ validators.auto_discover()
 clean_methods.auto_discover()
 
 
-def FIELD_TYPES():
+def _FIELD_TYPES():
     fields = ()
     for content_type, field in SETTINGS["field-types"]:
         module = importlib.import_module(content_type.replace(".%s" % field, ""))
@@ -29,9 +29,9 @@ def FIELD_TYPES():
             fields = fields + ((content_type, field),)
     return fields
 
-FIELD_TYPES = FIELD_TYPES()
+FIELD_TYPES = _FIELD_TYPES()
 
-def WIDGET_TYPES():
+def _WIDGET_TYPES():
     widgets = ()
     for content_type, widget in SETTINGS["widget-types"]:
         module = importlib.import_module(content_type.replace(".%s" % widget, ""))
@@ -39,7 +39,7 @@ def WIDGET_TYPES():
             widgets = widgets + ((content_type, widget),)
     return widgets
 
-WIDGET_TYPES = WIDGET_TYPES()
+WIDGET_TYPES = _WIDGET_TYPES()
 
 ERROR_MESSAGES = tuple(
     (error_type, error_type) for error_type in SETTINGS["error-types"]
