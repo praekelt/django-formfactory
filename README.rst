@@ -20,6 +20,11 @@ Installation
 
 #. Add ``url(r'^formfactory/', include("formfactory.urls", namespace="formfactory"))`` to your ``url patterns`` (only required if you intend on using the detail view)
 
+Dependencies
+------------
+
+FormFactory makes use of the python markdown package as well as djano-simplemde. The latest tested version are pinned within ``formfactory/tests/requirements/<django_version>.txt``
+
 Usage
 -----
 
@@ -30,6 +35,18 @@ Settings
 
 FORMFACTORY["field-types"]
     Control the form fields types that can be selected in Admin.
+    Supports adding none Django fields: ``("<module_for_field>", "<display_name>")``
+    eg. ``("formfactory.fields.ParagraphField", "ParagraphField")``
+
+FORMFACTORY["widget-types"]
+    Control the form widget types that can be selected in Admin.
+    Supports adding none Django widgets: ``("<module_for_widget>", "<display_name>")``
+    eg. ``("formfactory.widgets.ParagraphWidget", "ParagraphWidget")``
+
+Widgets and Fields
+------------------
+FormFactory ships with a ParagraphField and ParagraphWidget combo. The intended use for these is to allow copy to be added in between fields.
+Allows for the same base templates to be used in most cases.
 
 Views
 ~~~~~

@@ -56,22 +56,28 @@ def load_fixtures(kls):
     )
 
     for count, field_type in enumerate(models.FIELD_TYPES):
-        setattr(kls, "formfield_data_%s" % count, {
+        data = {
             "title": "Form Field %s" % count,
             "slug": "form-field-%s" % count,
             "field_type": field_type[0],
             "label": "Form Field %s" % count,
             "placeholder": "Field Placeholder %s" % count
-        })
+        }
 
-        if field_type[0] == "CharField":
+        # Specialised fields with none default fields will need to have extra
+        # data added.
+        if field_type[0] == "formfactory.fields.ParagraphField":
+            data["paragraph"] = "**formfactory.fields.ParagraphField**"
+        setattr(kls, "formfield_data_%s" % count, data)
+
+        if field_type[0] == "django.forms.fields.CharField":
             getattr(kls, "formfield_data_%s" % count)["max_length"] = 100
 
         setattr(kls, "formfield_%s" % count, models.FormField.objects.create(
             **getattr(kls, "formfield_data_%s" % count)
         ))
 
-        if field_type[0] == "ChoiceField":
+        if field_type[0] == "django.forms.fields.ChoiceField":
             getattr(kls, "formfield_%s" % count).choices.add(kls.fieldchoice)
             getattr(kls, "formfield_%s" % count).model_choices = kls.enum
 
@@ -194,60 +200,66 @@ def load_fixtures(kls):
         "salutation": {
             "title": "Salutation",
             "slug": "salutation",
-            "field_type": "ChoiceField",
+            "field_type": "django.forms.fields.ChoiceField",
             "label": "Salutation",
             "required": False
         },
         "name": {
             "title": "Name",
             "slug": "name",
-            "field_type": "CharField",
+            "field_type": "django.forms.fields.CharField",
             "label": "Full Name",
             "required": True
         },
         "email_address": {
             "title": "Email Address",
             "slug": "email-address",
-            "field_type": "EmailField",
+            "field_type": "django.forms.fields.EmailField",
             "label": "Email",
             "help_text": "The email you would like info to be sent to"
         },
         "accept_terms": {
             "title": "Accept Terms",
             "slug": "accept-terms",
-            "field_type": "BooleanField",
+            "field_type": "django.forms.fields.BooleanField",
             "label": "Do you accept the terms and conditions",
             "required": False
         },
         "to_email": {
             "title": "To Email",
             "slug": "to-email",
-            "field_type": "CharField",
-            "widget": "HiddenInput",
+            "field_type": "django.forms.fields.CharField",
+            "widget": "django.forms.widgets.HiddenInput",
             "initial": "dev@praekelt.com",
             "required": True
         },
         "id_copy": {
             "title": "ID Copy",
             "slug": "id-copy",
-            "field_type": "FileField",
+            "field_type": "django.forms.fields.FileField",
             "required": True
         },
         "upload_to": {
             "title": "Upload To",
             "slug": "upload-to",
-            "field_type": "CharField",
-            "widget": "HiddenInput",
+            "field_type": "django.forms.fields.CharField",
+            "widget": "django.forms.widgets.HiddenInput",
             "initial": "uploads/test",
             "required": True
         },
         "subject": {
             "title": "Subject",
             "slug": "subject",
-            "field_type": "CharField",
-            "widget": "HiddenInput",
+            "field_type": "django.forms.fields.CharField",
+            "widget": "django.forms.widgets.HiddenInput",
             "initial": "Test Email",
             "required": True
+        },
+        "paragraph": {
+            "title": "Paragraph",
+            "slug": "paragraph",
+            "field_type": "formfactory.fields.ParagraphField",
+            "paragraph": "**aaaa**"
         }
     }
 
@@ -340,15 +352,15 @@ def load_fixtures(kls):
         "username": {
             "title": "Username",
             "slug": "username",
-            "field_type": "CharField",
+            "field_type": "django.forms.fields.CharField",
             "label": "Username",
             "required": True
         },
         "password": {
             "title": "Password",
             "slug": "password",
-            "field_type": "CharField",
-            "widget": "PasswordInput",
+            "field_type": "django.forms.fields.CharField",
+            "widget": "django.forms.widgets.PasswordInput",
             "label": "Password",
             "required": True
         }

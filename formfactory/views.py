@@ -10,8 +10,9 @@ from django.views import generic
 
 from formtools.wizard.views import NamedUrlSessionWizardView
 
-from formfactory import SETTINGS
-from formfactory.models import Form, Wizard
+from formfactory import SETTINGS, utils
+from formfactory.models import Form, Wizard, WizardFormThrough
+from formfactory.decorators import generic_deprecation
 
 
 class FactoryFormView(generic.FormView):
@@ -22,6 +23,10 @@ class FactoryFormView(generic.FormView):
         super(FactoryFormView, self).__init__(*args, **kwargs)
         self.form_object = None
 
+    @generic_deprecation(
+        "The form_detail_<slug>.html pattern will be deprecated in the"\
+        " upcoming version 1.0, make use of paragraph fields on forms"
+    )
     def get_template_names(self):
         template_names = []
 
@@ -125,10 +130,14 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         wizard_slug = kwargs.get("slug")
         self.wizard_object = Wizard.objects.get(slug=wizard_slug)
         self.form_list_map = {}
-        self.form_object_list = self.wizard_object.forms.all().order_by(
-            "wizardformthrough"
-        )
 
+        self.form_object_list = utils.order_by_through(
+            self.wizard_object.forms.all(),
+            "WizardFormThrough",
+            "wizard",
+            self.wizard_object,
+            "form"
+        )
         form_list = []
         for obj in self.form_object_list:
             klass = obj.as_form().__class__
@@ -212,6 +221,10 @@ class FactoryWizardView(NamedUrlSessionWizardView):
         context["wizard_object"] = self.wizard_object
         return context
 
+    @generic_deprecation(
+        "The wizard_detail_<slug>.html pattern will be deprecated in the"\
+        " upcoming version 1.0, make use of paragraph fields on forms"
+    )
     def get_template_names(self):
         return [
             "formfactory/wizard_%s_step.html" % self.steps.current,

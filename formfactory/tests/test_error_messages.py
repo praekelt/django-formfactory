@@ -9,7 +9,7 @@ class CustomErrorMessageTestCase(TestCase):
         field = models.FormField.objects.create(
             title="Number",
             slug="number",
-            field_type="IntegerField",
+            field_type="django.forms.fields.IntegerField",
         )
 
         # Add custom error message and add it to field
