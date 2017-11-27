@@ -19,7 +19,7 @@ class ParagraphField(Field):
         self.required = False
         self.widget.is_required = False
 
-        # Fields should also handle their own args not being set.
+        # Fields should handle their own args not being set.
         if paragraph == "":
             paragraph = "Please set a value for this field."
 
