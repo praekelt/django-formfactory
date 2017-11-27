@@ -127,7 +127,7 @@ class FormFieldAdminForm(forms.ModelForm):
             "initial", "max_length", "help_text", "placeholder", "required",
             "disabled", "choices", "model_choices_content_type",
             "model_choices_object_id", "additional_validators",
-            "error_messages"
+            "error_messages", "paragraph"
         ]
 
 

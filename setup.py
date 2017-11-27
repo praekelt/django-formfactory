@@ -16,7 +16,9 @@ setup(
     dependency_links=[],
     install_requires=[
         "django",
-        "django-formtools"
+        "django-formtools",
+        "django-simplemde",
+        "markdown",
     ],
     classifiers=[
         "Programming Language :: Python",

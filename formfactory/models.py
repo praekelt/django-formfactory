@@ -1,12 +1,18 @@
+import importlib
+import markdown
+
 from django import forms
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.text import mark_safe
 from django.utils.translation import ugettext as _
 
+from simplemde.fields import SimpleMDEField
+
 from formfactory import (
-    _registry, actions, clean_methods, factory, SETTINGS, validators
+    _registry, actions, clean_methods, factory, SETTINGS, validators, utils
 )
 
 
@@ -15,15 +21,25 @@ validators.auto_discover()
 clean_methods.auto_discover()
 
 
-FIELD_TYPES = tuple(
-    (field, field) for field in SETTINGS["field-types"]
-    if issubclass(getattr(forms.fields, field), forms.fields.Field)
-)
+def _FIELD_TYPES():
+    fields = ()
+    for content_type, field in SETTINGS["field-types"]:
+        module = importlib.import_module(content_type.replace(".%s" % field, ""))
+        if issubclass(getattr(module, field), forms.fields.Field):
+            fields = fields + ((content_type, field),)
+    return fields
 
-WIDGET_TYPES = tuple(
-    (widget, widget) for widget in SETTINGS["widget-types"]
-    if issubclass(getattr(forms.widgets, widget), forms.widgets.Widget)
-)
+FIELD_TYPES = _FIELD_TYPES()
+
+def _WIDGET_TYPES():
+    widgets = ()
+    for content_type, widget in SETTINGS["widget-types"]:
+        module = importlib.import_module(content_type.replace(".%s" % widget, ""))
+        if issubclass(getattr(module, widget), forms.widgets.Widget):
+            widgets = widgets + ((content_type, widget),)
+    return widgets
+
+WIDGET_TYPES = _WIDGET_TYPES()
 
 ERROR_MESSAGES = tuple(
     (error_type, error_type) for error_type in SETTINGS["error-types"]
@@ -215,8 +231,12 @@ it.""")
                 "The model needs to be saved before a form can be generated."
             )
 
-        ordered_field_groups = self.fieldgroups.all().order_by(
-            "fieldgroupformthrough"
+        ordered_field_groups = utils.order_by_through(
+            self.fieldgroups.all(),
+            "FieldGroupFormThrough",
+            "form",
+            self,
+            "field_group"
         )
         kwargs.update({
             "field_groups": ordered_field_groups,
@@ -363,9 +383,52 @@ class FormField(models.Model):
     )
     additional_validators = models.ManyToManyField(Validator, blank=True)
     error_messages = models.ManyToManyField(CustomErrorMessage, blank=True)
+    paragraph = SimpleMDEField(
+        null=True,
+        blank=True,
+        help_text="Markdown for the formfactory ParagraphField and"\
+        " ParagraphWidget combination."
+    )
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def get_field_meta(self):
+        """
+        Return field meta info
+        :return: tuple(module, field_class_name)
+        """
+        for content_type, field in FIELD_TYPES:
+            if self.field_type == content_type:
+                module = importlib.import_module(
+                    content_type.replace(".%s" % field, "")
+                )
+                return (module, field)
+        raise Exception("Field; %s on Field model %s: Does not have a" \
+            "properly defined content_type value" % (self.field_type, self.id))
+
+    @property
+    def get_widget_meta(self):
+        """
+        Return field meta info
+        :return: tuple(module, widget_class_name)
+        """
+        for content_type, widget in WIDGET_TYPES:
+            if self.widget == content_type:
+                module = importlib.import_module(
+                    content_type.replace(".%s" % widget, "")
+                )
+                return (module, widget)
+        raise Exception("Widget; %s on Field model %s: Does not have a " \
+            "properly defined content_type value" % (self.widget, self.id))
+
+    @property
+    def safe_paragraph(self):
+        if self.paragraph:
+            return mark_safe(markdown.markdown(self.paragraph))
+        else:
+            return self.paragraph
 
 
 class FieldGroupThrough(models.Model):

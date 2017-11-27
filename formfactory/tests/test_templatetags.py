@@ -50,3 +50,11 @@ class TemplateTagsTestCase(TestCase):
             )
         )
         self.failUnless(response.status_code, 404)
+
+    def test_all_fields_get_form_by_slug(self):
+        response = self.client.get(
+            reverse(
+                "render_tag_all_fields"
+            )
+        )
+        self.failUnless("subscribe-form" in response.content)
