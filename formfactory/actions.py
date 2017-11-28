@@ -47,6 +47,16 @@ def store_data(form_instance, **kwargs):
         uuid=cleaned_data.pop("uuid"),
         form_id=cleaned_data.pop("form_id"),
     )
+
+    # Formfactory can end up in a scenario where a none required field gets to
+    # this stage as empty in the cleaned data. However the actual data field
+    # that is being saved to is required and not null. At this stage seems to
+    # only happen with wizards. Solution: if the field is not required and the
+    # value is not present pop it from the dict that will be saved.
+    for name, field in form_instance.fields.items():
+        if not field.required and not cleaned_data.get(name, None):
+            cleaned_data.pop(name)
+
     for key, value in cleaned_data.items():
         FormDataItem.objects.create(
             form_data=form_data,

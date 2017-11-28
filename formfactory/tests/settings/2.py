@@ -8,14 +8,13 @@ DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "test110.db"
+        "NAME": "test111.db"
     }
 }
 
 ROOT_URLCONF = "formfactory.tests.urls"
 
 INSTALLED_APPS = [
-    "test_without_migrations",
     "formfactory",
     "formfactory.tests",
     "formtools",

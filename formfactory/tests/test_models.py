@@ -10,13 +10,15 @@ class ModelTestCase(TestCase):
         load_fixtures(self)
 
     def test_field_constant(self):
-        self.assertIn(("DateTimeField", "DateTimeField"), models.FIELD_TYPES)
-        self.assertIn(("BooleanField", "BooleanField"), models.FIELD_TYPES)
-        self.assertIn(("CharField", "CharField"), models.FIELD_TYPES)
+        self.assertIn(("django.forms.fields.DateTimeField", "DateTimeField"), models.FIELD_TYPES)
+        self.assertIn(("django.forms.fields.BooleanField", "BooleanField"), models.FIELD_TYPES)
+        self.assertIn(("django.forms.fields.CharField", "CharField"), models.FIELD_TYPES)
+        self.assertIn(("formfactory.fields.ParagraphField", "ParagraphField"), models.FIELD_TYPES)
 
-        self.assertIn(("TextInput", "TextInput"), models.WIDGET_TYPES)
-        self.assertIn(("DateTimeInput", "DateTimeInput"), models.WIDGET_TYPES)
-        self.assertIn(("CheckboxInput", "CheckboxInput"), models.WIDGET_TYPES)
+        self.assertIn(("django.forms.widgets.TextInput", "TextInput"), models.WIDGET_TYPES)
+        self.assertIn(("django.forms.widgets.DateTimeInput", "DateTimeInput"), models.WIDGET_TYPES)
+        self.assertIn(("django.forms.widgets.CheckboxInput", "CheckboxInput"), models.WIDGET_TYPES)
+        self.assertIn(("formfactory.widgets.ParagraphWidget", "ParagraphWidget"), models.WIDGET_TYPES)
 
         self.assertIn(
             self.action_data["action"], [a[0] for a in models.FORM_ACTIONS]
@@ -65,10 +67,24 @@ class ModelTestCase(TestCase):
             self.assertEqual(getattr(self.fieldgroup, key), value)
 
     def test_wizard(self):
-        self.assertQuerysetEqual(
-            self.wizard.forms.all().order_by("wizardformthrough"),
-            [repr(self.simpleform), repr(self.loginform)]
-        )
+        import django
+
+        # This regression to django.db.sql.compiler.find_ordering_name() is
+        # only present in these two django version.
+        if django.get_version() in ["1.9", "1.9.1"]:
+            forms = [instance.form for
+                instance in models.WizardFormThrough.objects.filter(
+                    wizard=self.wizard).order_by("order")
+            ]
+            self.assertQuerysetEqual(
+                forms,
+                [repr(self.simpleform), repr(self.loginform)]
+            )
+        else:
+            self.assertQuerysetEqual(
+                self.wizard.forms.all().order_by("wizardformthrough"),
+                [repr(self.simpleform), repr(self.loginform)]
+            )
         self.assertEqual(
             self.wizard.get_absolute_url(),
             "/formfactory/wizard/%s/" % self.wizard.slug

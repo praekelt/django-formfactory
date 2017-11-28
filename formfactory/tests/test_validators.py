@@ -19,7 +19,7 @@ class ValidatorTestCase(TestCase):
         field = models.FormField.objects.create(
             title="Number",
             slug="number",
-            field_type="IntegerField",
+            field_type="django.forms.fields.IntegerField",
         )
         field.additional_validators.add(self.validator)
         group = models.FormFieldGroup.objects.create(

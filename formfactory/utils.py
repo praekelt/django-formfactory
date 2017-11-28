@@ -39,3 +39,34 @@ def increment_file_name(file_path):
     while path.exists(set_file_name(file_path, count)):
         count += 1
     return set_file_name(file_path, count)
+
+
+def order_by_through(queryset, through_model_name, filter_on,
+        filter_instance, ordered_object_type, order_by="order"):
+    """
+    Helps with an issue in django 1.9 and 1.9.1 that can be found here:
+    https://code.djangoproject.com/ticket/26092
+    :return: ordered QuerySet
+    """
+
+    return_set = None
+    try:
+        return_set = queryset.order_by(
+            through_model_name.lower()
+        )
+
+        # Make an arb call on the list to trigger the potential error.
+        len(return_set)
+    except AttributeError as e:
+
+        # Models can't be imported when utils first initialises.
+        from formfactory import models
+        model = getattr(models, through_model_name)
+        filter_data = {filter_on: filter_instance}
+        return_set = [getattr(instance, ordered_object_type)
+            for instance
+            in model.objects.filter(
+                **filter_data
+            ).order_by(order_by)
+        ]
+    return return_set

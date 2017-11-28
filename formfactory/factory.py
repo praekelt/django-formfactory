@@ -1,11 +1,16 @@
 from uuid import uuid4
+import importlib
+import inspect
 
 from django import forms
+from django.conf import settings
+from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-from django.utils import six
 from django.utils.translation import ugettext_lazy as _
+
+from formfactory import SETTINGS, utils
 
 
 class FormFactory(forms.Form):
@@ -23,7 +28,7 @@ class FormFactory(forms.Form):
         self.clean_method = kwargs.pop("clean_method")
         self.request = kwargs.pop("request", None)
 
-        form_id = kwargs.pop("form_id")
+        self.form_id = form_id = kwargs.pop("form_id")
         defined_field_groups = kwargs.pop("field_groups")
 
         super(FormFactory, self).__init__(*args, **kwargs)
@@ -34,13 +39,25 @@ class FormFactory(forms.Form):
         # Iterates over the fields defined in the Form model and sets the
         # appropriate attributes and builds up the fieldgroups.
         self.field_group = []
+
+        # Models aren't ready when the file is initially processed.
+        from formfactory import models
+        field_through = models.FieldGroupThrough
         for field_group in defined_field_groups:
-            fields = field_group.fields.all().order_by("fieldgroupthrough")
+
+            fields = utils.order_by_through(
+                field_group.fields.all(),
+                "FieldGroupThrough",
+                "field_group",
+                field_group,
+                "field"
+            )
             self.field_group.append(
                 [field_group.title, field_group.show_title, [f.slug for f in fields]]
             )
             for field in fields:
-                field_type = getattr(forms, field.field_type)
+                field_meta = field.get_field_meta
+                field_type = getattr(field_meta[0], field_meta[1])
 
                 additional_validators = []
                 for validator in field.additional_validators.all():
@@ -48,17 +65,39 @@ class FormFactory(forms.Form):
                         validator.as_function
                     )
 
-                self.fields[field.slug] = field_type(
-                    label=field.label,
-                    initial=field.initial or self.initial.get(field.slug),
-                    required=field.required,
-                    disabled=field.disabled,
-                    help_text=field.help_text,
-                    validators=additional_validators,
-                    error_messages=dict(
+                # NOTE: Label always defaults to title if label field is empty,
+                # this is not expected behaviour. Label needs to be optional.
+                field_args = {}
+
+                # Some custom fields might need extra info passed to the actual
+                # field instance. Only cater for leaf args.
+                init_args = inspect.getargspec(field_type.__init__).args
+                for arg in init_args:
+                    field_value = getattr(field, arg, None)
+                    if field_value:
+                        field_args[arg] = field_value
+
+                # Ensure the expected values are always present on a specific
+                # default subset.
+                field_args.update({
+                    "label": field.label,
+                    "initial": field.initial or self.initial.get(field.slug),
+                    "required": field.required,
+                    "disabled": field.disabled,
+                    "help_text": field.help_text,
+                    "validators": additional_validators,
+                    "error_messages": dict(
                         (m.key, m.value) for m in field.error_messages.all()
                     )
-                )
+                })
+
+                # Sets the user defined widget if setup
+                if field.widget:
+                    widget_meta = field.get_widget_meta
+                    widget = getattr(widget_meta[0], widget_meta[1])
+                    field_args["widget"] = widget()
+
+                self.fields[field.slug] = field_type(**field_args)
 
                 # Saves the field model pk to the form field to prevent the
                 # need for another query in the save method.
@@ -97,12 +136,10 @@ class FormFactory(forms.Form):
                 except TypeError:
                     pass
 
-                # Sets the user defined widget if setup
-                if field.widget:
-                    widget = getattr(forms.widgets, field.widget)
-                    self.fields[field.slug].widget = widget()
-
                 # Adds widget-specific options to the form field
+                # TODO add pluggable attrs, can be assigned for now other
+                # fields on the form model. probably use widget class and settings.
+                # TODO Allowed attrs (widget_attrs["paragraph"] = field.paragraph)
                 widget_attrs = self.fields[field.slug].widget.attrs
                 widget_attrs["placeholder"] = field.placeholder
                 if choices:
@@ -202,7 +239,18 @@ class FormFactory(forms.Form):
     def save(self, *args, **kwargs):
         """Performs the required actions in the defined sequence.
         """
-        for action in self.actions.order_by("formactionthrough"):
+
+        # Models aren't ready when the file is initially processed.
+        from formfactory import models
+        form = models.Form.objects.get(id=self.form_id)
+        actions = utils.order_by_through(
+            self.actions,
+            "FormActionThrough",
+            "form",
+            form,
+            "action"
+        )
+        for action in actions:
             action_params = kwargs.copy()
             action_params.update(dict(
                 (obj.key, obj.value) for obj in action.params.all()

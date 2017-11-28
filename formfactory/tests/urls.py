@@ -14,6 +14,11 @@ urlpatterns = [
         name="render_tag"
     ),
     url(
+        r"^render_tag_all_fields/$",
+        TemplateView.as_view(template_name="tests/render_tag_all.html"),
+        name="render_tag_all_fields"
+    ),
+    url(
         r"^render_tag_404/$",
         TemplateView.as_view(template_name="tests/render_tag_404.html"),
         name="render_tag_404"

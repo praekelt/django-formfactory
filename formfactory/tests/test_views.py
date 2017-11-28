@@ -48,6 +48,10 @@ class ViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         for field_group in self.simpleform.fieldgroups.all():
             for field in field_group.fields.all():
+
+                # Paragraph fields are never required.
+                if field.slug == "paragraph":
+                    continue
                 self.assertContains(response, field.slug)
                 for choice in field.choices.all():
                     self.assertContains(response, choice.label)
@@ -78,9 +82,6 @@ class ViewTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.failIf("Field Group 1" in response.content)
-
-    def tearDown(self):
-        pass
 
 
 class ViewNoCSRFTestCase(ViewTestCase):
