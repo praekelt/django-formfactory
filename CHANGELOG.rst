@@ -10,6 +10,10 @@ next
 #. Data migration for field_type and widget fields on FormField.
 #. Add missing migrations.
 
+0.2
+---
+#. Ajax form posting added.
+
 0.1
 ---
 #. Initial release.
