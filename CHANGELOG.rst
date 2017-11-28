@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.2.2
+-----
+#. Fix setup.py syntax
+
 0.2.1
 -----
 #. Added ParagraphField and ParagraphWidget.
