@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+0.2.1
+-----
 #. Added ParagraphField and ParagraphWidget.
 #. Added Paragraph markdown field on FormField model, for usage alongside field and widget.
 #. Added support for Fields and Widgets outside just base Django's.
