@@ -7,7 +7,7 @@ setup(
     name="django-formfactory",
     description="Dynamic django form builder.",
     long_description="".join([open(f, "r").read() for f in description_files]),
-    version="0.2.1"
+    version="0.2.1",
     author="Praekelt Consulting",
     author_email="dev@praekelt.com",
     license="BSD",
