@@ -1,9 +1,13 @@
 Changelog
 =========
 
+next
+----
+#. Fix defaut None placeholder.
+
 0.2.2
 -----
-#. Fix setup.py syntax
+#. Fix setup.py syntax.
 
 0.2.1
 -----
