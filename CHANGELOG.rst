@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+0.2.3
+-----
 #. Fix defaut None placeholder.
 
 0.2.2
