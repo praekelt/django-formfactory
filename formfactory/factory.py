@@ -141,7 +141,8 @@ class FormFactory(forms.Form):
                 # fields on the form model. probably use widget class and settings.
                 # TODO Allowed attrs (widget_attrs["paragraph"] = field.paragraph)
                 widget_attrs = self.fields[field.slug].widget.attrs
-                widget_attrs["placeholder"] = field.placeholder
+                if field.placeholder is not None:
+                    widget_attrs["placeholder"] = field.placeholder
                 if choices:
                     self.fields[field.slug].widget.choices = choices
 
