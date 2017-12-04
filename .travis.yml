@@ -1,14 +1,9 @@
 language: python
 
-matrix:
- include:
-  - python: 2.7
-    env:
-      - TOXENV=django19
-      - TOXENV=django110
-      - TOXENV=django111
-  - python: 3.5
-    env: TOXENV=django2
+env:
+  - TOXENV=django19
+  - TOXENV=django110
+  - TOXENV=django111
 
 install:
   - pip install tox
