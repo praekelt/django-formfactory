@@ -1,6 +1,10 @@
 Changelog
 =========
 
+next
+----
+#. Add travis support for django 2.
+
 0.2.3
 -----
 #. Fix defaut None placeholder.
