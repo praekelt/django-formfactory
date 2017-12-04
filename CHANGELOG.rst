@@ -1,10 +1,6 @@
 Changelog
 =========
 
-next
-----
-#. Add django 2 tests to travis as well.
-
 0.2.3
 -----
 #. Fix defaut None placeholder.
