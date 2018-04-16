@@ -1,8 +1,8 @@
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseNotFound
 from django.template import Context, Template, TemplateSyntaxError
 from django.test import LiveServerTestCase, Client
 from django.test import TestCase
+from django.urls import reverse
 
 from formfactory.tests.test_base import load_fixtures
 
@@ -20,7 +20,7 @@ class TemplateTagsTestCase(TestCase):
                 "render_tag"
             )
         )
-        self.failUnless("login-form-form_id" in response.content)
+        self.failUnless("login-form-form_id" in response.content.decode("utf-8"))
 
     def test_default_detail_template(self):
         # Detail view already makes use of the render_form tag and passes an
@@ -31,7 +31,7 @@ class TemplateTagsTestCase(TestCase):
                 kwargs={"slug": "login-form"}
             )
         )
-        self.failUnless("login-form-form_id" in response.content)
+        self.failUnless("login-form-form_id" in response.content.decode("utf-8"))
 
     def test_tag_syntax_error(self):
         with self.assertRaisesMessage(
@@ -57,4 +57,4 @@ class TemplateTagsTestCase(TestCase):
                 "render_tag_all_fields"
             )
         )
-        self.failUnless("subscribe-form" in response.content)
+        self.failUnless("subscribe-form" in response.content.decode("utf-8"))

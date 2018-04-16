@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from formfactory.views import FactoryFormView, FactoryFormNoCSRFView, \
     FactoryWizardView
 
-
+app_name = "formfactory"
 urlpatterns = [
     url(
         r"^wizard/(?P<slug>[\w-]+)(?:/(?P<step>[\w-]+))?/$",

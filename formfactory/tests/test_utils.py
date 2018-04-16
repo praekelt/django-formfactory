@@ -29,7 +29,7 @@ class UtilsTestCase(TestCase):
         )
 
         file_buffer = open(self.file_path, "wb+")
-        file_buffer.write("Test")
+        file_buffer.write("Test".encode("utf-8"))
         file_buffer.close()
         self.assertEqual(
             utils.increment_file_name(self.file_path), "/tmp/test_1.txt"

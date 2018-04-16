@@ -388,7 +388,7 @@ def load_fixtures(kls):
         count += 1
 
     kls.formdata_data = {
-        "uuid": unicode(uuid.uuid4()),
+        "uuid": str(uuid.uuid4()),
         "form": kls.form
     }
     kls.formdata = models.FormData.objects.create(**kls.formdata_data)

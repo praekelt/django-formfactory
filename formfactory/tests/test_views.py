@@ -1,20 +1,21 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.http.request import HttpRequest
 from django.test import TestCase
 from django.test.client import Client
+from django.urls import reverse
 
 from formfactory import models
 from formfactory.tests.test_base import cleanup_files, load_fixtures
 
 
 class ViewTestCase(TestCase):
+
     def setUp(self):
+        super(ViewTestCase, self).setUp()
         load_fixtures(self)
         cleanup_files()
 
-        self.client = Client()
         self.form_factory = self.simpleform.as_form()
         self.form_fields = self.form_factory.fields
         self.form_postdata = {
@@ -27,7 +28,7 @@ class ViewTestCase(TestCase):
             "subscribe-form-to-email": "dev@praekelt.com",
             "subscribe-form-subject": "Test Email",
             "subscribe-form-upload-to": "uploads/test",
-            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test")
+            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test".encode("utf-8"))
         }
 
         self.user = get_user_model().objects.create(username="testuser")
@@ -81,7 +82,7 @@ class ViewTestCase(TestCase):
             self.simpleform.get_absolute_url()
         )
         self.assertEqual(response.status_code, 200)
-        self.failIf("Field Group 1" in response.content)
+        self.failIf("Field Group 1" in response.content.decode("utf-8"))
 
 
 class ViewNoCSRFTestCase(ViewTestCase):
@@ -99,7 +100,9 @@ class ViewNoCSRFTestCase(ViewTestCase):
 
 
 class LoginViewDetailTestCase(TestCase):
+
     def setUp(self):
+        super(LoginViewDetailTestCase, self).setUp()
         load_fixtures(self)
         self.form_factory = self.simpleform.as_form()
         self.form_fields = self.form_factory.fields
@@ -138,6 +141,7 @@ class LoginViewDetailTestCase(TestCase):
 
 
 class WizardViewTestCase(TestCase):
+
     def setUp(self):
         super(WizardViewTestCase, self).setUp()
         load_fixtures(self)
@@ -165,7 +169,7 @@ class WizardViewTestCase(TestCase):
             "subscribe-form-form_id": self.simpleform.id,
             "subscribe-form-uuid": simple_form_uuid_field,
             "subscribe-form-upload-to": "uploads/test",
-            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test")
+            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test".encode("utf-8"))
         }
         response = self.client.post(
             reverse("formfactory:wizard-detail", kwargs={

@@ -1,11 +1,11 @@
 import uuid
 
 from django import forms
-from django.core.urlresolvers import reverse
 from django.core.files.storage import DefaultStorage
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.views import generic
 
 from formtools.wizard.views import NamedUrlSessionWizardView
@@ -103,7 +103,7 @@ class FactoryFormView(generic.FormView):
         context.update({
             "form_object": self.form_object
         })
-        context["uuid"] = uuid.uuid4().get_hex()
+        context["uuid"] = uuid.uuid4().hex
         return context
 
 

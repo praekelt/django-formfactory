@@ -4,8 +4,8 @@ import markdown
 from django import forms
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.text import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -63,7 +63,7 @@ class FormData(models.Model):
     """A basic store for form data.
     """
     uuid = models.UUIDField(db_index=True)
-    form = models.ForeignKey("Form")
+    form = models.ForeignKey("Form", on_delete=models.CASCADE)
 
     class Meta(object):
         ordering = ["uuid"]
@@ -75,8 +75,10 @@ class FormData(models.Model):
 class FormDataItem(models.Model):
     """A basic store for form data items.
     """
-    form_data = models.ForeignKey(FormData, related_name="items")
-    form_field = models.ForeignKey("FormField")
+    form_data = models.ForeignKey(
+        FormData, related_name="items", on_delete=models.CASCADE
+    )
+    form_field = models.ForeignKey("FormField", on_delete=models.CASCADE)
     value = models.TextField()
 
 
@@ -136,7 +138,9 @@ class ActionParam(models.Model):
     """
     key = models.CharField(max_length=128)
     value = models.CharField(max_length=128)
-    action = models.ForeignKey(Action, related_name="params")
+    action = models.ForeignKey(
+        Action, related_name="params", on_delete=models.CASCADE
+    )
 
     def __unicode__(self):
         return "%s:%s" % (self.key, self.value)
@@ -145,8 +149,8 @@ class ActionParam(models.Model):
 class FormActionThrough(models.Model):
     """Through table for form actions which defines an order.
     """
-    action = models.ForeignKey(Action)
-    form = models.ForeignKey("Form")
+    action = models.ForeignKey(Action, on_delete=models.CASCADE)
+    form = models.ForeignKey("Form", on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0)
 
     class Meta(object):
@@ -184,7 +188,9 @@ class Form(BaseFormModel):
     when the form processed.
     """
     actions = models.ManyToManyField(Action, through=FormActionThrough)
-    clean_method = models.ForeignKey(CleanMethod, blank=True, null=True)
+    clean_method = models.ForeignKey(
+        CleanMethod, blank=True, null=True, on_delete=models.CASCADE
+    )
     submit_button_text = models.CharField(
         max_length=64, default="Submit",
         help_text="The text you would like on the form submit button."
@@ -269,8 +275,8 @@ class Wizard(BaseFormModel):
 class WizardFormThrough(models.Model):
     """Through table for forms to wizards which defines an order.
     """
-    wizard = models.ForeignKey(Wizard)
-    form = models.ForeignKey(Form)
+    wizard = models.ForeignKey(Wizard, on_delete=models.CASCADE)
+    form = models.ForeignKey(Form, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0)
 
     class Meta(object):
@@ -285,8 +291,8 @@ class WizardFormThrough(models.Model):
 class WizardActionThrough(models.Model):
     """Through table for wizard actions with a defined order.
     """
-    action = models.ForeignKey(Action)
-    wizard = models.ForeignKey(Wizard)
+    action = models.ForeignKey(Action, on_delete=models.CASCADE)
+    wizard = models.ForeignKey(Wizard, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0)
 
     class Meta(object):
@@ -332,8 +338,8 @@ class FormFieldGroup(models.Model):
 class FieldGroupFormThrough(models.Model):
     """Through table for field groups forms with a defined order.
     """
-    field_group = models.ForeignKey(FormFieldGroup)
-    form = models.ForeignKey(Form)
+    field_group = models.ForeignKey(FormFieldGroup, on_delete=models.CASCADE)
+    form = models.ForeignKey(Form, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0)
 
     class Meta(object):
@@ -373,7 +379,7 @@ class FormField(models.Model):
     disabled = models.BooleanField(default=False)
     choices = models.ManyToManyField(FieldChoice, blank=True)
     model_choices_content_type = models.ForeignKey(
-        ContentType, blank=True, null=True
+        ContentType, blank=True, null=True, on_delete=models.CASCADE
     )
     model_choices_object_id = models.PositiveIntegerField(
         blank=True, null=True
@@ -434,8 +440,8 @@ class FormField(models.Model):
 class FieldGroupThrough(models.Model):
     """Through table for form fields and field groups with a defined order.
     """
-    field = models.ForeignKey(FormField)
-    field_group = models.ForeignKey(FormFieldGroup)
+    field = models.ForeignKey(FormField, on_delete=models.CASCADE)
+    field_group = models.ForeignKey(FormFieldGroup, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0)
 
     class Meta(object):

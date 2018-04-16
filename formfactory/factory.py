@@ -17,7 +17,7 @@ class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
     """
     uuid = forms.UUIDField(
-        initial=unicode(uuid4()), widget=forms.HiddenInput
+        initial=str(uuid4()), widget=forms.HiddenInput
     )
     form_id = forms.CharField(
         widget=forms.HiddenInput
@@ -71,7 +71,12 @@ class FormFactory(forms.Form):
 
                 # Some custom fields might need extra info passed to the actual
                 # field instance. Only cater for leaf args.
-                init_args = inspect.getargspec(field_type.__init__).args
+                if hasattr(inspect, "getfullargspec"):
+                    # Python 3
+                    init_args = inspect.getfullargspec(field_type.__init__).args
+                else:
+                    # Python 2
+                    init_args = inspect.getargspec(field_type.__init__).args
                 for arg in init_args:
                     field_value = getattr(field, arg, None)
                     if field_value:

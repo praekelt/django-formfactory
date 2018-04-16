@@ -1,6 +1,10 @@
 Changelog
 =========
 
+next
+----
+#. Django 2.0 and Python 3.5 support.
+
 0.2.3
 -----
 #. Fix defaut None placeholder.
