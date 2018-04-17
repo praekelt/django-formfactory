@@ -1,6 +1,7 @@
 from django import template
-from django.core.urlresolvers import reverse, resolve
+from django.db.models import Model
 from django.http import Http404
+from django.urls import reverse, resolve
 
 from formfactory import models
 
@@ -33,7 +34,7 @@ class RenderFormNode(template.Node):
 
         # If the variable is a string type, attempt to find object based on
         # slug field, otherwise pass the object along directly.
-        if isinstance(variable, basestring):
+        if not isinstance(variable, Model):
             try:
                 form = models.Form.objects.get(slug=variable)
             except models.Form.DoesNotExist:

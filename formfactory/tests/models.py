@@ -6,6 +6,8 @@ class Enum(models.Model):
 
 
 class EnumItem(models.Model):
-    enum = models.ForeignKey(Enum, related_name="items")
+    enum = models.ForeignKey(
+        Enum, related_name="items", on_delete=models.CASCADE
+    )
     label = models.CharField(max_length=128)
     value = models.CharField(max_length=128)

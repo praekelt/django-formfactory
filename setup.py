@@ -15,9 +15,9 @@ setup(
     packages=find_packages(),
     dependency_links=[],
     install_requires=[
-        "django",
-        "django-formtools",
-        "django-simplemde",
+        "django>=1.9",
+        "django-formtools>=2.1",
+        "django-simplemde>=0.1.2",
         "markdown",
     ],
     classifiers=[

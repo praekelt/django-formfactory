@@ -37,7 +37,7 @@ class ModelTestCase(TestCase):
         self.assertEqual(
             self.form.get_absolute_url(), "/formfactory/%s/" % self.form.slug
         )
-        self.assertEqual(unicode(self.form), u"Form 1")
+        self.assertEqual(self.form.__unicode__(), u"Form 1")
 
     def test_fieldchoice(self):
         for key, value in self.fieldchoice_data.items():

@@ -28,7 +28,7 @@ class FactoryTestCase(TestCase):
             "subscribe-form-upload-to": "uploads/test"
         }
         self.form_files = {
-            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test")
+            "subscribe-form-id-copy": SimpleUploadedFile("test.txt", "Test".encode("utf-8"))
         }
 
         self.upload_path = os.path.join(
