@@ -69,6 +69,9 @@ class FormData(models.Model):
         ordering = ["uuid"]
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s (%s)" % (self.form.title, self.uuid)
 
 
@@ -101,6 +104,9 @@ class Validator(models.Model):
     validator = models.CharField(choices=ADDITIONAL_VALIDATORS, max_length=128)
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return self.validator
 
     @property
@@ -114,6 +120,9 @@ class CleanMethod(models.Model):
     clean_method = models.CharField(choices=CLEAN_METHODS, max_length=128)
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return self.clean_method
 
     @property
@@ -130,6 +139,9 @@ class CustomErrorMessage(models.Model):
         verbose_name_plural = "Field error messages"
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s: %s" % (self.key, self.value)
 
 
@@ -143,6 +155,9 @@ class ActionParam(models.Model):
     )
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s:%s" % (self.key, self.value)
 
 
@@ -159,6 +174,9 @@ class FormActionThrough(models.Model):
         verbose_name_plural = "Form Actions"
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s (%s)" % (self.action.action, self.order)
 
 
@@ -212,6 +230,9 @@ it.""")
         ordering = ["title"]
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return self.title
 
     def get_absolute_url(self):
@@ -263,6 +284,9 @@ class Wizard(BaseFormModel):
     forms = models.ManyToManyField(Form, through="WizardFormThrough")
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return self.title
 
     def absolute_url(self):
@@ -285,6 +309,9 @@ class WizardFormThrough(models.Model):
         verbose_name_plural = "Forms"
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s (%s)" % (self.form.title, self.order)
 
 
@@ -301,6 +328,9 @@ class WizardActionThrough(models.Model):
         verbose_name_plural = "Wizard Actions"
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s (%s)" % (self.action.action, self.order)
 
 
@@ -314,6 +344,9 @@ class FieldChoice(models.Model):
         ordering = ["label"]
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s:%s" % (self.label, self.value)
 
 
@@ -332,6 +365,9 @@ class FormFieldGroup(models.Model):
     )
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return self.title
 
 
@@ -348,6 +384,9 @@ class FieldGroupFormThrough(models.Model):
         verbose_name_plural = "Field Groups"
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s (%s)" % (self.field_group.title, self.order)
 
 
@@ -397,6 +436,9 @@ class FormField(models.Model):
     )
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return self.title
 
     @property
@@ -450,6 +492,9 @@ class FieldGroupThrough(models.Model):
         verbose_name_plural = "Fields"
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return "%s (%s)" % (self.field.title, self.order)
 
 
@@ -459,6 +504,9 @@ class FormFieldErrorMessageProxy(FormField.error_messages.through):
         proxy = True
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return str(self.customerrormessage)
 
 
@@ -468,4 +516,7 @@ class FormFieldValidatorProxy(FormField.additional_validators.through):
         proxy = True
 
     def __unicode__(self):
+        return self.__str__()
+
+    def __str__(self):
         return str(self.validator)
