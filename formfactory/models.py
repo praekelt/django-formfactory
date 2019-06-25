@@ -499,6 +499,8 @@ class FormFieldErrorMessageProxy(FormField.error_messages.through):
     def __unicode__(self):
         return str(self.customerrormessage)
 
+    __str__ = __unicode__
+
 
 class FormFieldValidatorProxy(FormField.additional_validators.through):
     class Meta:
@@ -507,3 +509,5 @@ class FormFieldValidatorProxy(FormField.additional_validators.through):
 
     def __unicode__(self):
         return str(self.validator)
+
+    __str__ = __unicode__
