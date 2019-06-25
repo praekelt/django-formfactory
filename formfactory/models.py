@@ -77,8 +77,7 @@ class FormData(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.form.title, self.uuid)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class FormDataItem(models.Model):
@@ -99,8 +98,7 @@ class Action(models.Model):
     def __unicode__(self):
         return self.action
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
     @property
     def as_function(self):
@@ -115,8 +113,7 @@ class Validator(models.Model):
     def __unicode__(self):
         return self.validator
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
     @property
     def as_function(self):
@@ -131,8 +128,7 @@ class CleanMethod(models.Model):
     def __unicode__(self):
         return self.clean_method
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
     @property
     def as_function(self):
@@ -150,8 +146,7 @@ class CustomErrorMessage(models.Model):
     def __unicode__(self):
         return "%s: %s" % (self.key, self.value)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class ActionParam(models.Model):
@@ -166,8 +161,7 @@ class ActionParam(models.Model):
     def __unicode__(self):
         return "%s:%s" % (self.key, self.value)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class FormActionThrough(models.Model):
@@ -185,8 +179,7 @@ class FormActionThrough(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.action.action, self.order)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class BaseFormModel(models.Model):
@@ -241,8 +234,7 @@ it.""")
     def __unicode__(self):
         return self.title
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
     def get_absolute_url(self):
         if self.enable_csrf:
@@ -295,8 +287,7 @@ class Wizard(BaseFormModel):
     def __unicode__(self):
         return self.title
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
     def absolute_url(self):
         return self.get_absolute_url()
@@ -320,8 +311,7 @@ class WizardFormThrough(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.form.title, self.order)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class WizardActionThrough(models.Model):
@@ -339,8 +329,7 @@ class WizardActionThrough(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.action.action, self.order)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class FieldChoice(models.Model):
@@ -355,8 +344,7 @@ class FieldChoice(models.Model):
     def __unicode__(self):
         return "%s:%s" % (self.label, self.value)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class FormFieldGroup(models.Model):
@@ -376,8 +364,7 @@ class FormFieldGroup(models.Model):
     def __unicode__(self):
         return self.title
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class FieldGroupFormThrough(models.Model):
@@ -395,8 +382,7 @@ class FieldGroupFormThrough(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.field_group.title, self.order)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class FormField(models.Model):
@@ -447,8 +433,7 @@ class FormField(models.Model):
     def __unicode__(self):
         return self.title
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
     @property
     def get_field_meta(self):
@@ -503,8 +488,7 @@ class FieldGroupThrough(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.field.title, self.order)
 
-    def __str__(self):
-        return self.__unicode__()
+    __str__ = __unicode__
 
 
 class FormFieldErrorMessageProxy(FormField.error_messages.through):
