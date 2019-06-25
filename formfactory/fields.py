@@ -1,8 +1,13 @@
 import markdown
 
+import django
 from django.forms.fields import Field
-from django.utils.text import mark_safe
 from django.utils.translation import ugettext as _
+
+if django.VERSION[0] < 2:
+    from django.utils.text import mark_safe
+else:
+    from django.utils.safestring import mark_safe
 
 from formfactory import widgets
 

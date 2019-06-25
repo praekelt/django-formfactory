@@ -64,8 +64,8 @@ def load_fixtures(kls):
             "placeholder": "Field Placeholder %s" % count
         }
 
-        # Specialised fields with none default fields will need to have extra
-        # data added.
+        # Specialised fields as well as non django fields will need to have
+        # extra data added.
         if field_type[0] == "formfactory.fields.ParagraphField":
             data["paragraph"] = "**formfactory.fields.ParagraphField**"
         setattr(kls, "formfield_data_%s" % count, data)
@@ -259,7 +259,7 @@ def load_fixtures(kls):
             "title": "Paragraph",
             "slug": "paragraph",
             "field_type": "formfactory.fields.ParagraphField",
-            "paragraph": "**aaaa**"
+            "paragraph": "**paragraph-text**"
         }
     }
 

@@ -1,13 +1,19 @@
 import importlib
 import markdown
 
+import django
 from django import forms
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
-from django.utils.text import mark_safe
 from django.utils.translation import ugettext as _
+
+if django.VERSION[0] < 2:
+    from django.utils.text import mark_safe
+else:
+    from django.utils.safestring import mark_safe
+
 
 from simplemde.fields import SimpleMDEField
 
