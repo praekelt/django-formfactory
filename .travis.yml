@@ -9,7 +9,7 @@ matrix:
       env: TOXENV=django111-py35
     - python: "3.5"
       env: TOXENV=django21-py35
-    - python: "3.5."
+    - python: "3.5"
       env: TOXENV=django22-py35
 
     - python: "3.6"
