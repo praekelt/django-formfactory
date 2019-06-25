@@ -8,16 +8,12 @@ matrix:
     - python: "3.5"
       env: TOXENV=django111-py35
     - python: "3.5"
-      env: TOXENV=django2-py35
-    - python: "3.5"
       env: TOXENV=django21-py35
     - python: "3.5."
       env: TOXENV=django22-py35
 
     - python: "3.6"
       env: TOXENV=django111-py36
-    - python: "3.6"
-      env: TOXENV=django2-py36
     - python: "3.6"
       env: TOXENV=django21-py36
     - python: "3.6"
@@ -27,10 +23,6 @@ matrix:
       sudo: required
       dist: xenial
       env: TOXENV=django111-py37
-    - python: "3.7"
-      sudo: required
-      dist: xenial
-      env: TOXENV=django2-py37
     - python: "3.7"
       sudo: required
       dist: xenial
