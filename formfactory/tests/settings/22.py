@@ -8,7 +8,7 @@ DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "test111.db"
+        "NAME": "test22.db"
     }
 }
 
