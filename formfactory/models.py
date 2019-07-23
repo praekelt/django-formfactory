@@ -18,7 +18,13 @@ else:
 from simplemde.fields import SimpleMDEField
 
 from formfactory import (
-    _registry, actions, clean_methods, factory, SETTINGS, validators, utils
+    SETTINGS,
+    _registry,
+    actions,
+    clean_methods,
+    factory,
+    utils,
+    validators,
 )
 
 
@@ -35,7 +41,9 @@ def _FIELD_TYPES():
             fields = fields + ((content_type, field),)
     return fields
 
+
 FIELD_TYPES = _FIELD_TYPES()
+
 
 def _WIDGET_TYPES():
     widgets = ()
@@ -44,6 +52,7 @@ def _WIDGET_TYPES():
         if issubclass(getattr(module, widget), forms.widgets.Widget):
             widgets = widgets + ((content_type, widget),)
     return widgets
+
 
 WIDGET_TYPES = _WIDGET_TYPES()
 
