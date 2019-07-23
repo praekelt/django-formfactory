@@ -3,7 +3,8 @@ Changelog
 
 next
 ----
-#. Django 2.0 and Python 3.5 support.
+#. Django 2.1 and 2.2 along with  Python 3.5, 3.6, 3.7 support.
+#. Remove Django 1.10 support.
 
 0.2.3
 -----
