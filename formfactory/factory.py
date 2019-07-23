@@ -16,6 +16,10 @@ from formfactory import SETTINGS, utils
 class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
     """
+
+    # TODO: Update uuid in __init__. Forms are readied up during django
+    # startup, meaning the uuid is only set once and not updated for each form
+    # instance.
     uuid = forms.UUIDField(
         initial=str(uuid4()), widget=forms.HiddenInput
     )
