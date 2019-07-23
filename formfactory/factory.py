@@ -47,6 +47,10 @@ class FormFactory(forms.Form):
         # Models aren't ready when the file is initially processed.
         from formfactory import models
         field_through = models.FieldGroupThrough
+
+        # TODO: Duplicate field groups and fields allowed. Has possible
+        # unintended side effect that only the last field value is ever stored
+        # using the default store data action.
         for field_group in defined_field_groups:
 
             fields = utils.order_by_through(
