@@ -259,15 +259,7 @@ it.""")
     def absolute_url(self):
         return self.get_absolute_url()
 
-    def as_form(self, **kwargs):
-        """
-        Builds the form factory object and returns it.
-        """
-        if not self.pk:
-            raise AttributeError(
-                "The model needs to be saved before a form can be generated."
-            )
-
+    def get_form_kwargs(self, **kwargs):
         ordered_field_groups = utils.order_by_through(
             self.fieldgroups.all(),
             "FieldGroupFormThrough",
@@ -282,8 +274,18 @@ it.""")
             "prefix": kwargs.get("prefix", self.slug),
             "clean_method": self.clean_method
         })
+        return kwargs
 
-        return factory.FormFactory(**kwargs)
+    def as_form(self, **kwargs):
+        """
+        Builds the form factory object and returns it.
+        """
+        if not self.pk:
+            raise AttributeError(
+                "The model needs to be saved before a form can be generated."
+            )
+
+        return factory.FormFactory(**self.get_form_kwargs(**kwargs))
 
 
 class Wizard(BaseFormModel):
