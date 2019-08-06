@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from formfactory import SETTINGS, utils
 
-
+# TODO: Document filter_fields and order_fieldgroup_fields
 class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
     """
@@ -26,6 +26,20 @@ class FormFactory(forms.Form):
     form_id = forms.CharField(
         widget=forms.HiddenInput
     )
+
+    def filter_fields(self, field_group):
+        """Customisable method that allows for the overriding of the default
+        field queryset for each field group.
+        """
+        return field_group.fields.all()
+
+    # TODO: Django Form class already has a order_fields method. Look into
+    # using that.
+    def order_fieldgroup_fields(self, fields, *args):
+        """Customisable method that allows for the customisation of the field
+        order.
+        """
+        return utils.order_by_through(fields, *args)
 
     def __init__(self, *args, **kwargs):
         self.actions = kwargs.pop("actions")
@@ -46,15 +60,16 @@ class FormFactory(forms.Form):
 
         # Models aren't ready when the file is initially processed.
         from formfactory import models
-        field_through = models.FieldGroupThrough
 
         # TODO: Duplicate field groups and fields allowed. Has possible
         # unintended side effect that only the last field value is ever stored
         # using the default store data action.
         for field_group in defined_field_groups:
 
-            fields = utils.order_by_through(
-                field_group.fields.all(),
+            fields = self.filter_fields(field_group)
+
+            fields = self.order_fieldgroup_fields(
+                fields,
                 "FieldGroupThrough",
                 "field_group",
                 field_group,
