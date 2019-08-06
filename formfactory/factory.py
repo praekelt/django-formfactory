@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from formfactory import SETTINGS, utils
 
+
 # TODO: Document filter_fields and order_fieldgroup_fields
 class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
@@ -26,20 +27,6 @@ class FormFactory(forms.Form):
     form_id = forms.CharField(
         widget=forms.HiddenInput
     )
-
-    def filter_fields(self, field_group):
-        """Customisable method that allows for the overriding of the default
-        field queryset for each field group.
-        """
-        return field_group.fields.all()
-
-    # TODO: Django Form class already has a order_fields method. Look into
-    # using that.
-    def order_fieldgroup_fields(self, fields, *args):
-        """Customisable method that allows for the customisation of the field
-        order.
-        """
-        return utils.order_by_through(fields, *args)
 
     def __init__(self, *args, **kwargs):
         self.actions = kwargs.pop("actions")
@@ -173,6 +160,20 @@ class FormFactory(forms.Form):
                     widget_attrs["placeholder"] = field.placeholder
                 if choices:
                     self.fields[field.slug].widget.choices = choices
+
+    def filter_fields(self, field_group):
+        """Customisable method that allows for the overriding of the default
+        field queryset for each field group.
+        """
+        return field_group.fields.all()
+
+    # TODO: Django Form class already has a order_fields method. Look into
+    # using that.
+    def order_fieldgroup_fields(self, fields, *args):
+        """Customisable method that allows for the customisation of the field
+        order.
+        """
+        return utils.order_by_through(fields, *args)
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html,
                      errors_on_separate_row):
