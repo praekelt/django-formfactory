@@ -55,6 +55,11 @@ class FormFactory(forms.Form):
 
             fields = self.filter_fields(field_group)
 
+            # If the fields for a group are all filtered out, skip trying to do
+            # any other work on the fields or their field group.
+            if not fields:
+                continue
+
             fields = self.order_fieldgroup_fields(
                 fields,
                 "FieldGroupThrough",
