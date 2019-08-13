@@ -35,6 +35,7 @@ SETTINGS = getattr(settings, "FORMFACTORY", {
         ("django.forms.widgets.DateTimeInput", "DateTimeInput"),
         ("django.forms.widgets.EmailInput", "EmailInput"),
         ("django.forms.widgets.FileInput", "FileInput"),
+        ("django.forms.widgets.ClearableFileInput", "ClearableFileInput"),
         ("django.forms.widgets.HiddenInput", "HiddenInput"),
         ("django.forms.widgets.NullBooleanSelect", "NullBooleanSelect"),
         ("django.forms.widgets.NumberInput", "NumberInput"),
