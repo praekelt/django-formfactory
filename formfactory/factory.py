@@ -166,6 +166,8 @@ class FormFactory(forms.Form):
                 if choices:
                     self.fields[field.slug].widget.choices = choices
 
+            self.post_fieldgroup_setup(field_group, fields)
+
     def filter_fields(self, field_group):
         """Customisable method that allows for the overriding of the default
         field queryset for each field group.
@@ -179,6 +181,13 @@ class FormFactory(forms.Form):
         order.
         """
         return utils.order_by_through(fields, *args)
+
+    def post_fieldgroup_setup(self, field_group, fields):
+        """Post fieldgroup field processing hook, useful if there is additional
+        work to be done on the fields or more fields need to be hooked into the
+        form manually.
+        """
+        return None
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html,
                      errors_on_separate_row):
