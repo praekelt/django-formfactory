@@ -3,7 +3,10 @@ Changelog
 
 next
 ----
-#. Django 2.0 and Python 3.5 support.
+#. Added Django 2.1 and 2.2 along with Python 3.5, 3.6, 3.7 support.
+#. Remove Django 1.10 support.
+#. Added helper method on Form model that returns the form's kwargs.
+#. Added methods to factory.FormFactory to facilitate easier subclass customisation.
 
 0.2.3
 -----

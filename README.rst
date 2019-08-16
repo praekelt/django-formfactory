@@ -35,12 +35,12 @@ Settings
 
 FORMFACTORY["field-types"]
     Control the form fields types that can be selected in Admin.
-    Supports adding none Django fields: ``("<module_for_field>", "<display_name>")``
+    Supports adding non Django fields: ``("<module_for_field>", "<display_name>")``
     eg. ``("formfactory.fields.ParagraphField", "ParagraphField")``
 
 FORMFACTORY["widget-types"]
     Control the form widget types that can be selected in Admin.
-    Supports adding none Django widgets: ``("<module_for_widget>", "<display_name>")``
+    Supports adding non Django widgets: ``("<module_for_widget>", "<display_name>")``
     eg. ``("formfactory.widgets.ParagraphWidget", "ParagraphWidget")``
 
 Widgets and Fields

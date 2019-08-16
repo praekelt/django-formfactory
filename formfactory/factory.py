@@ -13,9 +13,15 @@ from django.utils.translation import ugettext_lazy as _
 from formfactory import SETTINGS, utils
 
 
+# TODO: Document filter_fields, order_fieldgroup_fields and
+# post_fieldgroup_setup. Readme does not have factory.py section yet.
 class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
     """
+
+    # TODO: Update uuid in __init__. Forms are readied up during django
+    # startup, meaning the uuid is only set once and not updated for each form
+    # instance.
     uuid = forms.UUIDField(
         initial=str(uuid4()), widget=forms.HiddenInput
     )
@@ -42,11 +48,21 @@ class FormFactory(forms.Form):
 
         # Models aren't ready when the file is initially processed.
         from formfactory import models
-        field_through = models.FieldGroupThrough
+
+        # TODO: Duplicate field groups and fields allowed. Has possible
+        # unintended side effect that only the last field value is ever stored
+        # using the default store data action.
         for field_group in defined_field_groups:
 
-            fields = utils.order_by_through(
-                field_group.fields.all(),
+            fields = self.filter_fields(field_group)
+
+            # If the fields for a group are all filtered out, skip trying to do
+            # any other work on the fields or their field group.
+            if not fields:
+                continue
+
+            fields = self.order_fieldgroup_fields(
+                fields,
                 "FieldGroupThrough",
                 "field_group",
                 field_group,
@@ -150,6 +166,29 @@ class FormFactory(forms.Form):
                     widget_attrs["placeholder"] = field.placeholder
                 if choices:
                     self.fields[field.slug].widget.choices = choices
+
+            self.post_fieldgroup_setup(field_group, fields)
+
+    def filter_fields(self, field_group):
+        """Customisable method that allows for the overriding of the default
+        field queryset for each field group.
+        """
+        return field_group.fields.all()
+
+    # TODO: Django Form class already has a order_fields method. Look into
+    # using that.
+    def order_fieldgroup_fields(self, fields, *args):
+        """Customisable method that allows for the customisation of the field
+        order.
+        """
+        return utils.order_by_through(fields, *args)
+
+    def post_fieldgroup_setup(self, field_group, fields):
+        """Post fieldgroup fields processed hook. Used for FormFactory subclass
+        customisation. Allows for additional work to be done on the fields,
+        groups or the form.
+        """
+        return None
 
     def _html_output(self, normal_row, error_row, row_ender, help_text_html,
                      errors_on_separate_row):

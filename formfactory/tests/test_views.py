@@ -50,8 +50,11 @@ class ViewTestCase(TestCase):
         for field_group in self.simpleform.fieldgroups.all():
             for field in field_group.fields.all():
 
-                # Paragraph fields are never required.
+                # Paragraph fields do not have the normal label and values
+                # available. Test the paragraph text exists and continue to the
+                # next loop iteration.
                 if field.slug == "paragraph":
+                    self.assertContains(response, "<strong>paragraph-text</strong>")
                     continue
                 self.assertContains(response, field.slug)
                 for choice in field.choices.all():
