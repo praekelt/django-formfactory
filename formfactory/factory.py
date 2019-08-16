@@ -13,7 +13,8 @@ from django.utils.translation import ugettext_lazy as _
 from formfactory import SETTINGS, utils
 
 
-# TODO: Document filter_fields and order_fieldgroup_fields
+# TODO: Document filter_fields, order_fieldgroup_fields and
+# post_fieldgroup_setup. Readme does not have factory.py section yet.
 class FormFactory(forms.Form):
     """Builds a form class from defined fields passed to it by the Form model.
     """
