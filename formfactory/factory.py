@@ -183,9 +183,9 @@ class FormFactory(forms.Form):
         return utils.order_by_through(fields, *args)
 
     def post_fieldgroup_setup(self, field_group, fields):
-        """Post fieldgroup field processing hook, useful if there is additional
-        work to be done on the fields or more fields need to be hooked into the
-        form manually.
+        """Post fieldgroup fields processed hook. Used for FormFactory subclass
+        customisation. Allows for additional work to be done on the fields,
+        groups or the form.
         """
         return None
 
