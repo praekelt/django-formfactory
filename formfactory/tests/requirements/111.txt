@@ -11,5 +11,5 @@ Markdown==2.6.7
 django-simplemde==0.1.2
 djangorestframework-extras>=0.2.1,<0.3
 #djangorestframework-jwt==1.8.0
-djangorestframework==3.8.2
+djangorestframework==3.11.2
 six==1.10.0
